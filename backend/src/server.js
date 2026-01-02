@@ -1,12 +1,12 @@
 let express = require('express');
-
+let cors = require('cors')
 const app = express();
 
 const pool = require('./pool.js');  // the database pool
 
 let bodyParser = require('body-parser');
 app.use(bodyParser.json()); // set content type as JSON
-
+app.use(cors());
 app.get("/", (req, res) => {
     res.setHeader('Content-Type', 'text/html');
     res.status(200).send("it do be workin");

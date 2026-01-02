@@ -1,0 +1,6 @@
+<p style="color: blue;font-family: 'Comic Sans MS'">userdemo works!</p>
+@for (item of userdata; track item.email) {
+  <li>{{ item.email }}</li>
+} @empty {
+  <li>There are no items.</li>
+}
