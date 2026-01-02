@@ -1,0 +1,9 @@
+{
+  "database": {
+    "host": "localhost",
+    "port": 5433,
+    "database": "food_delivery_platform",
+    "user": "postgres",
+    "password": "123456"
+  }
+}
