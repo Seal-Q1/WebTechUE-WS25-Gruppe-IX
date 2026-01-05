@@ -1,0 +1,15 @@
+nav {
+  background-color: var(--primary);
+  position: sticky;
+}
+
+nav ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+}
+
+a {
+  text-decoration: underline;
+}

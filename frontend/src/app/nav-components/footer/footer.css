@@ -1,0 +1,6 @@
+footer {
+  position: sticky;
+  bottom: 0;
+  background-color: var(--primary);
+  text-align: center;
+}
