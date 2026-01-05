@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
     res.status(200).send("it do be workin");
 });
 
-app.get("/users", (req, res) => {
+app.get("/api/users", (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     pool.query('SELECT * FROM "users"').then((result) => res.status(200).send(result.rows));
 });

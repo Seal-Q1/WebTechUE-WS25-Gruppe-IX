@@ -1,0 +1,6 @@
+<p><b>Users:</b></p>
+@for (user of users; track user.email) {
+  <li>{{ user.email }}</li>
+} @empty {
+  <li>There are no items.</li>
+}
