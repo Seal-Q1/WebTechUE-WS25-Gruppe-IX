@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
+import {MenuItemDto} from '@shared/types';
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +9,11 @@ import {HttpClient} from '@angular/common/http';
 export class MenuItemService {
   constructor(private http: HttpClient) {}
 
-  getMenuItem(itemId: number) {
-    return this.http.get<any>(apiUrls.menuItemEndpoint(itemId));
+  getAllMenuItems(restaurantId: number) {
+    return this.http.get<MenuItemDto[]>(apiUrls.allMenuItemsEndpoint(restaurantId));
+  }
+
+  getMenuItem(restaurantId: number, itemId: number) {
+    return this.http.get<MenuItemDto>(apiUrls.menuItemEndpoint(restaurantId, itemId));
   }
 }

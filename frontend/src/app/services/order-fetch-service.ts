@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
+import {OrderDto, OrderItemDto, OrderStatusEnum} from '@shared/types';
 
 @Injectable({
   providedIn: 'root',
@@ -8,11 +9,23 @@ import {HttpClient} from '@angular/common/http';
 export class OrderFetchService {
   constructor(private http: HttpClient) {}
 
-  getOrders(restaurantId: number) {
-    return this.http.get<any>(apiUrls.orderEndpoint(restaurantId));
+  getAllOrders(restaurantId: number) {
+    return this.http.get<OrderDto[]>(apiUrls.allOrdersEndpoint(restaurantId));
   }
 
-  getOrderItems(orderId: number) {
-    return this.http.get<any>(apiUrls.orderItemsEndpoint(orderId));
+  getOrder(restaurantId: number, orderId: number) {
+    return this.http.get<OrderDto>(apiUrls.orderEndpoint(restaurantId, orderId));
+  }
+
+  getOrderItems(restaurantId: number, orderId: number) {
+    return this.http.get<OrderItemDto[]>(apiUrls.orderItemsEndpoint(restaurantId, orderId));
+  }
+
+  updateOrderStatus(restaurantId: number, orderId: number, status: OrderStatusEnum) {
+    return this.http.patch<OrderDto>(apiUrls.orderStatusEndpoint(restaurantId, orderId), { status });
+  }
+
+  deleteOrder(restaurantId: number, orderId: number) {
+    return this.http.delete<void>(apiUrls.orderEndpoint(restaurantId, orderId));
   }
 }

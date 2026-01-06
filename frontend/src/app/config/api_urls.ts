@@ -2,10 +2,16 @@ import {environment} from '../../environment/environment';
 
 export const apiUrls = {
   userEndpoint: environment.apiUrl + "/users",
-  orderEndpoint: (restaurantId: number) =>
-    `${environment.apiUrl}/restaurant/${restaurantId}/orders`,
-  orderItemsEndpoint: (orderId: number) =>
-    `${environment.apiUrl}/orders/${orderId}/items`,
-  menuItemEndpoint: (itemId: number) =>
-    `${environment.apiUrl}/menu-items/${itemId}`
+  allOrdersEndpoint: (restaurantId: number) =>
+    `${environment.apiUrl}/restaurants/${restaurantId}/orders`,
+  orderEndpoint: (restaurantId: number, orderId: number) =>
+    `${environment.apiUrl}/restaurants/${restaurantId}/orders/${orderId}`,
+  orderStatusEndpoint: (restaurantId: number, orderId: number) =>
+    `${environment.apiUrl}/restaurants/${restaurantId}/orders/${orderId}/status`,
+  orderItemsEndpoint: (restaurantId: number, orderId: number) =>
+    `${environment.apiUrl}/restaurants/${restaurantId}/orders/${orderId}/items`,
+  allMenuItemsEndpoint: (restaurantId: number) =>
+    `${environment.apiUrl}/restaurants/${restaurantId}/menu-items`,
+  menuItemEndpoint: (restaurantId: number, itemId: number) =>
+    `${environment.apiUrl}/restaurants/${restaurantId}/menu-items/${itemId}`
 }
