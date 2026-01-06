@@ -4,11 +4,16 @@
     <p>Status={{order.status}}<p>
     <p>"{{order.name}}" ({{order.type}})<br>{{order.createdAt | date:'short'}}, {{order.paymentMethod}}, {{order.paidAmount}}€</p>
     <app-address-card [address]="order.address"></app-address-card>
-    <button (click)="loadOrderItems()"><u>Show Items</u></button>
+    <button (click)="onLoadItems()"><u>Show Items</u></button>
+    <button (click)="onDelete()"><u>Delete Order</u></button>
     @if (orderItems.length > 0) {
       <div>
         @for (item of orderItems; track item.id) {
-          <app-item-card [orderItem]="item"></app-item-card>
+          <app-item-card
+            [orderItem]="item"
+            [menuItem]="getMenuItem(item.itemId)"
+            (loadMenuItem)="onLoadMenuItem($event)">
+          </app-item-card>
         }
       </div>
     }

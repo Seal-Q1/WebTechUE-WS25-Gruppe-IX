@@ -3,7 +3,17 @@
   <button (click)="fetchOrders()"><small><u><i>[Refresh]</i></u></small></button>
 
   @for (order of orders; track order.id) {
-    <app-order-card [order]="order"></app-order-card>
+    <!-- dependency inject data and methods to loosen coupling (TODO data more primitive?) -->
+    <!-- ditto for item-card and order-card and all others down the composite -->
+    <app-order-card
+      [order]="order"
+      [orderItems]="getOrderItems(order.id)"
+      [menuItemsMap]="menuItems"
+      (loadItems)="fetchOrderItems($event)"
+      (loadMenuItem)="fetchMenuItem($event)"
+      (statusChange)="updateOrderStatus($event.orderId, $event.status)"
+      (deleteOrder)="deleteOrder($event)">
+    </app-order-card>
   } @empty {
     <p>No orders</p>
   }

@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {AddressDto} from '../../../dtos/address.dto';
+import {AddressDto} from '@shared/types';
 
 @Component({
   selector: 'app-address-card',
@@ -8,6 +8,5 @@ import {AddressDto} from '../../../dtos/address.dto';
   styleUrl: './address-card.css',
 })
 export class AddressCard {
-  @Input() address!: AddressDto | undefined;
-
+  @Input() address: AddressDto | undefined;
 }

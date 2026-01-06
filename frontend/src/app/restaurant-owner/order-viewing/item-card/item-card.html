@@ -1,6 +1,6 @@
 <li>
   <span>ID: {{orderItem.id}}, Item ID: {{orderItem.itemId}}, Quantity: {{orderItem.quantity}}, Unit Price: {{orderItem.unitPrice}}€</span>
-  <br><button (click)="loadMenuItem()"><u>Load Details</u></button>
+  <br><button (click)="onLoadMenuItem()"><u>Load Details</u></button>
   @if (menuItem) {
     <ul>
       <li>ID: {{menuItem.id}}</li>

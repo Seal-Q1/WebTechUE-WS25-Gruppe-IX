@@ -1,9 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {OrderDto} from '../../../dtos/order.dto';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {OrderDto, OrderItemDto, MenuItemDto, OrderStatusEnum} from '@shared/types';
 import {DatePipe} from '@angular/common';
 import {AddressCard} from '../address-card/address-card';
-import {OrderItemDto} from '../../../dtos/orderItem.dto';
-import {OrderFetchService} from '../../../services/order-fetch-service';
 import {ItemCard} from '../item-card/item-card';
 
 @Component({
@@ -16,28 +14,33 @@ import {ItemCard} from '../item-card/item-card';
   templateUrl: './order-card.html',
   styleUrl: './order-card.css',
 })
-export class OrderCardComponent implements OnInit {
-  ngOnInit(): void {
-      //console.log(this.order)
-  }
+export class OrderCardComponent {
   @Input() order!: OrderDto;
-  orderItems: OrderItemDto[] = [];
+  @Input() orderItems: OrderItemDto[] = [];
+  @Input() menuItemsMap: Map<number, MenuItemDto> = new Map();
 
-  constructor(private orderFetchService: OrderFetchService) {}
+  @Output() loadItems = new EventEmitter<number>();
+  @Output() loadMenuItem = new EventEmitter<number>();
+  @Output() statusChange = new EventEmitter<{orderId: number, status: OrderStatusEnum}>();
+  @Output() deleteOrder = new EventEmitter<number>();
 
-  loadOrderItems(): void {
-    this.orderFetchService.getOrderItems(this.order.id).subscribe(items => {
-        console.log('Order items:', items);
-        this.orderItems = this.deserializeOrderItemData(items);
-      }
-    );
+  onLoadItems(): void {
+    this.loadItems.emit(this.order.id);
   }
 
-    return data.map((item: any): OrderItemDto => ({
-      id: item.id,
-      itemId: item.item_id,
-      quantity: item.quantity,
-      unitPrice: item.unit_price,
-    }));
+  onLoadMenuItem(itemId: number): void {
+    this.loadMenuItem.emit(itemId);
+  }
+
+  onStatusChange(status: OrderStatusEnum): void {
+    this.statusChange.emit({orderId: this.order.id, status});
+  }
+
+  onDelete(): void {
+    this.deleteOrder.emit(this.order.id);
+  }
+
+  getMenuItem(itemId: number): MenuItemDto | undefined {
+    return this.menuItemsMap.get(itemId);
   }
 }

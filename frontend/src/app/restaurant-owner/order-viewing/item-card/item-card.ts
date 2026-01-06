@@ -1,7 +1,5 @@
-import {Component, Input} from '@angular/core';
-import {OrderItemDto} from '../../../dtos/orderItem.dto';
-import {MenuItemDto} from '../../../dtos/menuItem.dto';
-import {MenuItemService} from '../../../services/menu-item-service';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {OrderItemDto, MenuItemDto} from '@shared/types';
 
 @Component({
   selector: 'app-item-card',
@@ -11,17 +9,11 @@ import {MenuItemService} from '../../../services/menu-item-service';
 })
 export class ItemCard {
   @Input() orderItem!: OrderItemDto;
-  menuItem: MenuItemDto | undefined;
+  @Input() menuItem: MenuItemDto | undefined;
 
-  constructor(private menuItemService: MenuItemService) {}
+  @Output() loadMenuItem = new EventEmitter<number>();
 
-    console.log("click");
-    this.menuItemService.getMenuItem(this.orderItem.itemId).subscribe(item => {
-        console.log('Menu item:', item);
-        this.menuItem = this.deserializeMenuItemData(item);
-      }
-    );
-  }
-
+  onLoadMenuItem(): void {
+    this.loadMenuItem.emit(this.orderItem.itemId);
   }
 }
