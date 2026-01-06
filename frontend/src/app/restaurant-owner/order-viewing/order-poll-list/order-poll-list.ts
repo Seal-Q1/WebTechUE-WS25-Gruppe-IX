@@ -24,7 +24,7 @@ export class OrderPollList {
   orderItems: Map<number, OrderItemDto[]> = new Map();
   menuItems: Map<number, MenuItemDto> = new Map();
 
-  private restaurantId = 1;
+  private restaurantId = 1; //FIXME remove hardcode
 
   constructor(
     public orderFetchService: OrderFetchService,
