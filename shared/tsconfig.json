@@ -2,8 +2,9 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    // "rootDir": "./src",
-    // "outDir": "./dist",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "moduleResolution": "node", //this is necessary for the exporting (c.f. packages in python)
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
