@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectorRef} from '@angular/core';
 import {OrderDto, OrderItemDto, MenuItemDto, OrderStatusEnum} from '@shared/types';
 import {OrderFetchService} from '../../../services/order-fetch-service';
 import {MenuItemService} from '../../../services/menu-item-service';
@@ -22,12 +22,14 @@ export class OrderPollList {
 
   constructor(
     private orderFetchService: OrderFetchService,
-    private menuItemService: MenuItemService
+    private menuItemService: MenuItemService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   fetchOrders(): void {
     this.orderFetchService.getAllOrders(this.restaurantId).subscribe(data => {
       this.orders = data;
+      this.changeDetectorRef.detectChanges();
     });
   }
 
@@ -62,6 +64,7 @@ export class OrderPollList {
       const index = this.orders.findIndex(o => o.id === orderId);
       if (index !== -1) {
         this.orders[index] = updatedOrder; //update local order on successful CR(U)D
+        this.changeDetectorRef.detectChanges();
       }
     });
   }
@@ -70,6 +73,7 @@ export class OrderPollList {
     this.orderFetchService.deleteOrder(this.restaurantId, orderId).subscribe(() => {
       this.orders = this.orders.filter(o => o.id !== orderId); //delete order on successful (CRU)D
       this.orderItems.delete(orderId); //delete corresponding order-items for consistency
+      this.changeDetectorRef.detectChanges();
     });
   }
 }
