@@ -33,7 +33,6 @@ export class OrderCardComponent implements OnInit {
     );
   }
 
-  deserializeOrderItemData(data: Array<object>): OrderItemDto[] {
     return data.map((item: any): OrderItemDto => ({
       id: item.id,
       itemId: item.item_id,

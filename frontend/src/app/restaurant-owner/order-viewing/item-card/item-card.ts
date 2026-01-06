@@ -15,7 +15,6 @@ export class ItemCard {
 
   constructor(private menuItemService: MenuItemService) {}
 
-  loadMenuItem(): void {
     console.log("click");
     this.menuItemService.getMenuItem(this.orderItem.itemId).subscribe(item => {
         console.log('Menu item:', item);
@@ -24,12 +23,5 @@ export class ItemCard {
     );
   }
 
-  deserializeMenuItemData(data: any): MenuItemDto {
-    return {
-      id: data.id,
-      name: data.item_name,
-      price: data.item_price,
-      description: data.item_description,
-    };
   }
 }
