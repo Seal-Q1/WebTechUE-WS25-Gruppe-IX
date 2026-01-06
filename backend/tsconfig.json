@@ -9,7 +9,7 @@
     // See also https://aka.ms/tsconfig/module
     "module": "commonjs",
     "target": "es2022",
-    "types": [],
+    "types": ["node"], //for TypeScript compatibility stuff
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
@@ -34,14 +34,19 @@
 
     // Recommended Options
     "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
     "skipLibCheck": true,
 
-    "esModuleInterop": true,
-    "moduleResolution": "node10",
+    // ----------------------------------------------------------------------------
+    //this is necessary for the exporting (c.f. packages in python)
+    //I must admit it do not completely fully understand angular's packaging, but it works
+    "baseUrl": ".", //sets __init__
+    "paths": {
+      "@shared/*": ["../shared/src/*"]
+    },
+    "moduleResolution": "node", //for making sure alias resolve correctly (?)
+    "esModuleInterop": true, //convenience helper for imports (?)
+    "resolveJsonModule": true //for reading config.json
+    // ----------------------------------------------------------------------------
   }
 }

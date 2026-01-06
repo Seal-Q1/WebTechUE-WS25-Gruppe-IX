@@ -4,7 +4,17 @@
     // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
-    "moduleResolution": "node", //this is necessary for the exporting (c.f. packages in python)
+
+    // ----------------------------------------------------------------------------
+    //this is necessary for the exporting (c.f. packages in python)
+    //I must admit it do not completely fully understand angular's packaging, but it works
+    "baseUrl": ".", //sets __init__
+    "paths": {
+      "@shared/*": ["../shared/src/*"]
+    },
+    "moduleResolution": "node", //for making sure alias resolve correctly (?)
+    "esModuleInterop": true, //convenience helper for imports (?)
+    // ----------------------------------------------------------------------------
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
