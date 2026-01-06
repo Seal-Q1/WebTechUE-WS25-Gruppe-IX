@@ -1,13 +1,7 @@
-import {OrderDto} from '../../../dtos/order.dto';
-import {OrderItemDto} from '../../../dtos/orderItem.dto';
 import {Component} from '@angular/core';
-import {MenuItemDto} from '../../../dtos/menuItem.dto';
+import {OrderDto, OrderItemDto, MenuItemDto, OrderStatusEnum} from '@shared/types';
 import {OrderFetchService} from '../../../services/order-fetch-service';
 import {MenuItemService} from '../../../services/menu-item-service';
-import {OrderTypeEnum} from '../../../dtos/orderType.enum';
-import {PaymentMethodEnum} from '../../../dtos/paymentMethod.enum';
-import {AddressDto} from '../../../dtos/address.dto';
-import {OrderStatusEnum} from '../../../dtos/orderStatus.enum';
 import {OrderCardComponent} from '../order-card/order-card';
 
 
@@ -27,14 +21,13 @@ export class OrderPollList {
   private restaurantId = 1; //FIXME remove hardcode
 
   constructor(
-    public orderFetchService: OrderFetchService,
-    public menuItemService: MenuItemService
+    private orderFetchService: OrderFetchService,
+    private menuItemService: MenuItemService
   ) {}
 
-
   fetchOrders(): void {
-    this.orderFetchService.getOrders(this.restaurantId).subscribe(data => {
-      this.orders = this.deserializeOrderData(data);
+    this.orderFetchService.getAllOrders(this.restaurantId).subscribe(data => {
+      this.orders = data;
     });
   }
 
@@ -42,8 +35,8 @@ export class OrderPollList {
     if (this.orderItems.has(orderId)) {
       return;
     }
-    this.orderFetchService.getOrderItems(orderId).subscribe(data => {
-      this.orderItems.set(orderId, this.deserializeOrderItemData(data));
+    this.orderFetchService.getOrderItems(this.restaurantId, orderId).subscribe(data => {
+      this.orderItems.set(orderId, data);
     });
   }
 
@@ -51,8 +44,8 @@ export class OrderPollList {
     if (this.menuItems.has(itemId)) {
       return;
     }
-    this.menuItemService.getMenuItem(itemId).subscribe(data => {
-      this.menuItems.set(itemId, this.deserializeMenuItemData(data));
+    this.menuItemService.getMenuItem(this.restaurantId, itemId).subscribe(data => {
+      this.menuItems.set(itemId, data);
     });
   }
 
@@ -64,58 +57,7 @@ export class OrderPollList {
     return this.menuItems.get(itemId);
   }
 
-  deserializeOrderData(data: Array<object>): OrderDto[] {
-      console.log("DESERIALIZING ORDER:");console.log(data);return data.map((order: any): OrderDto => ({
-      id: order.id,
-      name: order.name,
-      type: this.deserializeOrderType(order.type),
-      status: this.deserializeOrderStatus(order.status),
-      address: this.deserializeOrderType(order.type) == OrderTypeEnum.Delivery ? this.deserializeAddress(order) : undefined,
-      paidAmount: order.paid_amount,
-      paymentMethod: this.deserializePaymentMethod(order.payment_method),
-      couponId: order.coupon_id ?? undefined,
-      userId: order.user_id,
-      createdAt: new Date(order.created_at)
-    }));
   }
 
-  deserializeOrderItemData(data: Array<object>): OrderItemDto[] {
-    console.log("DESERIALIZING ITEM-DATA:");console.log(data);return data.map((item: any): OrderItemDto => ({
-      id: item.id,
-      itemId: item.item_id,
-      quantity: item.quantity,
-      unitPrice: item.unit_price
-    }));
-  }
-
-  deserializeMenuItemData(data: any): MenuItemDto {
-    console.log("DESERIALIZING MENU-ITEM:");console.log(data);return {
-      id: data.id,
-      name: data.item_name,
-      price: data.item_price,
-      description: data.item_description ?? undefined
-    };
-  }
-
-  private deserializeOrderType(order_type: any): OrderTypeEnum {
-    return order_type as OrderTypeEnum;
-  }
-
-  private deserializePaymentMethod(payment_method: any): PaymentMethodEnum {
-    return payment_method as PaymentMethodEnum;
-  }
-
-  private deserializeAddress(o: any): AddressDto {
-    return {
-      street: o.address_street,
-      houseNumber: o.address_houseNumber,
-      postalCode: o.address_postalCode,
-      city: o.address_city,
-      door: o.address_door
-    };
-  }
-
-  private deserializeOrderStatus(order_status: any): OrderStatusEnum {
-    return order_status as OrderStatusEnum;
   }
 }
