@@ -1,17 +1,14 @@
-import { Component } from '@angular/core';
-import {ProfileList} from '../profile-list/profile-list';
+import {Component} from '@angular/core';
 import {OrderPollList} from '../restaurant-owner/order-viewing/order-poll-list/order-poll-list';
 
 @Component({
   selector: 'app-home',
   imports: [
-    ProfileList,
     OrderPollList
   ],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class Home {
-
 
 }
