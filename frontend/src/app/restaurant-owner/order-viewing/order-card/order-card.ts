@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {OrderDto} from '../../../dtos/order.dto';
 import {DatePipe} from '@angular/common';
 import {AddressCard} from '../address-card/address-card';
@@ -12,6 +12,9 @@ import {AddressCard} from '../address-card/address-card';
   templateUrl: './order-card.html',
   styleUrl: './order-card.css',
 })
-export class OrderCardComponent {
+export class OrderCardComponent implements OnInit {
+  ngOnInit(): void {
+      //console.log(this.order)
+  }
   @Input() order!: OrderDto;
 }

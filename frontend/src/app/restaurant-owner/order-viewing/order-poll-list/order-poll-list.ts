@@ -1,6 +1,6 @@
 import {OrderDto} from '../../../dtos/order.dto';
 import {OrderItemDto} from '../../../dtos/orderItem.dto';
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {MenuItemDto} from '../../../dtos/menuItem.dto';
 import {OrderFetchService} from '../../../services/order-fetch-service';
 import {MenuItemService} from '../../../services/menu-item-service';
@@ -65,12 +65,12 @@ export class OrderPollList {
   }
 
   deserializeOrderData(data: Array<object>): OrderDto[] {
-    return data.map((order: any): OrderDto => ({
+      return data.map((order: any): OrderDto => ({
       id: order.id,
       name: order.name,
       type: this.deserializeOrderType(order.type),
       status: this.deserializeOrderStatus(order.status),
-      address: order.address ? this.deserializeAddress(order.address) : undefined,
+      address: this.deserializeOrderType(order.type) == OrderTypeEnum.Delivery ? this.deserializeAddress(order) : undefined,
       paidAmount: order.paid_amount,
       paymentMethod: this.deserializePaymentMethod(order.payment_method),
       couponId: order.coupon_id ?? undefined,
@@ -105,13 +105,13 @@ export class OrderPollList {
     return payment_method as PaymentMethodEnum;
   }
 
-  private deserializeAddress(address: any): AddressDto {
+  private deserializeAddress(o: any): AddressDto {
     return {
-      street: address.street,
-      houseNumber: address.houseNumber,
-      postalCode: address.postalCode,
-      city: address.city,
-      door: address.door
+      street: o.address_street,
+      houseNumber: o.address_houseNumber,
+      postalCode: o.address_postalCode,
+      city: o.address_city,
+      door: o.address_door
     };
   }
 
