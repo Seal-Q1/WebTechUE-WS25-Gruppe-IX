@@ -4,6 +4,8 @@
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/ce0febc2-750e-4d7c-9891-725d05e5544a/console_1.sql" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/ce0febc2-750e-4d7c-9891-725d05e5544a/console_2.sql" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$PROJECT_DIR$/backend/initdb/populate4Testing.sql" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
-    <file url="file://$PROJECT_DIR$/backend/src/server.js" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
+    <file url="file://$PROJECT_DIR$/backend/src/routes/menu-items.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
+    <file url="file://$PROJECT_DIR$/backend/src/routes/orders.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
+    <file url="file://$PROJECT_DIR$/backend/src/routes/users.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
   </component>
 </project>
