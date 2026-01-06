@@ -1,0 +1,10 @@
+<div>
+  <h2><b>Orders:</b></h2>
+  <button (click)="fetchOrders()"><small><u><i>[Refresh]</i></u></small></button>
+
+  @for (order of orders; track order.id) {
+    <app-order-card [order]="order"></app-order-card>
+  } @empty {
+    <p>No orders</p>
+  }
+</div>

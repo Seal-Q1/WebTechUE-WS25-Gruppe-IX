@@ -1,0 +1,4 @@
+.order-card {
+  background: linear-gradient(0, var(--primary) 0%, var(--secondary) 100%);
+  border: 1px solid black;
+}

@@ -1,17 +1,14 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
-
-const API_URL: string = apiUrls.userEndpoint
 
 @Injectable({
   providedIn: 'root',
 })
-
-export class UserService {
+export class MenuItemService {
   constructor(private http: HttpClient) {}
 
-  getUserDemo() {
-    return this.http.get<any>(API_URL)
+  getMenuItem(itemId: number) {
+    return this.http.get<any>(apiUrls.menuItemEndpoint(itemId));
   }
 }

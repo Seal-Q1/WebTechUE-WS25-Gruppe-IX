@@ -85,3 +85,5 @@ CREATE TABLE order_item
     unit_price    NUMERIC(9, 2) NOT NULL, -- see above
     UNIQUE (order_id, item_id)
 );
+
+-- TODO maybe add constraint that the sum of all ordered items must be equal to the paid amount? (unless coupons do strange stuff i guess)

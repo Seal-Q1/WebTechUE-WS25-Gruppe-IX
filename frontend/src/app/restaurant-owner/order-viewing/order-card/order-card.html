@@ -1,0 +1,9 @@
+<div class="order-card">
+  <div class="order-card-header">
+    <p>Order #{{order.id}}</p>
+    <p>Status={{order.status}}<p>
+    <p>"{{order.name}}" ({{order.type}})<br>{{order.createdAt | date:'short'}}, {{order.paymentMethod}}, {{order.paidAmount}}€</p>
+    <app-address-card [address]="order.address"></app-address-card>
+  </div>
+</div>
+
