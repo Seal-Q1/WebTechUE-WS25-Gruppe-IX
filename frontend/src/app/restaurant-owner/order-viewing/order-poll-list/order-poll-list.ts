@@ -57,7 +57,19 @@ export class OrderPollList {
     return this.menuItems.get(itemId);
   }
 
+  updateOrderStatus(orderId: number, status: OrderStatusEnum): void {
+    this.orderFetchService.updateOrderStatus(this.restaurantId, orderId, status).subscribe(updatedOrder => {
+      const index = this.orders.findIndex(o => o.id === orderId);
+      if (index !== -1) {
+        this.orders[index] = updatedOrder; //update local order on successful CR(U)D
+      }
+    });
   }
 
+  deleteOrder(orderId: number): void {
+    this.orderFetchService.deleteOrder(this.restaurantId, orderId).subscribe(() => {
+      this.orders = this.orders.filter(o => o.id !== orderId); //delete order on successful (CRU)D
+      this.orderItems.delete(orderId); //delete corresponding order-items for consistency
+    });
   }
 }
