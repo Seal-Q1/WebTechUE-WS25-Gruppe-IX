@@ -65,7 +65,7 @@ export class OrderPollList {
   }
 
   deserializeOrderData(data: Array<object>): OrderDto[] {
-      return data.map((order: any): OrderDto => ({
+      console.log("DESERIALIZING ORDER:");console.log(data);return data.map((order: any): OrderDto => ({
       id: order.id,
       name: order.name,
       type: this.deserializeOrderType(order.type),
@@ -80,7 +80,7 @@ export class OrderPollList {
   }
 
   deserializeOrderItemData(data: Array<object>): OrderItemDto[] {
-    return data.map((item: any): OrderItemDto => ({
+    console.log("DESERIALIZING ITEM-DATA:");console.log(data);return data.map((item: any): OrderItemDto => ({
       id: item.id,
       itemId: item.item_id,
       quantity: item.quantity,
@@ -89,7 +89,7 @@ export class OrderPollList {
   }
 
   deserializeMenuItemData(data: any): MenuItemDto {
-    return {
+    console.log("DESERIALIZING MENU-ITEM:");console.log(data);return {
       id: data.id,
       name: data.item_name,
       price: data.item_price,
