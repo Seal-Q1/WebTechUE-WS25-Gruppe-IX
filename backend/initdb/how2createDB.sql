@@ -67,7 +67,7 @@ CREATE TABLE public.order
 CREATE TABLE public.menu_item
 (
     item_id          INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    --TODO --restaurant_id  INT REFERENCES restaurant(restaurant_id) ON DELETE RESTRICT,
+    restaurant_id  INT REFERENCES restaurant(restaurant_id) ON DELETE CASCADE, --todo reconsider if this should cascade or restrict
     item_name        TEXT           NOT NULL,
     item_price       NUMERIC(10, 2) NOT NULL,
     item_description TEXT,
@@ -82,8 +82,44 @@ CREATE TABLE order_item
     order_id      INT           NOT NULL REFERENCES "order" (order_id) ON DELETE CASCADE,
     item_id       INT           NOT NULL REFERENCES menu_item (item_id) ON DELETE RESTRICT,
     quantity      INT           NOT NULL CHECK (quantity > 0), -- you cannot order -7 chicken nuggets
-    unit_price    NUMERIC(9, 2) NOT NULL, -- see above
+    unit_price    NUMERIC(9, 2) NOT NULL,                      -- see above
     UNIQUE (order_id, item_id)
 );
 
 -- TODO maybe add constraint that the sum of all ordered items must be equal to the paid amount? (unless coupons do strange stuff i guess)
+
+CREATE TYPE public.restaurant_type_enum AS ENUM ('pending', 'accepted', 'rejected');
+
+CREATE TABLE public.restaurant
+(
+    restaurant_id        INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    restaurant_name      TEXT NOT NULL,
+    owner_id             INT REFERENCES users ON DELETE RESTRICT,
+    phone                TEXT NOT NULL,
+    email                TEXT NOT NULL,
+    restaurant_status_id restaurant_type_enum NOT NUll,
+    location_name        TEXT NOT NULL,
+    address_street       TEXT NOT NULL,
+    address_house_nr     TEXT NOT NULL,
+    address_postal_code  TEXT NOT NULL,
+    address_city         TEXT NOT NULL,
+    address_door         TEXT NOT NULL
+
+);
+
+-- Association-relation
+CREATE TABLE public.restaurant_cuisine_map
+(
+    restaurant_cuisine_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    restaurant_id         INT NOT NULL REFERENCES public.restaurant (restaurant_id) ON DELETE CASCADE,
+    cuisine_id            INT NOT NULL REFERENCES public.cuisine (cuisine_id) ON DELETE RESTRICT,
+    UNIQUE (restaurant_id, cuisine_id)
+);
+
+
+CREATE TABLE public.cuisine
+(
+    cuisine_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cuisine_name TEXT NOT NULL,
+    cuisine_description TEXT
+);
