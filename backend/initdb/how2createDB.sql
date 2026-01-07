@@ -67,7 +67,7 @@ CREATE TABLE public.order
 CREATE TABLE public.menu_item
 (
     item_id          INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    restaurant_id  INT REFERENCES restaurant(restaurant_id) ON DELETE CASCADE, --todo reconsider if this should cascade or restrict
+    restaurant_id    INT REFERENCES restaurant (restaurant_id) ON DELETE CASCADE, --todo reconsider if this should cascade or restrict
     item_name        TEXT           NOT NULL,
     item_price       NUMERIC(10, 2) NOT NULL,
     item_description TEXT,
@@ -88,22 +88,23 @@ CREATE TABLE order_item
 
 -- TODO maybe add constraint that the sum of all ordered items must be equal to the paid amount? (unless coupons do strange stuff i guess)
 
+-- TODO add constraint only accepted restaurants can do anything
 CREATE TYPE public.restaurant_type_enum AS ENUM ('pending', 'accepted', 'rejected');
 
 CREATE TABLE public.restaurant
 (
     restaurant_id        INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    restaurant_name      TEXT NOT NULL,
+    restaurant_name      TEXT                 NOT NULL,
     owner_id             INT REFERENCES users ON DELETE RESTRICT,
-    phone                TEXT NOT NULL,
-    email                TEXT NOT NULL,
+    phone                TEXT                 NOT NULL,
+    email                TEXT                 NOT NULL,
     restaurant_status_id restaurant_type_enum NOT NUll,
-    location_name        TEXT NOT NULL,
-    address_street       TEXT NOT NULL,
-    address_house_nr     TEXT NOT NULL,
-    address_postal_code  TEXT NOT NULL,
-    address_city         TEXT NOT NULL,
-    address_door         TEXT NOT NULL
+    location_name        TEXT                 NOT NULL,
+    address_street       TEXT                 NOT NULL,
+    address_house_nr     TEXT                 NOT NULL,
+    address_postal_code  TEXT                 NOT NULL,
+    address_city         TEXT                 NOT NULL,
+    address_door         TEXT                 NOT NULL
 
 );
 
@@ -116,10 +117,11 @@ CREATE TABLE public.restaurant_cuisine_map
     UNIQUE (restaurant_id, cuisine_id)
 );
 
+--todo add constraint that order may only hold items of the same restaurant
 
 CREATE TABLE public.cuisine
 (
-    cuisine_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    cuisine_name TEXT NOT NULL,
+    cuisine_id          INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cuisine_name        TEXT NOT NULL,
     cuisine_description TEXT
 );
