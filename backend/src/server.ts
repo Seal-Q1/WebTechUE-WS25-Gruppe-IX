@@ -1,6 +1,6 @@
 import express, { type Request, type Response } from 'express';
 import cors from 'cors';
-import { usersRouter, ordersRouter, menuItemsRouter } from './routes';
+import { usersRouter, ordersRouter, menuItemsRouter, cuisinesRouter } from './routes';
 
 const app = express();
 
@@ -15,6 +15,7 @@ app.get('/', (_req: Request, res: Response) => {
 app.use('/api/users', usersRouter);
 app.use('/api/restaurants/:restaurantId/orders', ordersRouter);
 app.use('/api/restaurants/:restaurantId/menu-items', menuItemsRouter);
+app.use('/api/cuisines', cuisinesRouter);
 
 const port = 3000;
 app.listen(port, () => {
