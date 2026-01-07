@@ -1,4 +1,4 @@
-import type {Serializable} from './serializable.interface';
+import {Serializable} from './serializable.interface';
 import {type OrderDto, OrderStatusEnum, OrderTypeEnum, PaymentMethodEnum } from '@shared/types';
 
 export interface OrderRow {
@@ -18,7 +18,7 @@ export interface OrderRow {
   created_at: Date;
 }
 
-export class OrderSerializer implements Serializable<OrderRow, OrderDto> {
+export class OrderSerializer extends Serializable<OrderRow, OrderDto> {
   serialize(row: OrderRow): OrderDto {
     const dto: OrderDto = {
       id: row.order_id,
@@ -46,10 +46,6 @@ export class OrderSerializer implements Serializable<OrderRow, OrderDto> {
     }
 
     return dto;
-  }
-
-  serialize_multiple(rows: OrderRow[]): OrderDto[] {
-    return rows.map(row => this.serialize(row));
   }
 }
 

@@ -1,4 +1,4 @@
-import type {Serializable} from './serializable.interface';
+import {Serializable} from './serializable.interface';
 import type {OrderItemDto} from '@shared/types';
 
 export interface OrderItemRow {
@@ -8,7 +8,7 @@ export interface OrderItemRow {
   unit_price: string; //[sic!] pg pool returns the NUMERIC(9,2) as string
 }
 
-export class OrderItemSerializer implements Serializable<OrderItemRow, OrderItemDto> {
+export class OrderItemSerializer extends Serializable<OrderItemRow, OrderItemDto> {
   serialize(row: OrderItemRow): OrderItemDto {
     return {
       id: row.order_item_id,
@@ -16,10 +16,6 @@ export class OrderItemSerializer implements Serializable<OrderItemRow, OrderItem
       quantity: row.quantity,
       unitPrice: parseFloat(row.unit_price)
     };
-  }
-
-  serialize_multiple(rows: OrderItemRow[]): OrderItemDto[] {
-    return rows.map(row => this.serialize(row));
   }
 }
 

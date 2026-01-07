@@ -1,17 +1,21 @@
-import type {Serializable} from './serializable.interface';
+import {Serializable} from './serializable.interface';
 import type {MenuItemDto} from '@shared/types';
 
 export interface MenuItemRow {
   item_id: number;
+  restaurant_id: number;
   item_name: string;
-  item_price: string; //[sic!] pg pool returns the NUMERIC(9,2) as string
+  item_price: string;
   item_description: string | null;
+  item_picture: Buffer | null;
+  is_deleted: boolean;
 }
 
-export class MenuItemSerializer implements Serializable<MenuItemRow, MenuItemDto> {
+export class MenuItemSerializer extends Serializable<MenuItemRow, MenuItemDto> {
   serialize(row: MenuItemRow): MenuItemDto {
     const dto: MenuItemDto = {
       id: row.item_id,
+      restaurantId: row.restaurant_id,
       name: row.item_name,
       price: parseFloat(row.item_price)
     };
@@ -20,11 +24,11 @@ export class MenuItemSerializer implements Serializable<MenuItemRow, MenuItemDto
       dto.description = row.item_description;
     }
 
-    return dto;
-  }
+    if (row.item_picture) {
+      dto.picture = row.item_picture.toString('base64'); //TODO ?
+    }
 
-  serialize_multiple(rows: MenuItemRow[]): MenuItemDto[] {
-    return rows.map(row => this.serialize(row));
+    return dto;
   }
 }
 

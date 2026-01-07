@@ -1,4 +1,4 @@
-import type {Serializable} from './serializable.interface';
+import {Serializable} from './serializable.interface';
 import type {UserDto} from '@shared/types';
 
 export interface UserRow {
@@ -10,7 +10,7 @@ export interface UserRow {
   phone: string;
 }
 
-export class UserSerializer implements Serializable<UserRow, UserDto> {
+export class UserSerializer extends Serializable<UserRow, UserDto> {
   serialize(row: UserRow): UserDto {
     return {
       id: row.user_id,
@@ -20,10 +20,6 @@ export class UserSerializer implements Serializable<UserRow, UserDto> {
       email: row.email,
       phone: row.phone
     };
-  }
-
-  serialize_multiple(rows: UserRow[]): UserDto[] {
-    return rows.map(row => this.serialize(row));
   }
 }
 
