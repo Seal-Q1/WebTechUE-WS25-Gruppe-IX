@@ -1,3 +1,4 @@
+-- snake case is the convention btw
 CREATE DATABASE food_delivery_platform ENCODING = 'UTF8';
 ALTER DATABASE food_delivery_platform OWNER TO postgres;
 \connect food_delivery_platform;
@@ -62,7 +63,27 @@ CREATE TABLE public.order
             )
 );
 
--- snake case is the convention btw
+
+
+-- TODO add constraint only accepted restaurants can do anything
+CREATE TYPE public.restaurant_type_enum AS ENUM ('pending', 'accepted', 'rejected');
+
+CREATE TABLE public.restaurant
+(
+    restaurant_id        INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    restaurant_name      TEXT                 NOT NULL,
+    owner_id             INT REFERENCES users ON DELETE RESTRICT,
+    phone                TEXT                 NOT NULL,
+    email                TEXT                 NOT NULL,
+    restaurant_status_id restaurant_type_enum NOT NUll,
+    location_name        TEXT                 NOT NULL,
+    address_street       TEXT                 NOT NULL,
+    address_house_nr     TEXT                 NOT NULL,
+    address_postal_code  TEXT                 NOT NULL,
+    address_city         TEXT                 NOT NULL,
+    address_door         TEXT                 NOT NULL
+
+);
 
 CREATE TABLE public.menu_item
 (
@@ -86,27 +107,15 @@ CREATE TABLE order_item
     UNIQUE (order_id, item_id)
 );
 
--- TODO maybe add constraint that the sum of all ordered items must be equal to the paid amount? (unless coupons do strange stuff i guess)
+--todo add constraint that order may only hold items of the same restaurant
 
--- TODO add constraint only accepted restaurants can do anything
-CREATE TYPE public.restaurant_type_enum AS ENUM ('pending', 'accepted', 'rejected');
-
-CREATE TABLE public.restaurant
+CREATE TABLE public.cuisine
 (
-    restaurant_id        INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    restaurant_name      TEXT                 NOT NULL,
-    owner_id             INT REFERENCES users ON DELETE RESTRICT,
-    phone                TEXT                 NOT NULL,
-    email                TEXT                 NOT NULL,
-    restaurant_status_id restaurant_type_enum NOT NUll,
-    location_name        TEXT                 NOT NULL,
-    address_street       TEXT                 NOT NULL,
-    address_house_nr     TEXT                 NOT NULL,
-    address_postal_code  TEXT                 NOT NULL,
-    address_city         TEXT                 NOT NULL,
-    address_door         TEXT                 NOT NULL
-
+    cuisine_id          INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    cuisine_name        TEXT NOT NULL,
+    cuisine_description TEXT
 );
+-- TODO maybe add constraint that the sum of all ordered items must be equal to the paid amount? (unless coupons do strange stuff i guess)
 
 -- Association-relation
 CREATE TABLE public.restaurant_cuisine_map
@@ -117,11 +126,3 @@ CREATE TABLE public.restaurant_cuisine_map
     UNIQUE (restaurant_id, cuisine_id)
 );
 
---todo add constraint that order may only hold items of the same restaurant
-
-CREATE TABLE public.cuisine
-(
-    cuisine_id          INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    cuisine_name        TEXT NOT NULL,
-    cuisine_description TEXT
-);

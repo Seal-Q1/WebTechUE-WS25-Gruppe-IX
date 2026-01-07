@@ -1,8 +1,8 @@
 \connect food_delivery_platform;
 
 INSERT INTO users (user_name, first_name, last_name, email, phone, password_hash)
-VALUES ('Seal', 'Markus', 'M', 'seal@q.1', '+123', 'tubele');
-VALUES ('owner99', 'Restau', 'rantOwner','restau@owner.at', '+123','paschwoat');
+VALUES ('Seal', 'Markus', 'M', 'seal@q.1', '+123', 'tubele'),
+       ('owner99', 'Restau', 'rantOwner','restau@owner.at', '+123','paschwoat');
 
 INSERT INTO restaurant (restaurant_name, owner_id, phone, email, restaurant_status_id, location_name, address_street, address_house_nr, address_postal_code, address_city, address_door)
 VALUES ('Borgar Bootique',2,'+123','restaurant@mail.at','accepted','RestaurantLocation','RestaurantStr.','999','9583','Klagenfurt','5');
