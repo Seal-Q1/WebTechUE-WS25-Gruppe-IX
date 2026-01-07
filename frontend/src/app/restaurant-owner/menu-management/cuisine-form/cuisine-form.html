@@ -1,0 +1,16 @@
+<div>
+  <h4>{{ cuisine ? 'Edit Category' : 'New Category' }}</h4>
+  <form (ngSubmit)="onSubmit()">
+    <div>
+      <label>Name:</label>
+      <input type="text" [(ngModel)]="name" name="name" required>
+    </div>
+    <div>
+      <label>Description:</label>
+      <textarea [(ngModel)]="description" name="description"></textarea>
+    </div>
+    <button type="submit">Save</button>
+    <br>
+    <button type="button" (click)="onCancel()">Cancel</button>
+  </form>
+</div>

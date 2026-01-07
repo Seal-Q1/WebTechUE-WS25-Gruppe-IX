@@ -1,0 +1,14 @@
+<div>
+  @for (cuisine of cuisines; track cuisine.id) {
+    <div>
+      <span>{{ cuisine.name }}</span>
+      @if (cuisine.description) {
+        <span> - {{ cuisine.description }}</span>
+      }
+      <button (click)="onEdit(cuisine)">Edit</button>
+      <button (click)="onDelete(cuisine.id)">Delete</button>
+    </div>
+  } @empty {
+    <p>No categories</p>
+  }
+</div>

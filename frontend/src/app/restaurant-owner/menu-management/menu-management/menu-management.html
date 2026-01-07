@@ -1,0 +1,43 @@
+<div>
+  <h2>Menu Management</h2>
+
+  <section>
+    <h3>Dishes</h3>
+    <button (click)="fetchDishes()">Refresh Dishes</button><br>
+    <button (click)="onAddDish()">Add Dish</button>
+
+    @if (showDishForm) {
+      <app-dish-form
+        [dish]="selectedDish"
+        (save)="onSaveDish($event)"
+        (cancel)="onCancelDish()">
+      </app-dish-form>
+    }
+
+    <app-dish-list
+      [dishes]="dishes"
+      (edit)="onEditDish($event)"
+      (delete)="onDeleteDish($event)">
+    </app-dish-list>
+  </section>
+
+  <section>
+    <h3>Categories (Cuisines)</h3>
+    <button (click)="fetchCuisines()">Refresh Categories</button><br>
+    <button (click)="onAddCuisine()">Add Category</button>
+
+    @if (showCuisineForm) {
+      <app-cuisine-form
+        [cuisine]="selectedCuisine"
+        (save)="onSaveCuisine($event)"
+        (cancel)="onCancelCuisine()">
+      </app-cuisine-form>
+    }
+
+    <app-cuisine-list
+      [cuisines]="cuisines"
+      (edit)="onEditCuisine($event)"
+      (delete)="onDeleteCuisine($event)">
+    </app-cuisine-list>
+  </section>
+</div>

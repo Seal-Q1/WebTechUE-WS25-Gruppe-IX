@@ -16,4 +16,16 @@ export class MenuItemService {
   getMenuItem(restaurantId: number, itemId: number) {
     return this.http.get<MenuItemDto>(apiUrls.menuItemEndpoint(restaurantId, itemId));
   }
+
+  createMenuItem(restaurantId: number, data: { name: string; price: number; description?: string; picture?: string }) {
+    return this.http.post<MenuItemDto>(apiUrls.allMenuItemsEndpoint(restaurantId), data);
+  }
+
+  updateMenuItem(restaurantId: number, itemId: number, data: { name: string; price: number; description?: string; picture?: string }) {
+    return this.http.put<MenuItemDto>(apiUrls.menuItemEndpoint(restaurantId, itemId), data);
+  }
+
+  deleteMenuItem(restaurantId: number, itemId: number) {
+    return this.http.delete<void>(apiUrls.menuItemEndpoint(restaurantId, itemId));
+  }
 }
