@@ -17,5 +17,9 @@ export const apiUrls = {
   allCuisinesEndpoint: () =>
     `${environment.apiUrl}/cuisines`,
   cuisineEndpoint: (cuisineId: number) =>
-    `${environment.apiUrl}/cuisines/${cuisineId}`
+    `${environment.apiUrl}/cuisines/${cuisineId}`,
+  allRestaurantsEndpoint: () =>
+    `${environment.apiUrl}/restaurants`,
+  restaurantProfileEndpoint: (restaurantId: number) =>
+    `${environment.apiUrl}/restaurants/${restaurantId}/manage-profile`
 }

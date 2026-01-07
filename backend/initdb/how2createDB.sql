@@ -81,7 +81,14 @@ CREATE TABLE public.restaurant
     address_house_nr     TEXT                 NOT NULL,
     address_postal_code  TEXT                 NOT NULL,
     address_city         TEXT                 NOT NULL,
-    address_door         TEXT                 NOT NULL
+    address_door            TEXT NOT NULL,
+    opening_hours_monday    TEXT,
+    opening_hours_tuesday   TEXT,
+    opening_hours_wednesday TEXT,
+    opening_hours_thursday  TEXT,
+    opening_hours_friday    TEXT,
+    opening_hours_saturday  TEXT,
+    opening_hours_sunday    TEXT
 
 );
 

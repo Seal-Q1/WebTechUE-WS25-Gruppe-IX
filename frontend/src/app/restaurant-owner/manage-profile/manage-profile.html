@@ -1,0 +1,72 @@
+<div>
+  <h2>Restaurant Profile Management</h2>
+  <button (click)="loadRestaurantProfile()">Refresh Profile</button>
+  <br>
+
+  <form (ngSubmit)="onSubmit()" *ngIf="restaurant">
+    <div>
+      <h3>Basic Information</h3>
+
+      <div>
+        <label>Restaurant Name:</label>
+        <input [(ngModel)]="name" name="name" required type="text">
+      </div>
+
+      <div>
+        <label>Phone:</label>
+        <input [(ngModel)]="phone" name="phone" required type="text">
+      </div>
+
+      <div>
+        <label>Email:</label>
+        <input [(ngModel)]="email" name="email" required type="email">
+      </div>
+    </div>
+
+    <div>
+      <h3>Opening Hours</h3>
+
+      <div>
+        <label>Monday:</label>
+        <input [(ngModel)]="openingHours.monday" name="monday" placeholder="e.g. 09:00-22:00 or Closed" type="text">
+      </div>
+
+      <div>
+        <label>Tuesday:</label>
+        <input [(ngModel)]="openingHours.tuesday" name="tuesday" placeholder="e.g. 09:00-22:00 or Closed" type="text">
+      </div>
+
+      <div>
+        <label>Wednesday:</label>
+        <input [(ngModel)]="openingHours.wednesday" name="wednesday" placeholder="e.g. 09:00-22:00 or Closed"
+               type="text">
+      </div>
+
+      <div>
+        <label>Thursday:</label>
+        <input [(ngModel)]="openingHours.thursday" name="thursday" placeholder="e.g. 09:00-22:00 or Closed" type="text">
+      </div>
+
+      <div>
+        <label>Friday:</label>
+        <input [(ngModel)]="openingHours.friday" name="friday" placeholder="e.g. 09:00-23:00 or Closed" type="text">
+      </div>
+
+      <div>
+        <label>Saturday:</label>
+        <input [(ngModel)]="openingHours.saturday" name="saturday" placeholder="e.g. 10:00-23:00 or Closed" type="text">
+      </div>
+
+      <div>
+        <label>Sunday:</label>
+        <input [(ngModel)]="openingHours.sunday" name="sunday" placeholder="e.g. Closed or 10:00-20:00" type="text">
+      </div>
+    </div>
+
+    <button type="submit">Save Profile</button>
+  </form>
+
+  <div *ngIf="!restaurant">
+    <p>No Restaurant :(</p>
+  </div>
+</div>

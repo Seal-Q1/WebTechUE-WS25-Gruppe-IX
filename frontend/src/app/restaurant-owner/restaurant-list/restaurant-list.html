@@ -1,0 +1,23 @@
+<div>
+  <h2>Restaurants</h2>
+  <button (click)="fetchRestaurants()">Refresh Restaurants</button>
+  <br>
+  <button (click)="onAddRestaurant()">Add Restaurant</button>
+  @if (showRestaurantForm) {
+    <app-restaurant-form
+      (cancel)="onCancelRestaurant()"
+      (save)="onSaveRestaurant($event)"
+      [restaurant]="null">
+    </app-restaurant-form>
+  }
+  @for (restaurant of restaurants; track restaurant.id) {
+    <div>
+      <span>{{ restaurant.name }}</span><br>
+      <button (click)="onEditProfile(restaurant.id)">Edit Profile</button>
+      <br>
+      <button (click)="onEditMenu(restaurant.id)">Edit Menu</button>
+    </div>
+  } @empty {
+    <p>No restaurants</p>
+  }
+</div>

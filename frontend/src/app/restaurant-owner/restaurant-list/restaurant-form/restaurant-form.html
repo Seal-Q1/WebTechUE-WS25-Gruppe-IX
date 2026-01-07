@@ -1,0 +1,44 @@
+<div>
+  <h4>{{ restaurant ? 'Edit Restaurant' : 'New Restaurant' }}</h4>
+  <form (ngSubmit)="onSubmit()">
+    <div>
+      <label>Name:</label>
+      <input [(ngModel)]="name" name="name" required type="text">
+    </div>
+    <div>
+      <label>Phone:</label>
+      <input [(ngModel)]="phone" name="phone" required type="text">
+    </div>
+    <div>
+      <label>Email:</label>
+      <input [(ngModel)]="email" name="email" required type="email">
+    </div>
+    <div>
+      <label>Location Name:</label>
+      <input [(ngModel)]="locationName" name="locationName" required type="text">
+    </div>
+    <div>
+      <label>Street:</label>
+      <input [(ngModel)]="addressStreet" name="addressStreet" required type="text">
+    </div>
+    <div>
+      <label>House Nr:</label>
+      <input [(ngModel)]="addressHouseNr" name="addressHouseNr" required type="text">
+    </div>
+    <div>
+      <label>Postal Code:</label>
+      <input [(ngModel)]="addressPostalCode" name="addressPostalCode" required type="text">
+    </div>
+    <div>
+      <label>City:</label>
+      <input [(ngModel)]="addressCity" name="addressCity" required type="text">
+    </div>
+    <div>
+      <label>Door:</label>
+      <input [(ngModel)]="addressDoor" name="addressDoor" required type="text">
+    </div>
+    <button type="submit">Save</button>
+    <br>
+    <button (click)="onCancel()" type="button">Cancel</button>
+  </form>
+</div>
