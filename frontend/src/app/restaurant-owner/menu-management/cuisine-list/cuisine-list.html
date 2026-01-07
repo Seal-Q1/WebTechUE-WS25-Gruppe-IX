@@ -3,9 +3,10 @@
     <div>
       <span>{{ cuisine.name }}</span>
       @if (cuisine.description) {
-        <span> - {{ cuisine.description }}</span>
+        <span> - {{ cuisine.description }}</span><br>
       }
       <button (click)="onEdit(cuisine)">Edit</button>
+      <br>
       <button (click)="onDelete(cuisine.id)">Delete</button>
     </div>
   } @empty {

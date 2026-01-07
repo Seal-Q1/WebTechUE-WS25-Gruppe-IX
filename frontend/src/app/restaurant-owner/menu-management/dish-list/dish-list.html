@@ -3,9 +3,10 @@
     <div>
       <span>{{ dish.name }} - {{ dish.price | number:'1.2-2' }}</span>
       @if (dish.description) {
-        <span> - {{ dish.description }}</span>
+        <span> - {{ dish.description }}</span><br>
       }
       <button (click)="onEdit(dish)">Edit</button>
+      <br>
       <button (click)="onDelete(dish.id)">Delete</button>
     </div>
   } @empty {
