@@ -11,6 +11,10 @@ export class Navbar {
   constructor(private router: Router) {
   }
 
+  onHomeClicked() {
+    this.router.navigate(['/']);
+  }
+
   onRestaurants = (): void => {
     this.router.navigate(['/restaurants']);
   };
