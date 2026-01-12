@@ -11,7 +11,9 @@ CREATE TABLE public.users
     last_name     TEXT        NOT NULL,
     email         TEXT UNIQUE NOT NULL,
     phone         TEXT        NOT NULL,
-    password_hash TEXT        NOT NULL
+    password_hash TEXT        NOT NULL,
+    user_status   TEXT        NOT NULL DEFAULT 'active',
+    warning_count INT         NOT NULL DEFAULT 0
 );
 --INSERT INTO public.users (user_name, first_name, last_name, email, phone, password_hash)
 -- VALUES ('mustermaxi_hd', 'Maximilian', 'Mustermann', 'maxim@gmail.com', '+123', 'password')

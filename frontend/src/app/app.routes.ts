@@ -3,6 +3,9 @@ import {Home} from "./home/home";
 import {MenuManagement} from "./restaurant-owner/menu-management/menu-management/menu-management";
 import {ManageProfile} from "./restaurant-owner/manage-profile/manage-profile";
 import {RestaurantList} from "./restaurant-owner/restaurant-list/restaurant-list";
+import {Dashboard} from "./site-manager/dashboard/dashboard";
+import {RestaurantModeration} from "./site-manager/restaurant-moderation/restaurant-moderation";
+import {UserModeration} from "./site-manager/user-moderation/user-moderation";
 
 
 export const routes: Routes = [
@@ -21,5 +24,17 @@ export const routes: Routes = [
   {
     path: 'restaurants',
     component: RestaurantList
+  },
+  {
+    path: 'admin',
+    component: Dashboard
+  },
+  {
+    path: 'admin/restaurants',
+    component: RestaurantModeration
+  },
+  {
+    path: 'admin/users',
+    component: UserModeration
   }
 ];

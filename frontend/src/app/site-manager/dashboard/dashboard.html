@@ -1,0 +1,92 @@
+<div>
+  <h2>Site Manager Dashboard</h2>
+  <p>Overview and management of the food delivery platform</p>
+
+  @if (error) {
+    <div class="error-banner">
+      {{ error }}
+      <button (click)="error = null">X</button>
+    </div>
+  }
+
+  <button (click)="loadDashboardData()">Refresh Data</button>
+
+  <!-- Statistics -->
+  <div>
+    <h3>Key Statistics</h3>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-value">{{ stats?.totalOrders ?? '-' }}</span>
+        <span class="stat-label">Total Orders</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">€{{ stats?.totalRevenue?.toFixed(2) ?? '-' }}</span>
+        <span class="stat-label">Total Revenue</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ stats?.totalUsers ?? '-' }}</span>
+        <span class="stat-label">Total Users</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ stats?.activeRestaurants ?? activeRestaurants.length }}</span>
+        <span class="stat-label">Active Restaurants</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ stats?.ordersToday ?? '-' }}</span>
+        <span class="stat-label">Orders Today</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value">{{ stats?.pendingRestaurants ?? pendingRestaurants.length }}</span>
+        <span class="stat-label">Pending Approvals</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div>
+    <h3>Quick Actions</h3>
+    <button (click)="onManageRestaurants()">Manage Restaurants</button>
+    <button (click)="onManageUsers()">Manage Users</button>
+  </div>
+
+  <!-- Pending Restaurants -->
+  <div>
+    <h3>Pending Restaurant Registrations</h3>
+    @if (isLoading) {
+      <p>Loading pending requests...</p>
+    } @else if (pendingRestaurants.length === 0) {
+      <p>No pending restaurant registrations</p>
+    } @else {
+      @for (restaurant of pendingRestaurants; track restaurant.id) {
+        <div class="pending-card">
+          <div>
+            <strong>{{ restaurant.name }}</strong>
+            <span>{{ restaurant.address.city }} | {{ restaurant.email }} | {{ restaurant.phone }}</span>
+          </div>
+          <div>
+            <button (click)="quickApprove(restaurant.id)">Approve</button>
+            <button (click)="quickReject(restaurant.id)">Reject</button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Active Restaurants -->
+  <div>
+    <h3>Active Restaurants</h3>
+    @if (isLoading) {
+      <p>Loading restaurants...</p>
+    } @else if (activeRestaurants.length === 0) {
+      <p>No active restaurants yet</p>
+    } @else {
+      @for (restaurant of activeRestaurants; track restaurant.id) {
+        <div class="restaurant-card">
+          <strong>{{ restaurant.name }}</strong>
+          <span>{{ restaurant.locationName }} | {{ restaurant.address.city }}</span>
+          <span>{{ restaurant.email }}</span>
+        </div>
+      }
+    }
+  </div>
+</div>
