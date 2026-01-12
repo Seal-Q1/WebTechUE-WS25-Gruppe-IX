@@ -21,5 +21,25 @@ export const apiUrls = {
   allRestaurantsEndpoint: () =>
     `${environment.apiUrl}/restaurants`,
   restaurantProfileEndpoint: (restaurantId: number) =>
-    `${environment.apiUrl}/restaurants/${restaurantId}/manage-profile`
+    `${environment.apiUrl}/restaurants/${restaurantId}/manage-profile`,
+
+  // Admin endpoints
+  adminStatsEndpoint: () =>
+    `${environment.apiUrl}/admin/stats`,
+  adminPendingRestaurantsEndpoint: () =>
+    `${environment.apiUrl}/admin/restaurants/pending`,
+  adminActiveRestaurantsEndpoint: () =>
+    `${environment.apiUrl}/admin/restaurants/active`,
+  adminApproveRestaurantEndpoint: (restaurantId: number) =>
+    `${environment.apiUrl}/admin/restaurants/${restaurantId}/approve`,
+  adminRejectRestaurantEndpoint: (restaurantId: number) =>
+    `${environment.apiUrl}/admin/restaurants/${restaurantId}/reject`,
+  adminUsersEndpoint: () =>
+    `${environment.apiUrl}/admin/users`,
+  adminWarnUserEndpoint: (userId: number) =>
+    `${environment.apiUrl}/admin/users/${userId}/warn`,
+  adminSuspendUserEndpoint: (userId: number) =>
+    `${environment.apiUrl}/admin/users/${userId}/suspend`,
+  adminActivateUserEndpoint: (userId: number) =>
+    `${environment.apiUrl}/admin/users/${userId}/activate`,
 }

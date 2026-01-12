@@ -18,4 +18,8 @@ export class Navbar {
   onRestaurants = (): void => {
     this.router.navigate(['/restaurants']);
   };
+
+  onAdmin = (): void => {
+    this.router.navigate(['/admin']);
+  };
 }

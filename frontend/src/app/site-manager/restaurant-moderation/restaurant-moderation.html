@@ -1,0 +1,118 @@
+<div>
+  <button (click)="onBack()">← Back to Dashboard</button>
+  <h2>Restaurant Moderation</h2>
+  <p>Approve or reject restaurant registration requests</p>
+
+  @if (error) {
+    <div class="alert-error">
+      {{ error }}
+      <button (click)="error = null">X</button>
+    </div>
+  }
+
+  @if (success) {
+    <div class="alert-success">
+      {{ success }}
+      <button (click)="success = null">X</button>
+    </div>
+  }
+
+  <!-- Filters -->
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Search restaurants..."
+      [value]="searchQuery"
+      (input)="onSearchChange($any($event.target).value)"
+    />
+    <div class="filter-buttons">
+      <button [class.active]="statusFilter === 'all'" (click)="onStatusFilterChange('all')">All</button>
+      <button [class.active]="statusFilter === 'pending'" (click)="onStatusFilterChange('pending')">Pending</button>
+      <button [class.active]="statusFilter === 'accepted'" (click)="onStatusFilterChange('accepted')">Active</button>
+      <button [class.active]="statusFilter === 'rejected'" (click)="onStatusFilterChange('rejected')">Rejected</button>
+    </div>
+  </div>
+
+  <button (click)="loadRestaurants()">Refresh</button>
+
+  <!-- Stats -->
+  <div class="stats">
+    <span>Total: {{ restaurants.length }}</span>
+    <span>Pending: {{ pendingCount }}</span>
+    <span>Active: {{ activeCount }}</span>
+    <span>Rejected: {{ rejectedCount }}</span>
+  </div>
+
+  <!-- Restaurant List -->
+  @if (isLoading) {
+    <p>Loading restaurants...</p>
+  } @else if (filteredRestaurants.length === 0) {
+    <p>No restaurants found</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>Restaurant</th>
+          <th>Location</th>
+          <th>Contact</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (restaurant of filteredRestaurants; track restaurant.id) {
+          <tr>
+            <td>
+              <strong>{{ restaurant.name }}</strong><br>
+              <small>#{{ restaurant.id }}</small>
+            </td>
+            <td>
+              {{ restaurant.locationName }}<br>
+              <small>{{ restaurant.address.street }} {{ restaurant.address.houseNr }}, {{ restaurant.address.postalCode }} {{ restaurant.address.city }}</small>
+            </td>
+            <td>
+              {{ restaurant.email }}<br>
+              <small>{{ restaurant.phone }}</small>
+            </td>
+            <td>
+              <span class="status-badge status-{{ restaurant.status }}">{{ getStatusLabel(restaurant.status) }}</span>
+            </td>
+            <td>
+              @if (restaurant.status === 'pending') {
+                <button (click)="approveRestaurant(restaurant)">Approve</button>
+                <button (click)="openRejectModal(restaurant)">Reject</button>
+              } @else if (restaurant.status === 'rejected') {
+                <button (click)="approveRestaurant(restaurant)">Re-approve</button>
+              } @else {
+                <button (click)="openRejectModal(restaurant)">Suspend</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  <!-- Reject Modal -->
+  @if (showRejectModal) {
+    <div class="modal-overlay" (click)="closeRejectModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h3>Reject Restaurant</h3>
+        <p>Are you sure you want to reject <strong>{{ selectedRestaurant?.name }}</strong>?</p>
+        <div>
+          <label for="rejectReason">Reason (optional):</label>
+          <textarea
+            id="rejectReason"
+            [(ngModel)]="rejectReason"
+            placeholder="Enter reason for rejection..."
+            rows="3"
+          ></textarea>
+        </div>
+        <div class="modal-actions">
+          <button (click)="closeRejectModal()">Cancel</button>
+          <button (click)="confirmReject()">Reject Restaurant</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

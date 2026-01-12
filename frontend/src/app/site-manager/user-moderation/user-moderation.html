@@ -1,0 +1,136 @@
+<div>
+  <button (click)="onBack()">← Back to Dashboard</button>
+  <h2>User Moderation</h2>
+  <p>Manage users, issue warnings, and handle suspensions</p>
+
+  @if (error) {
+    <div class="alert-error">
+      {{ error }}
+      <button (click)="error = null">X</button>
+    </div>
+  }
+
+  @if (success) {
+    <div class="alert-success">
+      {{ success }}
+      <button (click)="success = null">X</button>
+    </div>
+  }
+
+  <!-- Filters -->
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Search users by name or email..."
+      [value]="searchQuery"
+      (input)="onSearchChange($any($event.target).value)"
+    />
+    <div class="filter-buttons">
+      <button [class.active]="statusFilter === 'all'" (click)="onStatusFilterChange('all')">All</button>
+      <button [class.active]="statusFilter === 'active'" (click)="onStatusFilterChange('active')">Active</button>
+      <button [class.active]="statusFilter === 'warned'" (click)="onStatusFilterChange('warned')">Warned</button>
+      <button [class.active]="statusFilter === 'suspended'" (click)="onStatusFilterChange('suspended')">Suspended</button>
+    </div>
+  </div>
+
+  <button (click)="loadUsers()">Refresh</button>
+
+  <!-- Stats -->
+  <div class="stats">
+    <span>Total Users: {{ users.length }}</span>
+    <span>Active: {{ activeCount }}</span>
+    <span>Warned: {{ warnedCount }}</span>
+    <span>Suspended: {{ suspendedCount }}</span>
+  </div>
+
+  <!-- User List -->
+  @if (isLoading) {
+    <p>Loading users...</p>
+  } @else if (filteredUsers.length === 0) {
+    <p>No users found</p>
+  } @else {
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Contact</th>
+          <th>Status</th>
+          <th>Warnings</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of filteredUsers; track user.id) {
+          <tr [class.row-suspended]="user.status === 'suspended'">
+            <td>
+              <strong>{{ user.firstName }} {{ user.lastName }}</strong><br>
+              <small>&#64;{{ user.userName }}</small>
+            </td>
+            <td>
+              {{ user.email }}<br>
+              <small>{{ user.phone }}</small>
+            </td>
+            <td>
+              <span class="status-badge status-{{ user.status }}">{{ getStatusLabel(user.status) }}</span>
+            </td>
+            <td>
+              <span class="warning-count" [class.has-warnings]="user.warningCount > 0">{{ user.warningCount }}</span>
+            </td>
+            <td>
+              @if (user.status !== 'suspended') {
+                <button (click)="openWarnModal(user)">Warn</button>
+                <button (click)="openSuspendModal(user)">Suspend</button>
+              } @else {
+                <button (click)="activateUser(user)">Reactivate</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  <!-- Action Modal -->
+  @if (showActionModal) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h3>
+          @if (actionType === 'warn') {
+            Issue Warning
+          } @else {
+            Suspend User
+          }
+        </h3>
+        <div class="user-preview">
+          <strong>{{ selectedUser?.firstName }} {{ selectedUser?.lastName }}</strong>
+          <span>&#64;{{ selectedUser?.userName }}</span>
+        </div>
+
+        @if (actionType === 'warn') {
+          <p>This will send a warning to the user. After 3 warnings, the user will be automatically suspended.</p>
+        } @else {
+          <p>This will immediately suspend the user's account. They will not be able to place orders or access their account.</p>
+        }
+
+        <div>
+          <label for="reason">Reason <span class="required">*</span></label>
+          <textarea
+            id="reason"
+            [(ngModel)]="actionReason"
+            placeholder="Enter reason for this action..."
+            rows="4"
+            required
+          ></textarea>
+        </div>
+        <div class="modal-actions">
+          <button (click)="closeModal()">Cancel</button>
+          @if (actionType === 'warn') {
+            <button (click)="confirmAction()">Send Warning</button>
+          } @else {
+            <button (click)="confirmAction()">Suspend User</button>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>
