@@ -20,7 +20,7 @@ export interface RestaurantDto {
   status: RestaurantStatusEnum;
   locationName: string;
   address: AddressDto;
-    openingHours?: OpeningHoursDto;
+  openingHours?: OpeningHoursDto;
 }
 
 //TODO user-facing DTOs should not expose all/sensitive data

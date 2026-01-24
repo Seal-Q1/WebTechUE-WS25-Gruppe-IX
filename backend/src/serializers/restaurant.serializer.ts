@@ -15,13 +15,13 @@ export interface RestaurantRow {
   address_postal_code: string;
   address_city: string;
   address_door: string | null;
-    opening_hours_monday: string | null;
-    opening_hours_tuesday: string | null;
-    opening_hours_wednesday: string | null;
-    opening_hours_thursday: string | null;
-    opening_hours_friday: string | null;
-    opening_hours_saturday: string | null;
-    opening_hours_sunday: string | null;
+  opening_hours_monday: string | null;
+  opening_hours_tuesday: string | null;
+  opening_hours_wednesday: string | null;
+  opening_hours_thursday: string | null;
+  opening_hours_friday: string | null;
+  opening_hours_saturday: string | null;
+  opening_hours_sunday: string | null;
 }
 
 export class RestaurantSerializer extends Serializable<RestaurantRow, RestaurantDto> {

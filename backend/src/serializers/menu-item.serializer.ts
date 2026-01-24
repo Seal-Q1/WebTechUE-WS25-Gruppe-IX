@@ -7,7 +7,6 @@ export interface MenuItemRow {
   item_name: string;
   item_price: string;
   item_description: string | null;
-  item_picture: Buffer | null;
   is_deleted: boolean;
 }
 
@@ -22,10 +21,6 @@ export class MenuItemSerializer extends Serializable<MenuItemRow, MenuItemDto> {
 
     if (row.item_description) {
       dto.description = row.item_description;
-    }
-
-    if (row.item_picture) {
-      dto.picture = row.item_picture.toString('base64'); //TODO ?
     }
 
     return dto;
