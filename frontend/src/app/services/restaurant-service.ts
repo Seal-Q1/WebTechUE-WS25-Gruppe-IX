@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
-import {OpeningHoursDto, RestaurantDto} from '@shared/types';
+import {ImageDto, OpeningHoursDto, RestaurantDto} from '@shared/types';
 
 @Injectable({
   providedIn: 'root',
@@ -35,5 +35,13 @@ export class RestaurantService {
     address: { street: string; houseNr: string; postalCode: string; city: string; door: string }
   }) {
     return this.http.post<RestaurantDto>(apiUrls.allRestaurantsEndpoint(), data);
+  }
+
+  getRestaurantImage(restaurantId: number) {
+    return this.http.get<ImageDto>(apiUrls.restaurantImageEndpoint(restaurantId));
+  }
+
+  updateRestaurantImage(restaurantId: number, image: string | null) {
+    return this.http.put<ImageDto>(apiUrls.restaurantImageEndpoint(restaurantId), { image });
   }
 }

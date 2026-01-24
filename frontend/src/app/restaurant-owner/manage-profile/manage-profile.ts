@@ -2,12 +2,14 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
-import {OpeningHoursDto, RestaurantDto} from '@shared/types';
+import {ImageDto, OpeningHoursDto, RestaurantDto} from '@shared/types';
+import {Observable} from 'rxjs';
 import {RestaurantService} from '../../services/restaurant-service';
+import {DragAndDropImageArea} from '../../shared/drag-and-drop-image-area/drag-and-drop-image-area';
 
 @Component({
   selector: 'app-manage-profile',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, DragAndDropImageArea],
   templateUrl: './manage-profile.html',
   styleUrl: './manage-profile.css',
 })
@@ -78,5 +80,13 @@ export class ManageProfile implements OnInit {
       this.restaurant = updatedRestaurant;
       this.changeDetectorRef.detectChanges();
     });
+  };
+
+  fetchImage = (): Observable<ImageDto> => {
+    return this.restaurantService.getRestaurantImage(this.restaurantId);
+  };
+
+  saveImage = (base64: string | null): Observable<ImageDto> => {
+    return this.restaurantService.updateRestaurantImage(this.restaurantId, base64);
   };
 }

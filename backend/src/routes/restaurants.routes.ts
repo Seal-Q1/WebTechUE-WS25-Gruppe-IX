@@ -1,6 +1,6 @@
 import {type Request, type Response, Router} from 'express';
 import pool from '../pool';
-import {type RestaurantRow, restaurantSerializer} from '../serializers';
+import {type RestaurantRow, restaurantSerializer, type ImageRow, imageSerializer} from '../serializers';
 import {sendInternalError, sendNotFound} from '../utils';
 
 const router = Router();
@@ -156,6 +156,46 @@ router.post("/", async (req: Request, res: Response) => {
         res.status(201).json(restaurantSerializer.serialize(result.rows[0]!));
     } catch (error) {
         sendInternalError(res, error, "occurred while creating restaurant");
+    }
+});
+
+router.get("/:restaurantId/image", async (req: Request, res: Response) => {
+    try {
+        const restaurantId = parseInt(req.params.restaurantId!);
+        
+        // FOR TESTING TODO REMOVE ME
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        const query = `SELECT restaurant_id as id, image FROM restaurant WHERE restaurant_id = $1`;
+        const result = await pool.query<ImageRow>(query, [restaurantId]);
+        if (result.rows.length === 0) {
+            sendNotFound(res, "Could not find Restaurant");
+            return;
+        }
+        res.json(imageSerializer.serialize(result.rows[0]!));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while fetching restaurant image");
+    }
+});
+
+router.put("/:restaurantId/image", async (req: Request, res: Response) => {
+    try {
+        const restaurantId = parseInt(req.params.restaurantId!);
+        const { image } = req.body as { image: string | null };
+        const query = `
+            UPDATE restaurant
+            SET image = $1
+            WHERE restaurant_id = $2
+            RETURNING restaurant_id as id, image
+        `;
+        const result = await pool.query<ImageRow>(query, [image, restaurantId]);
+        if (result.rows.length === 0) {
+            sendNotFound(res, "Could not find Restaurant");
+            return;
+        }
+        res.json(imageSerializer.serialize(result.rows[0]!));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while updating restaurant image");
     }
 });
 

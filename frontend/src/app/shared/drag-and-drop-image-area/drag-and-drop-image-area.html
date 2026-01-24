@@ -1,0 +1,23 @@
+<div class="drag-and-drop-container">
+  <div
+    class="drop-zone"
+    [class.drag-over]="isDragOver && !isLoading"
+    [class.loading]="isLoading"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)">
+    <app-image-display [imageDto]="getDisplayDto()" [isLoading]="isLoading"></app-image-display>
+    <p class="drag-text">Drag Image here</p>
+  </div>
+
+  <label class="file-select-btn" [class.disabled]="isLoading">
+    Click to select image
+    <input type="file" accept="image/*" (change)="onFileSelected($event)" [disabled]="isLoading" hidden>
+  </label>
+
+  <div class="button-row">
+    <button type="button" (click)="onSave()" [disabled]="!hasPendingChanges()">Save Current Image</button>
+    <button type="button" (click)="onReset()" [disabled]="!hasPendingChanges()">Reset to Image in DB</button>
+    <button type="button" (click)="onClear()" [disabled]="isLoading">Remove Image</button>
+  </div>
+</div>

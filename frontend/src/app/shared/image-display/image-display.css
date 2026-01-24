@@ -1,0 +1,13 @@
+.image-display-container {
+  background-color: #e0e0e0;
+  min-height: 100px;
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-display-container img {
+  max-width: 100%;
+  max-height: 200px;
+}

@@ -1,21 +1,28 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MenuItemDto } from '@shared/types';
+import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
+import { ImageDto, MenuItemDto } from '@shared/types';
+import { MenuItemService } from '../../../services/menu-item-service';
+import { DragAndDropImageArea } from '../../../shared/drag-and-drop-image-area/drag-and-drop-image-area';
 
 @Component({
   selector: 'app-dish-form',
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule, DragAndDropImageArea],
   templateUrl: './dish-form.html',
   styleUrl: './dish-form.css',
 })
 export class DishForm {
   @Input() dish: MenuItemDto | null = null;
+  @Input() restaurantId: number = 0;
   @Output() save = new EventEmitter<{ name: string; price: number; description?: string }>();
   @Output() cancel = new EventEmitter<void>();
 
   name = '';
   price = 0;
   description = '';
+
+  constructor(private menuItemService: MenuItemService) {}
 
   ngOnChanges(): void {
     if (this.dish) {
@@ -43,6 +50,14 @@ export class DishForm {
     this.cancel.emit();
     this.resetForm();
   }
+
+  fetchImage = (): Observable<ImageDto> => {
+    return this.menuItemService.getMenuItemImage(this.restaurantId, this.dish!.id);
+  };
+
+  saveImage = (base64: string | null): Observable<ImageDto> => {
+    return this.menuItemService.updateMenuItemImage(this.restaurantId, this.dish!.id, base64);
+  };
 
   resetForm(): void {
     this.name = '';

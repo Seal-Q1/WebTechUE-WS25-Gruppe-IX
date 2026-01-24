@@ -11,3 +11,5 @@ export {restaurantSerializer, RestaurantSerializer} from './restaurant.serialize
 export type { RestaurantRow } from './restaurant.serializer';
 export {cuisineSerializer, CuisineSerializer} from './cuisine.serializer';
 export type { CuisineRow } from './cuisine.serializer';
+export {imageSerializer, ImageSerializer} from './image.serializer';
+export type { ImageRow } from './image.serializer';

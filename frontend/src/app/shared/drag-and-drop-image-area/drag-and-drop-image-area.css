@@ -1,0 +1,78 @@
+.drag-and-drop-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #e0e0e0;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.drop-zone {
+  background-color: #c0c0c0;
+  padding: 20px;
+  border: 2px dashed #999;
+  text-align: center;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.drop-zone.drag-over {
+  background-color: #a0a0a0;
+  border-color: #666;
+}
+
+.drop-zone.loading {
+  cursor: default;
+  pointer-events: none;
+}
+
+.drag-text {
+  margin: 0;
+  color: black;
+  font-size: 14px;
+}
+
+.file-select-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #888;
+  color: white;
+  cursor: pointer;
+  border: none;
+  margin: 10px 0;
+}
+
+.file-select-btn:hover:not(.disabled) {
+  background-color: #777;
+}
+
+.file-select-btn.disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+  color: #ccc;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.button-row button {
+  padding: 8px 16px;
+  background-color: #888;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.button-row button:hover:not(:disabled) {
+  background-color: #777;
+}
+
+.button-row button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}

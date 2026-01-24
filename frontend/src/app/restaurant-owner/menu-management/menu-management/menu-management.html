@@ -9,6 +9,7 @@
     @if (showDishForm) {
       <app-dish-form
         [dish]="selectedDish"
+        [restaurantId]="restaurantId"
         (save)="onSaveDish($event)"
         (cancel)="onCancelDish()">
       </app-dish-form>

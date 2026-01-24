@@ -14,6 +14,8 @@ export const apiUrls = {
     `${environment.apiUrl}/restaurants/${restaurantId}/menu-items`,
   menuItemEndpoint: (restaurantId: number, itemId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}/menu-items/${itemId}`,
+  menuItemImageEndpoint: (restaurantId: number, itemId: number) =>
+    `${environment.apiUrl}/restaurants/${restaurantId}/menu-items/${itemId}/image`,
   allCuisinesEndpoint: () =>
     `${environment.apiUrl}/cuisines`,
   cuisineEndpoint: (cuisineId: number) =>
@@ -22,6 +24,8 @@ export const apiUrls = {
     `${environment.apiUrl}/restaurants`,
   restaurantProfileEndpoint: (restaurantId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}/manage-profile`,
+  restaurantImageEndpoint: (restaurantId: number) =>
+    `${environment.apiUrl}/restaurants/${restaurantId}/image`,
 
   // Admin endpoints
   adminStatsEndpoint: () =>

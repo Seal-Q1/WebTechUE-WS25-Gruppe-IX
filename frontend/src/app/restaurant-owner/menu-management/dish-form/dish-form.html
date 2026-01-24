@@ -13,6 +13,13 @@
       <label>Description:</label>
       <textarea [(ngModel)]="description" name="description"></textarea>
     </div>
+    <div *ngIf="dish">
+      <label>Dish Image:</label>
+      <app-drag-and-drop-image-area
+        [fetchImage]="fetchImage"
+        [saveImage]="saveImage">
+      </app-drag-and-drop-image-area>
+    </div>
     <button type="submit">Save</button><br>
     <button type="button" (click)="onCancel()">Cancel</button>
   </form>
