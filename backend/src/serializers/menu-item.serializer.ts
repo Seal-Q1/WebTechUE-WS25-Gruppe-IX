@@ -8,6 +8,7 @@ export interface MenuItemRow {
   item_price: string;
   item_description: string | null;
   is_deleted: boolean;
+  order_index: number;
 }
 
 export class MenuItemSerializer extends Serializable<MenuItemRow, MenuItemDto> {
@@ -16,7 +17,8 @@ export class MenuItemSerializer extends Serializable<MenuItemRow, MenuItemDto> {
       id: row.item_id,
       restaurantId: row.restaurant_id,
       name: row.item_name,
-      price: parseFloat(row.item_price)
+      price: parseFloat(row.item_price),
+      orderIndex: row.order_index
     };
 
     if (row.item_description) {

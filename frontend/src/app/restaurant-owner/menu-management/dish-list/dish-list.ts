@@ -1,20 +1,38 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
-import { MenuItemDto } from '@shared/types';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {MenuItemDto} from '@shared/types';
+import {GridList} from '../../../shared/grid-list/grid-list';
+import {MenuItemGridListElement} from '../../../shared/grid-list/menu-item-grid-list-element/menu-item-grid-list-element';
+import {MenuItemService} from '../../../services/menu-item-service';
 
 @Component({
   selector: 'app-dish-list',
-  imports: [DecimalPipe],
+  imports: [GridList, MenuItemGridListElement],
   templateUrl: './dish-list.html',
   styleUrl: './dish-list.css',
 })
 export class DishList {
   @Input() dishes: MenuItemDto[] = [];
+  @Input() restaurantId: number = 0;
+  @Input() reorderEnabled: boolean = true;
   @Output() edit = new EventEmitter<MenuItemDto>();
   @Output() delete = new EventEmitter<number>();
 
-  onEdit(dish: MenuItemDto): void {
-    this.edit.emit(dish);
+  constructor(
+    private menuItemService: MenuItemService
+  ) {}
+
+
+  onItemClick(dishId: number): void {
+    const dish = this.dishes.find(d => d.id === dishId);
+    if (dish) {
+      this.edit.emit(dish);
+    }
+  }
+
+  onOrderChanged(orderUpdates: { id: number; orderIndex: number }[]): void {
+    if (this.restaurantId > 0) {
+      this.menuItemService.updateMenuItemsOrder(this.restaurantId, orderUpdates).subscribe();
+    }
   }
 
   onDelete(dishId: number): void {

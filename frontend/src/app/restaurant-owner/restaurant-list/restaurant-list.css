@@ -1,11 +1,14 @@
 div {
   margin: 5px;
   padding: 5px;
-  background-color: var(--primary);
 }
 
 button {
   font-weight: bold;
   text-decoration: underline;
   color: gray;
+}
+
+.restaurant-list-container {
+  margin-top: 16px;
 }

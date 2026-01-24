@@ -88,7 +88,8 @@ CREATE TABLE public.restaurant
     opening_hours_friday    TEXT,
     opening_hours_saturday  TEXT,
     opening_hours_sunday    TEXT,
-    image                   TEXT
+    image                   TEXT,
+    order_index             INT NOT NULL DEFAULT 0
 
 );
 
@@ -100,7 +101,8 @@ CREATE TABLE public.menu_item
     item_price       NUMERIC(10, 2) NOT NULL,
     item_description TEXT,
     item_picture     TEXT,
-    is_deleted       BOOLEAN        NOT NULL DEFAULT FALSE
+    is_deleted       BOOLEAN        NOT NULL DEFAULT FALSE,
+    order_index      INT NOT NULL DEFAULT 0
 );
 
 --Association-relation
@@ -120,7 +122,9 @@ CREATE TABLE public.cuisine
 (
     cuisine_id          INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     cuisine_name        TEXT NOT NULL,
-    cuisine_description TEXT
+    cuisine_description TEXT,
+    cuisine_emoji       TEXT,
+    order_index         INT NOT NULL DEFAULT 0
 );
 -- TODO maybe add constraint that the sum of all ordered items must be equal to the paid amount? (unless coupons do strange stuff i guess)
 

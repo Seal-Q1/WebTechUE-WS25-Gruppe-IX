@@ -6,17 +6,9 @@
     <button (click)="fetchDishes()">Refresh Dishes</button><br>
     <button (click)="onAddDish()">Add Dish</button>
 
-    @if (showDishForm) {
-      <app-dish-form
-        [dish]="selectedDish"
-        [restaurantId]="restaurantId"
-        (save)="onSaveDish($event)"
-        (cancel)="onCancelDish()">
-      </app-dish-form>
-    }
-
     <app-dish-list
       [dishes]="dishes"
+      [restaurantId]="restaurantId"
       (edit)="onEditDish($event)"
       (delete)="onDeleteDish($event)">
     </app-dish-list>
@@ -27,14 +19,6 @@
     <button (click)="fetchCuisines()">Refresh Categories</button><br>
     <button (click)="onAddCuisine()">Add Category</button>
 
-    @if (showCuisineForm) {
-      <app-cuisine-form
-        [cuisine]="selectedCuisine"
-        (save)="onSaveCuisine($event)"
-        (cancel)="onCancelCuisine()">
-      </app-cuisine-form>
-    }
-
     <app-cuisine-list
       [cuisines]="cuisines"
       (edit)="onEditCuisine($event)"
@@ -42,3 +26,22 @@
     </app-cuisine-list>
   </section>
 </div>
+
+@if (showDishForm) {
+  <app-dish-editing-overlay
+    [dish]="selectedDish"
+    [restaurantId]="restaurantId"
+    (save)="onSaveDish($event)"
+    (cancel)="onCancelDish()"
+    (delete)="onDeleteDishFromOverlay($event)">
+  </app-dish-editing-overlay>
+}
+
+@if (showCuisineForm) {
+  <app-cuisine-editing-overlay
+    [cuisine]="selectedCuisine"
+    (save)="onSaveCuisine($event)"
+    (cancel)="onCancelCuisine()"
+    (delete)="onDeleteCuisineFromOverlay($event)">
+  </app-cuisine-editing-overlay>
+}

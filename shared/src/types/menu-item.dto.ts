@@ -5,4 +5,5 @@ export interface MenuItemDto {
   price: number;
   description?: string;
   isDeleted?: boolean;
+  orderIndex: number;
 }

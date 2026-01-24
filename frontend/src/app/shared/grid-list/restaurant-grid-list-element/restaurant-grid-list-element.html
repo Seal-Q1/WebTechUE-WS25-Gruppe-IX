@@ -1,0 +1,9 @@
+<div class="grid-element" (click)="onItemClicked()">
+  <button class="settings-button" (click)="onSettingsClick($event)" title="Settings">
+    Settings
+  </button>
+  <div class="element-image">
+    <app-image-display [imageDto]="imageDto" [isLoading]="isLoading"></app-image-display>
+  </div>
+  <div class="element-name">{{ displayName }}</div>
+</div>

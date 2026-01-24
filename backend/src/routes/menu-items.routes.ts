@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from 'express';
 import pool from '../pool';
 import { menuItemSerializer, type MenuItemRow, imageSerializer, type ImageRow } from '../serializers';
-import { sendNotFound, sendInternalError } from '../utils';
+import { sendNotFound, sendInternalError, randomDelay } from '../utils';
 
 const router = Router({ mergeParams: true });
 
@@ -14,10 +14,12 @@ router.get("/", async (req: Request, res: Response) => {
                item_name,
                item_price,
                item_description,
-               is_deleted
+               is_deleted,
+               order_index
         FROM menu_item
         WHERE restaurant_id = $1
           AND is_deleted = FALSE
+        ORDER BY order_index ASC, item_id ASC
     `;
     const result = await pool.query<MenuItemRow>(query, [restaurantId]);
     res.json(menuItemSerializer.serialize_multiple(result.rows));
@@ -36,7 +38,8 @@ router.get("/:itemId", async (req: Request, res: Response) => {
              item_name,
              item_price,
              item_description,
-             is_deleted
+             is_deleted,
+             order_index
       FROM menu_item
       WHERE item_id = $1
         AND restaurant_id = $2
@@ -53,15 +56,17 @@ router.get("/:itemId", async (req: Request, res: Response) => {
   }
 });
 
+// assumption: no concurrent writes (only one user will change ordering at the same time); simplifies logic
 router.post("/", async (req: Request, res: Response) => {
   try {
     const restaurantId = parseInt(req.params.restaurantId!);
     const { name, price, description } = req.body;
     const query = `
-      INSERT INTO menu_item (restaurant_id, item_name, item_price, item_description)
-      VALUES ($1, $2, $3, $4)
-      RETURNING item_id, restaurant_id, item_name, item_price, item_description, is_deleted
-    `;
+      INSERT INTO menu_item (restaurant_id, item_name, item_price, item_description, order_index)
+      VALUES ($1, $2, $3, $4,
+              COALESCE((SELECT MAX(order_index) + 1 FROM menu_item WHERE restaurant_id = $1 AND is_deleted = FALSE), 0))
+      RETURNING item_id, restaurant_id, item_name, item_price, item_description, is_deleted, order_index
+    `; //coalesce returns 0 if there aren't any yet
     const result = await pool.query<MenuItemRow>(query, [restaurantId, name, price, description || null]);
     res.status(201).json(menuItemSerializer.serialize(result.rows[0]!));
   } catch (error) {
@@ -82,7 +87,7 @@ router.put("/:itemId", async (req: Request, res: Response) => {
       WHERE item_id = $4
         AND restaurant_id = $5
         AND is_deleted = FALSE
-      RETURNING item_id, restaurant_id, item_name, item_price, item_description, is_deleted
+      RETURNING item_id, restaurant_id, item_name, item_price, item_description, is_deleted, order_index
     `;
     const result = await pool.query<MenuItemRow>(query, [name, price, description || null, itemId, restaurantId]);
     if (result.rows.length === 0) {
@@ -123,8 +128,7 @@ router.get("/:itemId/image", async (req: Request, res: Response) => {
     const restaurantId = parseInt(req.params.restaurantId!);
     const itemId = parseInt(req.params.itemId!);
         
-      // FOR TESTING TODO REMOVE ME
-      await new Promise(resolve => setTimeout(resolve, 5000));
+    await randomDelay();
       
     const query = `
       SELECT item_id as id, item_picture as image
@@ -165,6 +169,33 @@ router.put("/:itemId/image", async (req: Request, res: Response) => {
     res.json(imageSerializer.serialize(result.rows[0]!));
   } catch (error) {
     sendInternalError(res, error, "occurred while updating menu item image");
+  }
+});
+
+//TODO permission to do so via auth.
+router.patch("/order", async (req: Request, res: Response) => {
+  try {
+    const restaurantId = parseInt(req.params.restaurantId!);
+    const items = req.body as { id: number; orderIndex: number }[];
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      for (const item of items) {
+        await client.query(
+          'UPDATE menu_item SET order_index = $1 WHERE item_id = $2 AND restaurant_id = $3',
+          [item.orderIndex, item.id, restaurantId]
+        );
+      }
+      await client.query('COMMIT');
+      res.status(204).send();
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    sendInternalError(res, error, "occurred while updating menu item order");
   }
 });
 

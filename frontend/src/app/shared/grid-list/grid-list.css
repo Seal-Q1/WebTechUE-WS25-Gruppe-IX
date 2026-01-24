@@ -1,0 +1,39 @@
+.grid-list-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.grid-list-item {
+  aspect-ratio: 1;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+}
+
+.grid-list-item.reorderable {
+  cursor: grab;
+}
+
+.grid-list-item.reorderable:active {
+  cursor: grabbing;
+}
+
+.grid-list-item.dragging {
+  opacity: 0.5;
+}
+
+.grid-list-item.drag-over app-restaurant-grid-list-element .grid-element,
+.grid-list-item.drag-over app-cuisine-grid-list-element .grid-element,
+.grid-list-item.drag-over app-menu-item-grid-list-element .grid-element {
+  border-color: var(--primary);
+  border-style: dashed;
+  background-color: rgba(255, 115, 0, 0.1);
+}
+
+.empty-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #888;
+  padding: 32px;
+}

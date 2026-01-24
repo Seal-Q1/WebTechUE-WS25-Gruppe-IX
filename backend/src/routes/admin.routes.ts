@@ -11,13 +11,13 @@ router.get("/stats", async (_req: Request, res: Response) => {
         const ordersResult = await pool.query(`
             SELECT COUNT(*) as total_orders, COALESCE(SUM(paid_amount), 0) as total_revenue
             FROM "order"
-        `);
+        `); //coalesce returns 0 if there aren't any yet
 
         const ordersTodayResult = await pool.query(`
             SELECT COUNT(*) as orders_today, COALESCE(SUM(paid_amount), 0) as revenue_today
             FROM "order"
             WHERE DATE(created_at) = CURRENT_DATE
-        `);
+        `); //coalesce returns 0 if there aren't any yet
 
         const usersResult = await pool.query(`
             SELECT COUNT(*) as total_users FROM users
@@ -150,7 +150,7 @@ router.get("/users", async (_req: Request, res: Response) => {
                    COALESCE(warning_count, 0) as warning_count
             FROM users
             ORDER BY user_id DESC
-        `;
+        `; //coalesce returns 0 if there aren't any yet
         const result = await pool.query<UserRowExtended>(query);
 
         const users = result.rows.map(row => ({

@@ -1,15 +1,13 @@
-<div>
-  @for (dish of dishes; track dish.id) {
-    <div>
-      <span>{{ dish.name }} - {{ dish.price | number:'1.2-2' }}</span>
-      @if (dish.description) {
-        <span> - {{ dish.description }}</span><br>
-      }
-      <button (click)="onEdit(dish)">Edit</button>
-      <br>
-      <button (click)="onDelete(dish.id)">Delete</button>
-    </div>
-  } @empty {
-    <p>No dishes</p>
-  }
+<div class="dish-list-container">
+  <app-grid-list
+    [items]="dishes"
+    [reorderEnabled]="reorderEnabled"
+    (orderChanged)="onOrderChanged($event)">
+    <ng-template #itemTemplate let-item>
+      <app-menu-item-grid-list-element
+        [menuItem]="item"
+        (itemClick)="onItemClick(item.id)">
+      </app-menu-item-grid-list-element>
+    </ng-template>
+  </app-grid-list>
 </div>

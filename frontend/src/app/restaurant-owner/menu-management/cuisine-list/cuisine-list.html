@@ -1,15 +1,13 @@
-<div>
-  @for (cuisine of cuisines; track cuisine.id) {
-    <div>
-      <span>{{ cuisine.name }}</span>
-      @if (cuisine.description) {
-        <span> - {{ cuisine.description }}</span><br>
-      }
-      <button (click)="onEdit(cuisine)">Edit</button>
-      <br>
-      <button (click)="onDelete(cuisine.id)">Delete</button>
-    </div>
-  } @empty {
-    <p>No categories</p>
-  }
+<div class="cuisine-list-container">
+  <app-grid-list
+    [items]="cuisines"
+    [reorderEnabled]="reorderEnabled"
+    (orderChanged)="onOrderChanged($event)">
+    <ng-template #itemTemplate let-item>
+      <app-cuisine-grid-list-element
+        [cuisine]="item"
+        (itemClick)="onItemClick(item.id)">
+      </app-cuisine-grid-list-element>
+    </ng-template>
+  </app-grid-list>
 </div>

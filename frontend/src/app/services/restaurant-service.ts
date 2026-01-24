@@ -44,4 +44,12 @@ export class RestaurantService {
   updateRestaurantImage(restaurantId: number, image: string | null) {
     return this.http.put<ImageDto>(apiUrls.restaurantImageEndpoint(restaurantId), { image });
   }
+
+  updateRestaurantsOrder(items: { id: number; orderIndex: number }[]) {
+    return this.http.patch<void>(apiUrls.restaurantsOrderEndpoint(), items);
+  }
+
+  deleteRestaurant(restaurantId: number) {
+    return this.http.delete<void>(apiUrls.restaurantEndpoint(restaurantId));
+  }
 }

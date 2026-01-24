@@ -4,13 +4,13 @@ import { MenuItemDto, CuisineDto } from '@shared/types';
 import { MenuItemService } from '../../../services/menu-item-service';
 import { CuisineService } from '../../../services/cuisine-service';
 import { DishList } from '../dish-list/dish-list';
-import { DishForm } from '../dish-form/dish-form';
 import { CuisineList } from '../cuisine-list/cuisine-list';
-import { CuisineForm } from '../cuisine-form/cuisine-form';
+import { DishEditingOverlay, CuisineEditingOverlay } from '../../../shared/editing-overlay';
+import type { DishFormData, CuisineFormData } from '../../../shared/editing-overlay';
 
 @Component({
   selector: 'app-menu-management',
-  imports: [DishList, DishForm, CuisineList, CuisineForm],
+  imports: [DishList, CuisineList, DishEditingOverlay, CuisineEditingOverlay],
   templateUrl: './menu-management.html',
   styleUrl: './menu-management.css',
 })
@@ -29,7 +29,7 @@ export class MenuManagement implements OnInit {
   constructor(
     private menuItemService: MenuItemService,
     private cuisineService: CuisineService,
-    private changeDetectorRef: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef,
     private route: ActivatedRoute
   ) {}
 
@@ -40,14 +40,14 @@ export class MenuManagement implements OnInit {
   fetchDishes(): void {
     this.menuItemService.getAllMenuItems(this.restaurantId).subscribe(data => {
       this.dishes = data;
-      this.changeDetectorRef.detectChanges();
+      this.cdr.detectChanges();
     });
   }
 
   fetchCuisines(): void {
     this.cuisineService.getAllCuisines().subscribe(data => {
       this.cuisines = data;
-      this.changeDetectorRef.detectChanges();
+      this.cdr.detectChanges();
     });
   }
 
@@ -61,17 +61,19 @@ export class MenuManagement implements OnInit {
     this.showDishForm = true;
   }
 
-  onSaveDish(data: { name: string; price: number; description?: string }): void {
+  onSaveDish(data: DishFormData): void {
     if (this.selectedDish) {
       this.menuItemService.updateMenuItem(this.restaurantId, this.selectedDish.id, data).subscribe(() => {
-        this.fetchDishes();
         this.showDishForm = false;
         this.selectedDish = null;
+        this.cdr.detectChanges();
+        this.fetchDishes();
       });
     } else {
       this.menuItemService.createMenuItem(this.restaurantId, data).subscribe(() => {
-        this.fetchDishes();
         this.showDishForm = false;
+        this.cdr.detectChanges();
+        this.fetchDishes();
       });
     }
   }
@@ -83,9 +85,16 @@ export class MenuManagement implements OnInit {
 
   onDeleteDish(dishId: number): void {
     this.menuItemService.deleteMenuItem(this.restaurantId, dishId).subscribe(() => {
+      // Filter the dish immediately - dish-list will handle grid update via ngOnChanges
       this.dishes = this.dishes.filter(d => d.id !== dishId);
-      this.changeDetectorRef.detectChanges();
+      this.cdr.detectChanges();
     });
+  }
+
+  onDeleteDishFromOverlay(dishId: number): void {
+    this.onDeleteDish(dishId);
+    this.showDishForm = false;
+    this.selectedDish = null;
   }
 
   onAddCuisine(): void {
@@ -98,17 +107,19 @@ export class MenuManagement implements OnInit {
     this.showCuisineForm = true;
   }
 
-  onSaveCuisine(data: { name: string; description?: string }): void {
+  onSaveCuisine(data: CuisineFormData): void {
     if (this.selectedCuisine) {
       this.cuisineService.updateCuisine(this.selectedCuisine.id, data).subscribe(() => {
-        this.fetchCuisines();
         this.showCuisineForm = false;
         this.selectedCuisine = null;
+        this.cdr.detectChanges();
+        this.fetchCuisines();
       });
     } else {
       this.cuisineService.createCuisine(data).subscribe(() => {
-        this.fetchCuisines();
         this.showCuisineForm = false;
+        this.cdr.detectChanges();
+        this.fetchCuisines();
       });
     }
   }
@@ -121,7 +132,13 @@ export class MenuManagement implements OnInit {
   onDeleteCuisine(cuisineId: number): void {
     this.cuisineService.deleteCuisine(cuisineId).subscribe(() => {
       this.cuisines = this.cuisines.filter(c => c.id !== cuisineId);
-      this.changeDetectorRef.detectChanges();
+      this.cdr.detectChanges();
     });
+  }
+
+  onDeleteCuisineFromOverlay(cuisineId: number): void {
+    this.onDeleteCuisine(cuisineId);
+    this.showCuisineForm = false;
+    this.selectedCuisine = null;
   }
 }

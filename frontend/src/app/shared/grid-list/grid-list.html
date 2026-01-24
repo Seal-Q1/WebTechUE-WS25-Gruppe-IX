@@ -1,0 +1,18 @@
+<div class="grid-list-container">
+  @for (item of items; track item.id; let i = $index) {
+    <div
+      class="grid-list-item"
+      [class.drag-over]="isDraggedOver(item)"
+      [class.reorderable]="reorderEnabled"
+      [draggable]="reorderEnabled"
+      (dragstart)="onDragStart($event, item)"
+      (dragend)="onDragEnd($event)"
+      (dragover)="onDragOver($event, item)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event, item)">
+      <ng-container *ngTemplateOutlet="itemTemplate; context: {$implicit: item, index: i}"></ng-container>
+    </div>
+  } @empty {
+    <p class="empty-message">No items</p>
+  }
+</div>

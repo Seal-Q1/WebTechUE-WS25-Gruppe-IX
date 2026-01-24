@@ -10,8 +10,11 @@ router.get("/", async (_req: Request, res: Response) => {
         const query = `
             SELECT cuisine_id,
                    cuisine_name,
-                   cuisine_description
+                   cuisine_description,
+                   cuisine_emoji,
+                   order_index
             FROM cuisine
+            ORDER BY order_index ASC, cuisine_id ASC
         `;
         const result = await pool.query<CuisineRow>(query);
         res.json(cuisineSerializer.serialize_multiple(result.rows));
@@ -26,7 +29,9 @@ router.get("/:cuisineId", async (req: Request, res: Response) => {
         const query = `
             SELECT cuisine_id,
                    cuisine_name,
-                   cuisine_description
+                   cuisine_description,
+                   cuisine_emoji,
+                   order_index
             FROM cuisine
             WHERE cuisine_id = $1
         `;
@@ -41,15 +46,17 @@ router.get("/:cuisineId", async (req: Request, res: Response) => {
     }
 });
 
+// assumption: no concurrent writes (only one user will change ordering at the same time); simplifies logic
 router.post("/", async (req: Request, res: Response) => {
     try {
-        const {name, description} = req.body;
+        const {name, description, emoji} = req.body;
         const query = `
-            INSERT INTO cuisine (cuisine_name, cuisine_description)
-            VALUES ($1, $2)
-            RETURNING cuisine_id, cuisine_name, cuisine_description
-        `;
-        const result = await pool.query<CuisineRow>(query, [name, description || null]);
+            INSERT INTO cuisine (cuisine_name, cuisine_description, cuisine_emoji, order_index)
+            VALUES ($1, $2, $3,
+                    COALESCE((SELECT MAX(order_index) + 1 FROM cuisine), 0))
+            RETURNING cuisine_id, cuisine_name, cuisine_description, cuisine_emoji, order_index
+        `; //coalesce returns 0 if there aren't any yet
+        const result = await pool.query<CuisineRow>(query, [name, description || null, emoji || null]);
         res.status(201).json(cuisineSerializer.serialize(result.rows[0]!));
     } catch (error) {
         sendInternalError(res, error, "occurred while creating cuisine");
@@ -59,15 +66,16 @@ router.post("/", async (req: Request, res: Response) => {
 router.put("/:cuisineId", async (req: Request, res: Response) => {
     try {
         const cuisineId = parseInt(req.params.cuisineId!);
-        const {name, description} = req.body;
+        const {name, description, emoji} = req.body;
         const query = `
             UPDATE cuisine
             SET cuisine_name        = $1,
-                cuisine_description = $2
-            WHERE cuisine_id = $3
-            RETURNING cuisine_id, cuisine_name, cuisine_description
+                cuisine_description = $2,
+                cuisine_emoji       = $3
+            WHERE cuisine_id = $4
+            RETURNING cuisine_id, cuisine_name, cuisine_description, cuisine_emoji, order_index
         `;
-        const result = await pool.query<CuisineRow>(query, [name, description || null, cuisineId]);
+        const result = await pool.query<CuisineRow>(query, [name, description || null, emoji || null, cuisineId]);
         if (result.rows.length === 0) {
             sendNotFound(res, "Could not find Cuisine");
             return;
@@ -95,6 +103,32 @@ router.delete("/:cuisineId", async (req: Request, res: Response) => {
         res.status(204).send();
     } catch (error) {
         sendInternalError(res, error, "occurred while deleting cuisine");
+    }
+});
+
+//TODO permission to do so via auth.
+router.patch("/order", async (req: Request, res: Response) => {
+    try {
+        const items = req.body as { id: number; orderIndex: number }[];
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            for (const item of items) {
+                await client.query(
+                    'UPDATE cuisine SET order_index = $1 WHERE cuisine_id = $2',
+                    [item.orderIndex, item.id]
+                );
+            }
+            await client.query('COMMIT');
+            res.status(204).send();
+        } catch (err) {
+            await client.query('ROLLBACK');
+            throw err;
+        } finally {
+            client.release();
+        }
+    } catch (error) {
+        sendInternalError(res, error, "occurred while updating cuisine order");
     }
 });
 

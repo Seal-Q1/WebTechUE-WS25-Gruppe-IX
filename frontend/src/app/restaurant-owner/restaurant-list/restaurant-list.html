@@ -3,21 +3,28 @@
   <button (click)="fetchRestaurants()">Refresh Restaurants</button>
   <br>
   <button (click)="onAddRestaurant()">Add Restaurant</button>
-  @if (showRestaurantForm) {
-    <app-restaurant-form
-      (cancel)="onCancelRestaurant()"
-      (save)="onSaveRestaurant($event)"
-      [restaurant]="null">
-    </app-restaurant-form>
-  }
-  @for (restaurant of restaurants; track restaurant.id) {
-    <div>
-      <span>{{ restaurant.name }}</span><br>
-      <button (click)="onEditProfile(restaurant.id)">Edit Profile</button>
-      <br>
-      <button (click)="onEditMenu(restaurant.id)">Edit Menu</button>
-    </div>
-  } @empty {
-    <p>No restaurants</p>
-  }
+  <div class="restaurant-list-container">
+    <app-grid-list
+      [items]="restaurants"
+      [reorderEnabled]="reorderEnabled"
+      (orderChanged)="onOrderChanged($event)">
+      <ng-template #itemTemplate let-item let-i="index">
+        <app-restaurant-grid-list-element
+          [restaurant]="item"
+          (itemClick)="onItemClick(item.id)"
+          (settingsClick)="onSettingsClick(item.id)">
+        </app-restaurant-grid-list-element>
+      </ng-template>
+    </app-grid-list>
+  </div>
 </div>
+
+@if (showRestaurantOverlay) {
+  <app-restaurant-editing-overlay
+    [restaurant]="selectedRestaurant"
+    [restaurantId]="selectedRestaurant?.id ?? 0"
+    (save)="onSaveRestaurant($event)"
+    (cancel)="onCancelRestaurant()"
+    (delete)="onDeleteRestaurantFromOverlay($event)">
+  </app-restaurant-editing-overlay>
+}

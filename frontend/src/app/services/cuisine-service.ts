@@ -17,15 +17,19 @@ export class CuisineService {
     return this.http.get<CuisineDto>(apiUrls.cuisineEndpoint(cuisineId));
   }
 
-  createCuisine(data: { name: string; description?: string }) {
+  createCuisine(data: { name: string; description?: string; emoji?: string }) {
     return this.http.post<CuisineDto>(apiUrls.allCuisinesEndpoint(), data);
   }
 
-  updateCuisine(cuisineId: number, data: { name: string; description?: string }) {
+  updateCuisine(cuisineId: number, data: { name: string; description?: string; emoji?: string }) {
     return this.http.put<CuisineDto>(apiUrls.cuisineEndpoint(cuisineId), data);
   }
 
   deleteCuisine(cuisineId: number) {
     return this.http.delete<void>(apiUrls.cuisineEndpoint(cuisineId));
+  }
+
+  updateCuisinesOrder(items: { id: number; orderIndex: number }[]) {
+    return this.http.patch<void>(apiUrls.cuisinesOrderEndpoint(), items);
   }
 }

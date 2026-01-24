@@ -1,0 +1,70 @@
+<app-editing-overlay-abstract
+  [title]="getTitle()"
+  [showImageUpload]="true"
+  [canUploadImage]="isEditMode()"
+  imageLabel="Restaurant Image"
+  [canDelete]="isEditMode()"
+  [fetchImage]="fetchImage"
+  [saveImage]="saveImage"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+  (delete)="onDelete()">
+  
+  <div class="form-section">
+    <h4>Basic Information</h4>
+    
+    <div class="form-group">
+      <label for="restaurant-name">Restaurant Name</label>
+      <input type="text" id="restaurant-name" [(ngModel)]="name" name="name" required>
+    </div>
+
+    <div class="form-group">
+      <label for="restaurant-phone">Phone</label>
+      <input type="text" id="restaurant-phone" [(ngModel)]="phone" name="phone" required>
+    </div>
+
+    <div class="form-group">
+      <label for="restaurant-email">Email</label>
+      <input type="email" id="restaurant-email" [(ngModel)]="email" name="email" required>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h4>Opening Hours</h4>
+    
+    <div class="form-group">
+      <label for="monday">Monday</label>
+      <input type="text" id="monday" [(ngModel)]="openingHours.monday" name="monday" placeholder="e.g. 09:00-22:00 or Closed">
+    </div>
+
+    <div class="form-group">
+      <label for="tuesday">Tuesday</label>
+      <input type="text" id="tuesday" [(ngModel)]="openingHours.tuesday" name="tuesday" placeholder="e.g. 09:00-22:00 or Closed">
+    </div>
+
+    <div class="form-group">
+      <label for="wednesday">Wednesday</label>
+      <input type="text" id="wednesday" [(ngModel)]="openingHours.wednesday" name="wednesday" placeholder="e.g. 09:00-22:00 or Closed">
+    </div>
+
+    <div class="form-group">
+      <label for="thursday">Thursday</label>
+      <input type="text" id="thursday" [(ngModel)]="openingHours.thursday" name="thursday" placeholder="e.g. 09:00-22:00 or Closed">
+    </div>
+
+    <div class="form-group">
+      <label for="friday">Friday</label>
+      <input type="text" id="friday" [(ngModel)]="openingHours.friday" name="friday" placeholder="e.g. 09:00-23:00 or Closed">
+    </div>
+
+    <div class="form-group">
+      <label for="saturday">Saturday</label>
+      <input type="text" id="saturday" [(ngModel)]="openingHours.saturday" name="saturday" placeholder="e.g. 10:00-23:00 or Closed">
+    </div>
+
+    <div class="form-group">
+      <label for="sunday">Sunday</label>
+      <input type="text" id="sunday" [(ngModel)]="openingHours.sunday" name="sunday" placeholder="e.g. Closed or 10:00-20:00">
+    </div>
+  </div>
+</app-editing-overlay-abstract>

@@ -21,6 +21,7 @@ export interface RestaurantDto {
   locationName: string;
   address: AddressDto;
   openingHours?: OpeningHoursDto;
+  orderIndex: number;
 }
 
 //TODO user-facing DTOs should not expose all/sensitive data

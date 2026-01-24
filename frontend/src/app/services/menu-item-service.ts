@@ -36,4 +36,8 @@ export class MenuItemService {
   updateMenuItemImage(restaurantId: number, itemId: number, image: string | null) {
     return this.http.put<ImageDto>(apiUrls.menuItemImageEndpoint(restaurantId, itemId), { image });
   }
+
+  updateMenuItemsOrder(restaurantId: number, items: { id: number; orderIndex: number }[]) {
+    return this.http.patch<void>(apiUrls.menuItemsOrderEndpoint(restaurantId), items);
+  }
 }

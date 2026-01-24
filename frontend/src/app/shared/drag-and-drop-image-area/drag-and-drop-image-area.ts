@@ -1,6 +1,6 @@
 // Heavily inspired by https://stackoverflow.com/questions/57480159/angular-drag-and-drop-to-upload-an-attachment
 
-import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { ImageDto, serializeImageToBase64 } from '@shared/types';
@@ -12,7 +12,7 @@ import { ImageDisplay } from '../image-display/image-display';
   templateUrl: './drag-and-drop-image-area.html',
   styleUrl: './drag-and-drop-image-area.css',
 })
-export class DragAndDropImageArea {
+export class DragAndDropImageArea implements AfterViewInit {
   @Input() fetchImage!: () => Observable<ImageDto>;
   @Input() saveImage!: (base64: string | null) => Observable<ImageDto>;
   @Output() imageSaved = new EventEmitter<ImageDto>();
@@ -22,26 +22,34 @@ export class DragAndDropImageArea {
   localImageDto: ImageDto | null = null;
   pendingBase64: string | null = null;
   isDragOver: boolean = false;
-  isLoading: boolean = true;
+  isLoading: boolean = false;
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) {}
 
-  ngOnInit(): void {
-    this.loadImage();
+  ngAfterViewInit(): void {
+    this.loadImage(); //image loading done only after component has finished initializing
   }
 
   loadImage(): void {
     if (this.fetchImage) {
       this.isLoading = true;
-      this.fetchImage().subscribe((dto) => {
-        this.savedImageDto = dto;
-        this.localImageDto = null;
-        this.pendingBase64 = null;
-        this.isLoading = false;
-        this.changeDetectorRef.detectChanges();
+      this.cdr.detectChanges();
+      this.fetchImage().subscribe({
+        next: (dto) => {
+          this.savedImageDto = dto;
+          this.localImageDto = null;
+          this.pendingBase64 = null;
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.savedImageDto = null;
+          this.localImageDto = null;
+          this.pendingBase64 = null;
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }
       });
-    } else {
-      this.isLoading = false;
     }
   }
 
@@ -88,7 +96,6 @@ export class DragAndDropImageArea {
     serializeImageToBase64(file).then((base64) => {
       this.pendingBase64 = base64;
       this.localImageDto = { id: this.savedImageDto?.id ?? 0, image: base64 };
-      this.changeDetectorRef.detectChanges();
     });
   }
 
@@ -99,7 +106,6 @@ export class DragAndDropImageArea {
         this.localImageDto = null;
         this.pendingBase64 = null;
         this.imageSaved.emit(resultDto);
-        this.changeDetectorRef.detectChanges();
       });
     }
   }
@@ -116,7 +122,6 @@ export class DragAndDropImageArea {
         this.localImageDto = null;
         this.pendingBase64 = null;
         this.imageCleared.emit();
-        this.changeDetectorRef.detectChanges();
       });
     }
   }

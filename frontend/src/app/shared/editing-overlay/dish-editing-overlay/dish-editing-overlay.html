@@ -1,0 +1,28 @@
+<app-editing-overlay-abstract
+  [title]="getTitle()"
+  [showImageUpload]="true"
+  [canUploadImage]="isEditMode()"
+  [canDelete]="isEditMode()"
+  [fetchImage]="fetchImage"
+  [saveImage]="saveImage"
+  imageLabel="Dish Image"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+  (delete)="onDelete()">
+
+  <div class="form-group">
+    <label for="dish-name">Name</label>
+    <input type="text" id="dish-name" [(ngModel)]="name" name="name" required>
+  </div>
+
+  <div class="form-group">
+    <label for="dish-price">Price</label>
+    <input type="number" id="dish-price" [(ngModel)]="price" name="price" step="0.01" required>
+  </div>
+
+  <div class="form-group">
+    <label for="dish-description">Description</label>
+    <textarea id="dish-description" [(ngModel)]="description" name="description"></textarea>
+  </div>
+
+</app-editing-overlay-abstract>

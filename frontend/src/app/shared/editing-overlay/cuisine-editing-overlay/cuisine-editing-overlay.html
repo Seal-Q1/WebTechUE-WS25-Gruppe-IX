@@ -1,0 +1,24 @@
+<app-editing-overlay-abstract
+  [title]="getTitle()"
+  [showImageUpload]="false"
+  [canDelete]="isEditMode()"
+  (save)="onSave()"
+  (cancel)="onCancel()"
+  (delete)="onDelete()">
+
+  <div class="form-group">
+    <label for="cuisine-name">Name</label>
+    <input type="text" id="cuisine-name" [(ngModel)]="name" name="name" required>
+  </div>
+
+  <div class="form-group">
+    <label for="cuisine-emoji">Emoji</label>
+    <input type="text" id="cuisine-emoji" [(ngModel)]="emoji" name="emoji" placeholder="e.g. 🍕">
+  </div>
+
+  <div class="form-group">
+    <label for="cuisine-description">Description</label>
+    <textarea id="cuisine-description" [(ngModel)]="description" name="description"></textarea>
+  </div>
+
+</app-editing-overlay-abstract>
