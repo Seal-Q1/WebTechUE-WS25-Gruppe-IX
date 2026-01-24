@@ -5,5 +5,7 @@ export type { OrderItemDto } from './order-item.dto';
 export type { UserDto } from './user.dto';
 export type {RestaurantDto, OpeningHoursDto} from './restaurant.dto';
 export type { CuisineDto } from './cuisine.dto';
+export type { ImageDto } from './image.dto';
+export { serializeImageToBase64, deserializeBase64ToDataUrl } from './image.dto';
 
 export { OrderStatusEnum, OrderTypeEnum, PaymentMethodEnum, RestaurantStatusEnum } from './enums';

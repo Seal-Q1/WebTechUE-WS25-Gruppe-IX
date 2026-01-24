@@ -87,7 +87,8 @@ CREATE TABLE public.restaurant
     opening_hours_thursday  TEXT,
     opening_hours_friday    TEXT,
     opening_hours_saturday  TEXT,
-    opening_hours_sunday    TEXT
+    opening_hours_sunday    TEXT,
+    image                   TEXT
 
 );
 
@@ -98,7 +99,7 @@ CREATE TABLE public.menu_item
     item_name        TEXT           NOT NULL,
     item_price       NUMERIC(10, 2) NOT NULL,
     item_description TEXT,
-    item_picture     BYTEA,
+    item_picture     TEXT,
     is_deleted       BOOLEAN        NOT NULL DEFAULT FALSE
 );
 

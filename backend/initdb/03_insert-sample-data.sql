@@ -7,10 +7,10 @@ VALUES ('Seal', 'Markus', 'M', 'seal@q.1', '+123', 'tubele'),
 INSERT INTO restaurant (restaurant_name, owner_id, phone, email, restaurant_status_id, location_name, address_street,
                         address_house_nr, address_postal_code, address_city, address_door, opening_hours_monday,
                         opening_hours_tuesday, opening_hours_wednesday, opening_hours_thursday, opening_hours_friday,
-                        opening_hours_saturday, opening_hours_sunday)
+                        opening_hours_saturday, opening_hours_sunday, image)
 VALUES ('Borgar Bootique', 2, '+123', 'restaurant@mail.at', 'accepted', 'RestaurantLocation', 'RestaurantStr.', '999',
         '9583', 'Klagenfurt', '5', '09:00-22:00', '09:00-22:00', '09:00-22:00', '09:00-22:00', '09:00-23:00',
-        '10:00-23:00', 'Closed');
+        '10:00-23:00', 'Closed', null);
 
 
 INSERT INTO menu_item (restaurant_id,item_name, item_price, item_description)
