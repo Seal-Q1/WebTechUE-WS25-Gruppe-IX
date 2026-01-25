@@ -25,6 +25,12 @@
       (delete)="onDeleteCuisine($event)">
     </app-cuisine-list>
   </section>
+
+  <section>
+    <app-order-poll-list
+      [restaurantId]="restaurantId">
+    </app-order-poll-list>
+  </section>
 </div>
 
 @if (showDishForm) {

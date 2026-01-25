@@ -1,11 +1,8 @@
 import {Component} from '@angular/core';
-import {OrderPollList} from '../restaurant-owner/order-viewing/order-poll-list/order-poll-list';
 
 @Component({
   selector: 'app-home',
-  imports: [
-    OrderPollList
-  ],
+  imports: [],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

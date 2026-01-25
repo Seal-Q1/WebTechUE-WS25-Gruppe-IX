@@ -1,4 +1,4 @@
-import {Component, ChangeDetectorRef} from '@angular/core';
+import {Component, ChangeDetectorRef, Input} from '@angular/core';
 import {OrderDto, OrderItemDto, MenuItemDto, OrderStatusEnum} from '@shared/types';
 import {OrderFetchService} from '../../../services/order-fetch-service';
 import {MenuItemService} from '../../../services/menu-item-service';
@@ -18,7 +18,7 @@ export class OrderPollList {
   orderItems: Map<number, OrderItemDto[]> = new Map();
   menuItems: Map<number, MenuItemDto> = new Map();
 
-  private restaurantId = 1; //FIXME remove hardcode
+  @Input() restaurantId: number = 1;
 
   constructor(
     private orderFetchService: OrderFetchService,

@@ -7,10 +7,11 @@ import { DishList } from '../dish-list/dish-list';
 import { CuisineList } from '../cuisine-list/cuisine-list';
 import { DishEditingOverlay, CuisineEditingOverlay } from '../../../shared/editing-overlay';
 import type { DishFormData, CuisineFormData } from '../../../shared/editing-overlay';
+import {OrderPollList} from '../../order-viewing/order-poll-list/order-poll-list';
 
 @Component({
   selector: 'app-menu-management',
-  imports: [DishList, CuisineList, DishEditingOverlay, CuisineEditingOverlay],
+  imports: [DishList, CuisineList, DishEditingOverlay, CuisineEditingOverlay, OrderPollList],
   templateUrl: './menu-management.html',
   styleUrl: './menu-management.css',
 })
