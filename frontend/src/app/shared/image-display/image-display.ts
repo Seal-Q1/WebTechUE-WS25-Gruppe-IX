@@ -10,13 +10,16 @@ import { ImageDto, deserializeBase64ToDataUrl } from '@shared/types';
 })
 export class ImageDisplay {
   @Input() imageDto: ImageDto | null = null;
-  @Input() isLoading: boolean = true;
 
   getImageUrl(): string | null {
     if (!this.imageDto || !this.imageDto.image) {
       return null;
     }
     return deserializeBase64ToDataUrl(this.imageDto.image);
+  }
+
+  isLoading(): boolean {
+    return this.imageDto == null;
   }
 
   hasImage(): boolean {

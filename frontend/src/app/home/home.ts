@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
+import {RestaurantGrid} from '../customer/restarurant-overview/restaurant-grid/restaurant-grid.component';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [RestaurantGrid],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

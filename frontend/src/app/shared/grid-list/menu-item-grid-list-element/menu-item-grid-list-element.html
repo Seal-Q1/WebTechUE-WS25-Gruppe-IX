@@ -1,7 +1,7 @@
 <div class="grid-element" (click)="onItemClicked()">
   <div class="element-image">
     <ng-container *ngIf="imageDto !== null; else loadingTpl">
-      <app-image-display [imageDto]="imageDto" [isLoading]="isLoading"></app-image-display>
+      <app-image-display [imageDto]="imageDto"></app-image-display>
     </ng-container>
     <ng-template #loadingTpl>
       <span>Loading...</span>

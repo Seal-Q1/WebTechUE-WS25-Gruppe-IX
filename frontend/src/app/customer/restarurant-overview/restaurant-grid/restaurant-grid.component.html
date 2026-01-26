@@ -1,0 +1,6 @@
+<div class="restaurant-grid">
+  @for (restaurant of restaurants(); track restaurant.id) {
+    <app-restaurant-grid-element [restaurant]="restaurant">
+    </app-restaurant-grid-element>
+  }
+</div>
