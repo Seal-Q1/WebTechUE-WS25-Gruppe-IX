@@ -47,11 +47,6 @@ export class Navbar implements OnInit, OnDestroy {
   onAdmin = (): void => {
     this.router.navigate(['/admin']);
   };
-  protected readonly faUtensils = faUtensils;
-  protected readonly faBurger = faBurger;
-  protected readonly faUser = faUser;
-  protected readonly faUserTie = faUserTie;
-  protected readonly faStar = faStar;
 
   onLogin = (): void => {
     this.router.navigate(['/login']);
