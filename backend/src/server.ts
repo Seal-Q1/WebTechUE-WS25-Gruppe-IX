@@ -1,6 +1,9 @@
 import express, {type Request, type Response} from 'express';
 import cors from 'cors';
-import {adminRouter, authRouter, bankingRouter, cuisinesRouter, loyaltyRouter, menuItemsRouter, ordersRouter, restaurantsRouter, usersRouter} from './routes';
+import {
+    adminRouter, authRouter, bankingRouter, cuisinesRouter, loyaltyRouter, menuItemsRouter,
+    orderPlacementRouter, ordersRouter, restaurantsRouter, usersRouter
+} from './routes';
 
 const app = express();
 
