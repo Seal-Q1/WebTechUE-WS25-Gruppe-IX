@@ -5,3 +5,5 @@ export {default as cuisinesRouter} from './cuisines.routes';
 export {default as restaurantsRouter} from './restaurants.routes';
 export {default as adminRouter} from './admin.routes';
 export {default as authRouter} from './auth.routes';
+export {default as loyaltyRouter} from './loyalty.routes';
+export {default as bankingRouter} from './banking.routes';

@@ -3,11 +3,12 @@ import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {Subscription} from 'rxjs';
 import {AuthService} from '../../services/auth.service';
+import {PointsBadgeComponent} from '../../loyalty/points-badge/points-badge';
 import type {AuthUserDto} from '@shared/types';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule],
+  imports: [CommonModule, PointsBadgeComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })

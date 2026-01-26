@@ -1,0 +1,453 @@
+.loyalty-dashboard {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: 12px;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #eee;
+  border-top: 3px solid #f59e0b;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  color: #dc3545;
+  text-align: center;
+}
+
+.points-card {
+  background: #f59e0b;
+  color: white;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.points-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.points-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.bonus-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.points-display {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.points-value {
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.points-label {
+  display: block;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.points-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #e5e5e5;
+}
+
+.section h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.section-subtitle {
+  color: #666;
+  margin: -8px 0 12px;
+  font-size: 13px;
+}
+
+.empty-message {
+  color: #666;
+  text-align: center;
+  padding: 24px;
+  font-size: 13px;
+}
+
+.promotions-section {
+  background: #fef9c3;
+}
+
+.promotions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.promotion-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #e5e5e5;
+}
+
+.promotion-card.active-today {
+  border-color: #f59e0b;
+}
+
+.promotion-multiplier {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f59e0b;
+  background: #fef9c3;
+  padding: 8px 12px;
+  border-radius: 4px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.promotion-details h4 {
+  margin: 0 0 2px;
+  font-size: 14px;
+}
+
+.promotion-details p {
+  margin: 0 0 4px;
+  color: #666;
+  font-size: 13px;
+}
+
+.promotion-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: #888;
+}
+
+.promotion-active-badge {
+  background: #22c55e;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  margin-left: auto;
+}
+
+.rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.reward-card {
+  background: #f9f9f9;
+  border-radius: 6px;
+  padding: 16px;
+  text-align: center;
+  border: 1px solid #e5e5e5;
+  position: relative;
+}
+
+.reward-card.can-afford {
+  border-color: #22c55e;
+}
+
+.limited-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #f59e0b;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.reward-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.reward-card h4 {
+  margin: 0 0 4px;
+  font-size: 14px;
+}
+
+.reward-value {
+  color: #22c55e;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.reward-cost {
+  margin-bottom: 8px;
+}
+
+.cost-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.cost-label {
+  font-size: 12px;
+  color: #666;
+}
+
+.min-order {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.reward-description {
+  font-size: 12px;
+  color: #666;
+  margin: 8px 0;
+}
+
+.btn-redeem {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  background: #667eea;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-redeem.disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.vouchers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.voucher-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.voucher-icon {
+  font-size: 24px;
+  width: 40px;
+  text-align: center;
+}
+
+.voucher-details {
+  flex: 1;
+}
+
+.voucher-details h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.voucher-date {
+  font-size: 12px;
+  color: #888;
+}
+
+.voucher-value {
+  font-weight: 600;
+  color: #22c55e;
+  font-size: 13px;
+}
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+.transaction-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.transaction-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.transaction-description {
+  font-size: 13px;
+}
+
+.transaction-date {
+  font-size: 11px;
+  color: #888;
+}
+
+.transaction-points {
+  font-size: 16px;
+  font-weight: 600;
+  min-width: 60px;
+  text-align: right;
+}
+
+.transaction-points.positive { color: #22c55e; }
+.transaction-points.negative { color: #ef4444; }
+
+.view-all-link {
+  display: block;
+  text-align: center;
+  margin-top: 12px;
+  color: #667eea;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content h3 {
+  margin: 0 0 16px;
+  font-size: 18px;
+}
+
+.modal-reward-info {
+  text-align: center;
+  padding: 16px 0;
+}
+
+.reward-icon.large {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.modal-reward-info h4 {
+  margin: 0 0 4px;
+}
+
+.cost-display, .balance-after {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-secondary {
+  background: #e5e5e5;
+  color: #333;
+}
+
+.success-content {
+  text-align: center;
+}
+
+.success-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 600px) {
+  .rewards-grid {
+    grid-template-columns: 1fr;
+  }
+  .points-info {
+    flex-direction: column;
+    gap: 4px;
+  }
+}

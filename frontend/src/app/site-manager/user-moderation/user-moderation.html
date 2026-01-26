@@ -1,19 +1,18 @@
-<div>
-  <button (click)="onBack()">← Back to Dashboard</button>
+<app-admin-layout activePage="users">
   <h2>User Moderation</h2>
   <p>Manage users, issue warnings, and handle suspensions</p>
 
   @if (error) {
     <div class="alert-error">
       {{ error }}
-      <button (click)="error = null">X</button>
+      <button (click)="error = null">×</button>
     </div>
   }
 
   @if (success) {
     <div class="alert-success">
       {{ success }}
-      <button (click)="success = null">X</button>
+      <button (click)="success = null">×</button>
     </div>
   }
 
@@ -95,6 +94,8 @@
                 (click)="toggleAdminStatus(user)"
                 [class.admin-remove]="isUserAdmin(user.id)"
                 [class.admin-add]="!isUserAdmin(user.id)"
+                [disabled]="!canToggleAdmin(user)"
+                [title]="isCurrentUser(user.id) ? 'Cannot remove your own admin status' : (user.status === 'suspended' ? 'Cannot make suspended user an admin' : '')"
               >
                 @if (isUserAdmin(user.id)) {
                   Remove Admin
@@ -152,4 +153,4 @@
       </div>
     </div>
   }
-</div>
+</app-admin-layout>

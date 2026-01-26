@@ -1,4 +1,5 @@
 import type {AddressDto} from './address.dto';
+import type {UserAddressDto, PaymentCardDto} from './banking.dto';
 
 export interface LoginRequestDto {
   username: string;
@@ -29,7 +30,9 @@ export interface AuthUserDto {
   phone: string;
   isAdmin: boolean;
   warningCount: number;
-  address?: AddressDto;
+  address?: AddressDto; // Default/primary address (for backwards compatibility)
+  addresses: UserAddressDto[]; // All user addresses
+  paymentCards: PaymentCardDto[]; // All user payment cards
 }
 
 export interface PasswordResetRequestDto {

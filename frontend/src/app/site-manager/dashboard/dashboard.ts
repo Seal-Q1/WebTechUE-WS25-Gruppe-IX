@@ -3,10 +3,11 @@ import {CommonModule} from '@angular/common';
 import {Router} from '@angular/router';
 import {RestaurantDto} from '@shared/types';
 import {DashboardStats, SiteManagerService} from '../site-manager-service';
+import {AdminLayout} from '../admin-layout/admin-layout';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule, AdminLayout],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -130,5 +131,13 @@ export class Dashboard implements OnInit {
 
   onManageUsers = (): void => {
     this.router.navigate(['/admin/users']);
+  };
+
+  onGlobalSettings = (): void => {
+    this.router.navigate(['/admin/settings']);
+  };
+
+  onReports = (): void => {
+    this.router.navigate(['/admin/reports']);
   };
 }
