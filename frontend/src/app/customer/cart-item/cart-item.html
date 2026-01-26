@@ -4,7 +4,7 @@
   </div>
   <div class="cart-info-container">
     <div class="cart-item-title">{{cartItem().itemInfo.name}} (x{{cartItem().quantity}})</div>
-    <div class="cart-item-price">{{getTotalPrice()}} €</div>
+    <div class="cart-item-price">{{getTotalPrice().toFixed(2)}} €</div>
   </div>
   <div class="cart-button-container">
     <button class="cart-button-add" title="Add item" (click)="addItem()">+</button>

@@ -9,7 +9,7 @@
     }
   </div>
   <div class="cart-total">
-    Total: {{cartService.getTotalPrice()}} €
+    Total: {{cartService.getTotalPrice().toFixed(2)}} €
   </div>
   <div class="cart-checkout-container">
     <button class="cart-checkout-button" title="Place order" (click)="placeOrder()">Place order</button>
