@@ -1,0 +1,14 @@
+.home-header {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.home-header h1 {
+  text-align: center;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.home-header p {
+  text-align: center;
+}

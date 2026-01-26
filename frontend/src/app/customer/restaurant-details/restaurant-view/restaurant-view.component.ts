@@ -5,12 +5,14 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {ImageDisplay} from '../../../shared/image-display/image-display';
 import {MenuItemService} from '../../../services/menu-item-service';
 import {DishGridElement} from '../dish-element/dish-element';
+import {CartSidebar} from '../../cart-sidebar/cart-sidebar';
 
 @Component({
-  selector: 'app-restaurant-menu',
+  selector: 'app-restaurant-view',
   imports: [
     ImageDisplay,
-    DishGridElement
+    DishGridElement,
+    CartSidebar
   ],
   templateUrl: './restaurant-view.component.html',
   styleUrl: './restaurant-view.component.css',

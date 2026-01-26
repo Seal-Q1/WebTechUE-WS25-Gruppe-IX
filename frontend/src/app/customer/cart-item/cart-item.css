@@ -1,0 +1,8 @@
+.cart-item-flex {
+  display: flex;
+  flex-direction: row;
+}
+
+.cart-item-title {
+  font-weight: bold;
+}

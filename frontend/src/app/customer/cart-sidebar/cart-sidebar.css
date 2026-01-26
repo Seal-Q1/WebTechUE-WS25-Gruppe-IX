@@ -1,0 +1,11 @@
+.cart-sidebar {
+  padding: 20px;
+}
+
+.cart-sidebar h2 {
+  font-size: 1.5em;
+}
+
+.cart-total {
+  margin-top: 20px;
+}

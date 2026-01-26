@@ -4,6 +4,7 @@ import {ImageDisplay} from '../../../shared/image-display/image-display';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {switchMap} from 'rxjs';
 import {MenuItemService} from '../../../services/menu-item-service';
+import {CartService} from '../../../services/cart-service';
 
 @Component({
   selector: 'app-dish-grid-element',
@@ -14,7 +15,8 @@ import {MenuItemService} from '../../../services/menu-item-service';
   styleUrl: './dish-element.css',
 })
 export class DishGridElement {
-  private menuItemService = inject(MenuItemService)
+  private menuItemService = inject(MenuItemService);
+  private cartService = inject(CartService);
 
   dish = input.required<MenuItemDto>();
 
@@ -24,4 +26,9 @@ export class DishGridElement {
     ),
     { initialValue: null }
   );
+
+  onAddToCart() {
+    let currentQuantity = this.cartService.getItemQuantity(this.dish())
+    this.cartService.setCartEntry(this.dish(), currentQuantity + 1)
+  }
 }

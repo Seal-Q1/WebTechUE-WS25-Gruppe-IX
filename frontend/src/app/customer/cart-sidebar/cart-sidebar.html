@@ -1,0 +1,17 @@
+<div class="cart-sidebar">
+  <h2>Cart</h2>
+  <div class="cart-item-container">
+    @for(cartItem of cartService.cart(); track "d" + cartItem.itemInfo.id + "r" + cartItem.itemInfo.restaurantId) {
+      <app-cart-item [cartItem]="cartItem">
+      </app-cart-item>
+    } @empty {
+      <p>Cart is empty.</p>
+    }
+  </div>
+  <div class="cart-total">
+    Total: {{cartService.getTotalPrice()}} €
+  </div>
+  <div class="cart-checkout-container">
+    <button class="cart-checkout-button">Place order</button>
+  </div>
+</div>

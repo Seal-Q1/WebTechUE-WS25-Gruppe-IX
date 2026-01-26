@@ -1,4 +1,19 @@
-h1 {
+.restaurant-flex {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+.dish-section {
+  flex-grow: 1;
+}
+
+.cart-section {
+  min-width: 300px;
+  border-left: 1px solid #333333;
+}
+
+.dish-section h1 {
   text-align: center;
   font-size: 2em;
   font-weight: bold;

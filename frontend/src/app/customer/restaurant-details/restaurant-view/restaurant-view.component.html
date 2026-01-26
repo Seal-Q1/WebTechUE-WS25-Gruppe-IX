@@ -1,14 +1,21 @@
-<div class="restaurant-image">
-  <app-image-display [imageDto]="imageDto()"></app-image-display>
-</div>
-<h1>{{restaurant()?.name}}</h1>
+<div class="restaurant-flex">
+  <div class="dish-section">
+    <div class="restaurant-image">
+      <app-image-display [imageDto]="imageDto()"></app-image-display>
+    </div>
+    <h1>{{restaurant()?.name}}</h1>
 
-<div class="dish-grid">
-  @for (dish of dishes(); track dish.id) {
-    <app-dish-grid-element [dish]="dish">
-    </app-dish-grid-element>
-  }
-  @empty {
-    <p class="empty-message">Restaurant has no dishes available.</p>
-  }
+    <div class="dish-grid">
+      @for (dish of dishes(); track dish.id) {
+        <app-dish-grid-element [dish]="dish">
+        </app-dish-grid-element>
+      }
+      @empty {
+        <p class="empty-message">Restaurant has no dishes available.</p>
+      }
+    </div>
+  </div>
+  <div class="cart-section">
+    <app-cart-sidebar></app-cart-sidebar>
+  </div>
 </div>
