@@ -1,9 +1,11 @@
 .restaurant-grid-element {
+  aspect-ratio: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
+  overflow: hidden;
   cursor: pointer;
 
   border: 2px solid #ddd;
