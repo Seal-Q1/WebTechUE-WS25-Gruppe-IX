@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, Input, Output, EventEmitter, ChangeDetectorRef} from '@angular/core';
 import {MenuItemDto} from '@shared/types';
 import {GridList} from '../../../shared/grid-list/grid-list';
 import {MenuItemGridListElement} from '../../../shared/grid-list/menu-item-grid-list-element/menu-item-grid-list-element';
@@ -18,7 +18,8 @@ export class DishList {
   @Output() delete = new EventEmitter<number>();
 
   constructor(
-    private menuItemService: MenuItemService
+    private menuItemService: MenuItemService,
+    private cdr: ChangeDetectorRef
   ) {}
 
 
@@ -26,6 +27,7 @@ export class DishList {
     const dish = this.dishes.find(d => d.id === dishId);
     if (dish) {
       this.edit.emit(dish);
+      this.cdr.markForCheck();
     }
   }
 
@@ -37,5 +39,6 @@ export class DishList {
 
   onDelete(dishId: number): void {
     this.delete.emit(dishId);
+    this.cdr.markForCheck();
   }
 }

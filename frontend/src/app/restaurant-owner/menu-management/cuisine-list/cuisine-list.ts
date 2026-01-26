@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, Input, Output, EventEmitter, ChangeDetectorRef} from '@angular/core';
 import {CuisineDto} from '@shared/types';
 import {GridList} from '../../../shared/grid-list/grid-list';
 import {CuisineGridListElement} from '../../../shared/grid-list/cuisine-grid-list-element/cuisine-grid-list-element';
@@ -16,13 +16,13 @@ export class CuisineList {
   @Output() edit = new EventEmitter<CuisineDto>();
   @Output() delete = new EventEmitter<number>();
 
-  constructor(private cuisineService: CuisineService) {}
-
+  constructor(private cuisineService: CuisineService, private cdr: ChangeDetectorRef) {}
 
   onItemClick(cuisineId: number): void {
     const cuisine = this.cuisines.find(c => c.id === cuisineId);
     if (cuisine) {
       this.edit.emit(cuisine);
+      this.cdr.markForCheck();
     }
   }
 
@@ -32,5 +32,6 @@ export class CuisineList {
 
   onDelete(cuisineId: number): void {
     this.delete.emit(cuisineId);
+    this.cdr.markForCheck();
   }
 }

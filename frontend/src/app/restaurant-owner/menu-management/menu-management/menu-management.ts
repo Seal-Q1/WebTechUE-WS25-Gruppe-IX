@@ -86,16 +86,15 @@ export class MenuManagement implements OnInit {
 
   onDeleteDish(dishId: number): void {
     this.menuItemService.deleteMenuItem(this.restaurantId, dishId).subscribe(() => {
-      // Filter the dish immediately - dish-list will handle grid update via ngOnChanges
-      this.dishes = this.dishes.filter(d => d.id !== dishId);
-      this.cdr.detectChanges();
+      this.showDishForm = false;
+      this.selectedDish = null;
+      this.fetchDishes();
+      this.cdr.markForCheck();
     });
   }
 
   onDeleteDishFromOverlay(dishId: number): void {
     this.onDeleteDish(dishId);
-    this.showDishForm = false;
-    this.selectedDish = null;
   }
 
   onAddCuisine(): void {
@@ -132,14 +131,14 @@ export class MenuManagement implements OnInit {
 
   onDeleteCuisine(cuisineId: number): void {
     this.cuisineService.deleteCuisine(cuisineId).subscribe(() => {
-      this.cuisines = this.cuisines.filter(c => c.id !== cuisineId);
-      this.cdr.detectChanges();
+      this.showCuisineForm = false;
+      this.selectedCuisine = null;
+      this.fetchCuisines();
+      this.cdr.markForCheck();
     });
   }
 
   onDeleteCuisineFromOverlay(cuisineId: number): void {
     this.onDeleteCuisine(cuisineId);
-    this.showCuisineForm = false;
-    this.selectedCuisine = null;
   }
 }
