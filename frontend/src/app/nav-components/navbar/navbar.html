@@ -1,13 +1,14 @@
 <nav>
   <a class="nav-home" (click)="onHomeClicked()">★ Q1 Food</a>
   <ul>
-    <li><a (click)="onRestaurants()">🍴 Restaurants</a></li>
-    <li><a>🍔 Essen</a></li>
+    <li><a (click)="onRestaurants()"><fa-icon [icon]="faUtensils"/> Restaurants</a></li>
+    <li><a><fa-icon [icon]="faBurger"/> Essen</a></li>
+    <li><a><fa-icon [icon]="faUser"/> Mein Profil</a></li>
     @if (isLoggedIn) {
       <li><app-points-badge></app-points-badge></li>
       <li><a (click)="onProfile()">👤 Mein Profil</a></li>
       @if (isAdmin) {
-        <li><a (click)="onAdmin()">👔 Admin</a></li>
+        <li><a (click)="onAdmin()"><fa-icon [icon]="faUserTie"/> Admin</a></li>
       }
       <li class="user-info">
         <span class="username">{{ currentUser?.userName }}</span>
