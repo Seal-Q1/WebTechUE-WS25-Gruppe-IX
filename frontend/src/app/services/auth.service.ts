@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable, tap} from 'rxjs';
 import {environment} from '../../environment/environment';
@@ -13,16 +13,26 @@ const WARNING_KEY = 'warning_shown';
   providedIn: 'root',
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  
   private currentUserSubject = new BehaviorSubject<AuthUserDto | null>(this.getStoredUser());
   public currentUser$ = this.currentUserSubject.asObservable();
   
   // Observable to notify when a warning should be shown
   private showWarningSubject = new BehaviorSubject<{show: boolean; warningCount: number}>({show: false, warningCount: 0});
   public showWarning$ = this.showWarningSubject.asObservable();
+  
+  // Callback to clear loyalty cache on logout
+  private onLogoutCallback: (() => void) | null = null;
 
-  constructor(private http: HttpClient) {
+  constructor() {
     // Try to restore session on service init
     this.restoreSession();
+  }
+  
+  // Method for LoyaltyService to register its cache clear callback
+  registerLogoutCallback(callback: () => void): void {
+    this.onLogoutCallback = callback;
   }
 
   private getStoredUser(): AuthUserDto | null {
@@ -88,6 +98,11 @@ export class AuthService {
     sessionStorage.removeItem(WARNING_KEY);
     this.currentUserSubject.next(null);
     this.showWarningSubject.next({show: false, warningCount: 0});
+    
+    // Clear loyalty cache
+    if (this.onLogoutCallback) {
+      this.onLogoutCallback();
+    }
   }
 
   getToken(): string | null {
@@ -155,6 +170,22 @@ export class AuthService {
 
   changePassword(data: ChangePasswordDto): Observable<{message: string}> {
     return this.http.put<{message: string}>(`${AUTH_API_URL}/change-password`, data, {
+      headers: {
+        Authorization: `Bearer ${this.getToken()}`
+      }
+    });
+  }
+
+  getAccountStatus(): Observable<{warningCount: number; status: string}> {
+    return this.http.get<{warningCount: number; status: string}>(`${AUTH_API_URL}/account-status`, {
+      headers: {
+        Authorization: `Bearer ${this.getToken()}`
+      }
+    });
+  }
+
+  getWarnings(): Observable<{id: number; reason: string; createdAt: Date}[]> {
+    return this.http.get<{id: number; reason: string; createdAt: Date}[]>(`${AUTH_API_URL}/warnings`, {
       headers: {
         Authorization: `Bearer ${this.getToken()}`
       }

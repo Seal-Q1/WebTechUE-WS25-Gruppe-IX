@@ -1,7 +1,7 @@
 import {Router, type Request, type Response} from 'express';
 import pool from '../pool';
 import {sendBadRequest, sendInternalError, sendNotFound} from '../utils';
-import type {AuthResponseDto, AuthUserDto, LoginRequestDto, RegisterRequestDto, UpdateProfileDto, ChangePasswordDto, AddressDto} from '@shared/types';
+import type {AuthResponseDto, AuthUserDto, LoginRequestDto, RegisterRequestDto, UpdateProfileDto, ChangePasswordDto, AddressDto, UserAddressDto, PaymentCardDto, CardType} from '@shared/types';
 import crypto from 'crypto';
 
 const router = Router();
@@ -18,6 +18,7 @@ interface UserRowWithPassword {
     role_name: string;
     user_status_id: number;
     status_name: string;
+    warning_count: number;
     location_id: number | null;
     location_name: string | null;
     address_street: string | null;
@@ -42,19 +43,82 @@ async function isUserAdmin(userId: number, roleId: number): Promise<boolean> {
     return result.rows.length > 0;
 }
 
-// Helper function to get warning count from user_status
-function getWarningCount(statusName: string): number {
-    if (statusName === 'warned') return 1;
-    if (statusName === 'suspended') return 2;
-    return 0;
+// Row types for addresses and cards
+interface AddressRow {
+    address_id: number;
+    user_id: number;
+    address_name: string;
+    address_street: string;
+    address_house_nr: string;
+    address_postal_code: string;
+    address_city: string;
+    address_door: string | null;
+    is_default: boolean;
+    created_at: Date;
 }
 
-// Helper function to serialize user with admin status
+interface CardRow {
+    card_id: number;
+    user_id: number;
+    card_name: string;
+    card_holder_name: string;
+    card_number_last4: string;
+    expiry_month: number;
+    expiry_year: number;
+    card_type: string;
+    is_default: boolean;
+    created_at: Date;
+}
+
+// Helper function to serialize user with admin status, addresses and cards
 async function serializeAuthUser(row: UserRowWithPassword): Promise<AuthUserDto> {
     const isAdmin = await isUserAdmin(row.user_id, row.role_id);
-    const warningCount = getWarningCount(row.status_name);
+    const warningCount = row.warning_count || 0;
     
-    const baseUser = {
+    // Fetch all user addresses
+    const addressesResult = await pool.query<AddressRow>(
+        'SELECT * FROM user_address WHERE user_id = $1 ORDER BY is_default DESC, created_at DESC',
+        [row.user_id]
+    );
+    
+    const addresses: UserAddressDto[] = addressesResult.rows.map(addr => ({
+        id: addr.address_id,
+        userId: addr.user_id,
+        name: addr.address_name,
+        address: {
+            street: addr.address_street,
+            houseNr: addr.address_house_nr,
+            postalCode: addr.address_postal_code,
+            city: addr.address_city,
+            door: addr.address_door || undefined
+        },
+        isDefault: addr.is_default,
+        createdAt: addr.created_at?.toISOString()
+    }));
+    
+    // Fetch all user payment cards
+    const cardsResult = await pool.query<CardRow>(
+        'SELECT card_id, user_id, card_name, card_holder_name, card_number_last4, expiry_month, expiry_year, card_type, is_default, created_at FROM payment_card WHERE user_id = $1 ORDER BY is_default DESC, created_at DESC',
+        [row.user_id]
+    );
+    
+    const paymentCards: PaymentCardDto[] = cardsResult.rows.map(card => ({
+        id: card.card_id,
+        userId: card.user_id,
+        cardName: card.card_name,
+        cardHolderName: card.card_holder_name,
+        last4: card.card_number_last4,
+        expiryMonth: card.expiry_month,
+        expiryYear: card.expiry_year,
+        cardType: card.card_type as CardType,
+        isDefault: card.is_default,
+        createdAt: card.created_at?.toISOString()
+    }));
+    
+    // Get default address for backwards compatibility
+    const defaultAddress = addresses.find(a => a.isDefault) || addresses[0];
+    
+    const authUser: AuthUserDto = {
         id: row.user_id,
         userName: row.user_name,
         firstName: row.first_name,
@@ -62,23 +126,16 @@ async function serializeAuthUser(row: UserRowWithPassword): Promise<AuthUserDto>
         email: row.email,
         phone: row.phone,
         isAdmin,
-        warningCount
+        warningCount,
+        addresses,
+        paymentCards
     };
     
-    if (row.address_street) {
-        return {
-            ...baseUser,
-            address: {
-                street: row.address_street,
-                houseNr: row.address_house_nr || '',
-                postalCode: row.address_postal_code || '',
-                city: row.address_city || '',
-                door: row.address_door || undefined
-            }
-        };
+    if (defaultAddress?.address) {
+        authUser.address = defaultAddress.address;
     }
     
-    return baseUser;
+    return authUser;
 }
 
 // Simple token generation (in production, use JWT)
@@ -264,9 +321,14 @@ router.post("/admins/:userId", async (req: Request, res: Response) => {
         }
 
         // Check if target user exists
-        const userExists = await pool.query('SELECT 1 FROM users WHERE user_id = $1', [targetUserId]);
+        const userExists = await pool.query<{user_status_id: number}>('SELECT user_status_id FROM users WHERE user_id = $1', [targetUserId]);
         if (userExists.rows.length === 0) {
             return sendNotFound(res, "User not found");
+        }
+
+        // Check if target user is suspended
+        if (userExists.rows[0]!.user_status_id === 3) {
+            return sendBadRequest(res, "Cannot make a suspended user an admin");
         }
 
         // Add to admin list
@@ -567,6 +629,61 @@ router.put("/change-password", async (req: Request, res: Response) => {
         res.json({message: "Password changed successfully"});
     } catch (error) {
         sendInternalError(res, error, "occurred while changing password");
+    }
+});
+
+// Get user's warnings
+router.get("/warnings", async (req: Request, res: Response) => {
+    try {
+        const currentUserId = parseTokenUserId(req.headers.authorization);
+        if (!currentUserId) {
+            return sendBadRequest(res, "Not authenticated");
+        }
+
+        const result = await pool.query<{warning_id: number; reason: string; created_at: Date}>(
+            `SELECT warning_id, reason, created_at 
+             FROM user_warning 
+             WHERE user_id = $1 
+             ORDER BY created_at DESC`,
+            [currentUserId]
+        );
+
+        res.json(result.rows.map(row => ({
+            id: row.warning_id,
+            reason: row.reason,
+            createdAt: row.created_at
+        })));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while fetching warnings");
+    }
+});
+
+// Get user's account status (warning count, status)
+router.get("/account-status", async (req: Request, res: Response) => {
+    try {
+        const currentUserId = parseTokenUserId(req.headers.authorization);
+        if (!currentUserId) {
+            return sendBadRequest(res, "Not authenticated");
+        }
+
+        const result = await pool.query<{warning_count: number; status_name: string}>(
+            `SELECT u.warning_count, us.status_name
+             FROM users u
+             JOIN user_status us ON u.user_status_id = us.user_status_id
+             WHERE u.user_id = $1`,
+            [currentUserId]
+        );
+
+        if (result.rows.length === 0) {
+            return sendNotFound(res, "User not found");
+        }
+
+        res.json({
+            warningCount: result.rows[0]!.warning_count,
+            status: result.rows[0]!.status_name
+        });
+    } catch (error) {
+        sendInternalError(res, error, "occurred while fetching account status");
     }
 });
 

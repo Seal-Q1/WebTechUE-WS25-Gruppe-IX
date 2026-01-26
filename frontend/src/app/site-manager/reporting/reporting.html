@@ -1,0 +1,199 @@
+<app-admin-layout activePage="reports">
+  <h2>Platform Reports</h2>
+  <p>View analytics and trends across the platform</p>
+
+  @if (error) {
+    <div class="alert-error">
+      {{ error }}
+      <button (click)="error = null">×</button>
+    </div>
+  }
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button [class.active]="activeTab === 'orders'" (click)="activeTab = 'orders'">Orders & Revenue</button>
+    <button [class.active]="activeTab === 'users'" (click)="activeTab = 'users'">User Activity</button>
+    <button [class.active]="activeTab === 'restaurants'" (click)="activeTab = 'restaurants'">Restaurants</button>
+  </div>
+
+  <!-- Orders Report -->
+  @if (activeTab === 'orders') {
+    <div class="section">
+      <div class="filters">
+        <div class="filter-group">
+          <label>From:</label>
+          <input type="date" [(ngModel)]="ordersStartDate" (change)="loadOrdersReport()" />
+        </div>
+        <div class="filter-group">
+          <label>To:</label>
+          <input type="date" [(ngModel)]="ordersEndDate" (change)="loadOrdersReport()" />
+        </div>
+        <div class="filter-group">
+          <label>Group By:</label>
+          <select [(ngModel)]="ordersGroupBy" (change)="loadOrdersReport()">
+            <option value="day">Day</option>
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="summary-cards">
+        <div class="summary-card">
+          <span class="summary-value">{{ ordersSummary.totalOrders }}</span>
+          <span class="summary-label">Total Orders</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-value">€{{ ordersSummary.totalRevenue.toFixed(2) }}</span>
+          <span class="summary-label">Total Revenue</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-value">€{{ ordersSummary.avgOrderValue.toFixed(2) }}</span>
+          <span class="summary-label">Avg Order Value</span>
+        </div>
+        <div class="summary-card">
+          <span class="summary-value">{{ completionRate.toFixed(1) }}%</span>
+          <span class="summary-label">Completion Rate</span>
+        </div>
+      </div>
+
+      <!-- Orders Table -->
+      @if (isLoading) {
+        <p>Loading report...</p>
+      } @else if (ordersReport.length === 0) {
+        <p>No order data for selected period</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>Orders</th>
+              <th>Revenue</th>
+              <th>Avg Value</th>
+              <th>Completed</th>
+              <th>Cancelled</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of ordersReport; track row.period) {
+              <tr>
+                <td>{{ formatDate(row.period) }}</td>
+                <td>{{ row.totalOrders }}</td>
+                <td>€{{ row.totalRevenue.toFixed(2) }}</td>
+                <td>€{{ row.avgOrderValue.toFixed(2) }}</td>
+                <td>{{ row.completedOrders }}</td>
+                <td>{{ row.cancelledOrders }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+
+  <!-- Users Report -->
+  @if (activeTab === 'users') {
+    <div class="section">
+      <div class="filters">
+        <div class="filter-group">
+          <label>From:</label>
+          <input type="date" [(ngModel)]="usersStartDate" (change)="loadUsersReport()" />
+        </div>
+        <div class="filter-group">
+          <label>To:</label>
+          <input type="date" [(ngModel)]="usersEndDate" (change)="loadUsersReport()" />
+        </div>
+      </div>
+
+      @if (usersReport) {
+        <!-- User Stats -->
+        <div class="summary-cards">
+          <div class="summary-card">
+            <span class="summary-value">{{ usersReport.totalUsers }}</span>
+            <span class="summary-label">Total Users</span>
+          </div>
+          @for (status of usersReport.statusBreakdown; track status.status) {
+            <div class="summary-card">
+              <span class="summary-value">{{ status.count }}</span>
+              <span class="summary-label">{{ getUserStatusLabel(status.status) }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Login Activity -->
+        <h3>Login Activity (Last 30 Days)</h3>
+        @if (usersReport.loginActivity.length === 0) {
+          <p>No login activity data available</p>
+        } @else {
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Total Logins</th>
+                <th>Unique Users</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of usersReport.loginActivity; track row.date) {
+                <tr>
+                  <td>{{ formatDate(row.date) }}</td>
+                  <td>{{ row.loginCount }}</td>
+                  <td>{{ row.uniqueUsers }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      } @else {
+        <p>Loading user report...</p>
+      }
+    </div>
+  }
+
+  <!-- Restaurants Report -->
+  @if (activeTab === 'restaurants') {
+    <div class="section">
+      @if (restaurantsReport) {
+        <!-- Restaurant Status -->
+        <div class="summary-cards">
+          @for (status of restaurantsReport.statusBreakdown; track status.status) {
+            <div class="summary-card">
+              <span class="summary-value">{{ status.count }}</span>
+              <span class="summary-label">{{ getRestaurantStatusLabel(status.status) }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Top Restaurants -->
+        <h3>Top Restaurants by Orders</h3>
+        @if (restaurantsReport.topRestaurants.length === 0) {
+          <p>No restaurant order data available</p>
+        } @else {
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Restaurant</th>
+                <th>Orders</th>
+                <th>Revenue</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (restaurant of restaurantsReport.topRestaurants; track restaurant.id; let i = $index) {
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ restaurant.name }}</td>
+                  <td>{{ restaurant.orderCount }}</td>
+                  <td>€{{ restaurant.totalRevenue.toFixed(2) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      } @else {
+        <p>Loading restaurants report...</p>
+      }
+    </div>
+  }
+</app-admin-layout>

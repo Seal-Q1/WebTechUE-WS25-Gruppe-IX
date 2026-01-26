@@ -5,10 +5,11 @@ import {Router} from '@angular/router';
 import {SiteManagerService, UserWithStatus} from '../site-manager-service';
 import {AuthService} from '../../services/auth.service';
 import type {AuthUserDto} from '@shared/types';
+import {AdminLayout} from '../admin-layout/admin-layout';
 
 @Component({
   selector: 'app-user-moderation',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AdminLayout],
   templateUrl: './user-moderation.html',
   styleUrl: './user-moderation.css',
 })
@@ -42,6 +43,7 @@ export class UserModeration implements OnInit {
   // Admin management
   adminUsers: AuthUserDto[] = [];
   adminUserIds: Set<number> = new Set();
+  currentUserId: number | null = null;
 
   constructor(
     private siteManagerService: SiteManagerService,
@@ -54,7 +56,15 @@ export class UserModeration implements OnInit {
   ngOnInit(): void {
     this.loadUsers();
     this.loadAdmins();
+    this.loadCurrentUser();
   }
+
+  loadCurrentUser = (): void => {
+    const currentUser = this.authService.currentUserValue;
+    if (currentUser) {
+      this.currentUserId = currentUser.id;
+    }
+  };
 
   loadUsers = (): void => {
     this.isLoading = true;
@@ -137,13 +147,18 @@ export class UserModeration implements OnInit {
     }
 
     const userId = this.selectedUser.id;
+    const userName = this.selectedUser.userName;
+    const action = this.actionType;
+    const reason = this.actionReason;
 
-    if (this.actionType === 'warn') {
-      this.siteManagerService.warnUser(this.selectedUser.id, this.actionReason).subscribe({
+    // Close modal immediately
+    this.closeModal();
+
+    if (action === 'warn') {
+      this.siteManagerService.warnUser(userId, reason).subscribe({
         next: (updatedUser) => {
-          this.success = `Warning sent to ${this.selectedUser!.userName}`;
+          this.success = `Warning sent to ${userName}`;
           this.updateUserLocally(userId, updatedUser);
-          this.closeModal();
           setTimeout(() => {
             this.success = null;
             this.changeDetectorRef.detectChanges();
@@ -155,12 +170,11 @@ export class UserModeration implements OnInit {
           this.changeDetectorRef.detectChanges();
         }
       });
-    } else if (this.actionType === 'suspend') {
-      this.siteManagerService.suspendUser(this.selectedUser.id, this.actionReason).subscribe({
+    } else if (action === 'suspend') {
+      this.siteManagerService.suspendUser(userId, reason).subscribe({
         next: (updatedUser) => {
-          this.success = `${this.selectedUser!.userName} has been suspended`;
+          this.success = `${userName} has been suspended`;
           this.updateUserLocally(userId, updatedUser);
-          this.closeModal();
           setTimeout(() => {
             this.success = null;
             this.changeDetectorRef.detectChanges();
@@ -226,6 +240,22 @@ export class UserModeration implements OnInit {
 
   isUserAdmin = (userId: number): boolean => {
     return this.adminUserIds.has(userId);
+  };
+
+  isCurrentUser = (userId: number): boolean => {
+    return this.currentUserId === userId;
+  };
+
+  canToggleAdmin = (user: UserWithStatus): boolean => {
+    // Cannot remove own admin status
+    if (this.isUserAdmin(user.id) && this.isCurrentUser(user.id)) {
+      return false;
+    }
+    // Cannot make suspended user an admin
+    if (!this.isUserAdmin(user.id) && user.status === 'suspended') {
+      return false;
+    }
+    return true;
   };
 
   toggleAdminStatus = (user: UserWithStatus): void => {

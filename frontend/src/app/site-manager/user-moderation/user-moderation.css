@@ -204,3 +204,20 @@ button {
 .admin-remove:hover {
   background: #fecaca;
 }
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.admin-add:disabled,
+button.admin-remove:disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
+  border-color: #d1d5db;
+}
+
+button.admin-add:disabled:hover,
+button.admin-remove:disabled:hover {
+  background: #e5e7eb;
+}

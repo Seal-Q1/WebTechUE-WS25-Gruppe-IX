@@ -4,6 +4,7 @@
     <li><a (click)="onRestaurants()">Restaurants</a></li>
     <li><a>Essen</a></li>
     @if (isLoggedIn) {
+      <li><app-points-badge></app-points-badge></li>
       <li><a (click)="onProfile()">My Profile</a></li>
       @if (isAdmin) {
         <li><a (click)="onAdmin()">Admin</a></li>

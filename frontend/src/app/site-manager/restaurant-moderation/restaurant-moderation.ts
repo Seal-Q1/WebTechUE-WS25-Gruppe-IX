@@ -5,10 +5,11 @@ import {Router} from '@angular/router';
 import {RestaurantDto} from '@shared/types';
 import {RestaurantStatusEnum} from '@shared/types/enums';
 import {SiteManagerService} from '../site-manager-service';
+import {AdminLayout} from '../admin-layout/admin-layout';
 
 @Component({
   selector: 'app-restaurant-moderation',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AdminLayout],
   templateUrl: './restaurant-moderation.html',
   styleUrl: './restaurant-moderation.css',
 })

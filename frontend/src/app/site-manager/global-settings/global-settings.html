@@ -1,0 +1,292 @@
+<app-admin-layout activePage="settings">
+  <h2>Global Settings</h2>
+  <p>Configure platform settings, delivery zones, and vouchers</p>
+
+  @if (error) {
+    <div class="alert-error">
+      {{ error }}
+      <button (click)="error = null">×</button>
+    </div>
+  }
+
+  @if (success) {
+    <div class="alert-success">
+      {{ success }}
+      <button (click)="success = null">×</button>
+    </div>
+  }
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button [class.active]="activeTab === 'settings'" (click)="activeTab = 'settings'">Platform Settings</button>
+    <button [class.active]="activeTab === 'zones'" (click)="activeTab = 'zones'">Delivery Zones</button>
+    <button [class.active]="activeTab === 'vouchers'" (click)="activeTab = 'vouchers'">Vouchers</button>
+  </div>
+
+  <!-- Platform Settings Tab -->
+  @if (activeTab === 'settings') {
+    <div class="section">
+      <div class="section-header">
+        <h3>Platform Settings</h3>
+        @if (!editingSettings) {
+          <button (click)="startEditingSettings()">Edit</button>
+        }
+      </div>
+
+      @if (isLoading) {
+        <p>Loading settings...</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Setting</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (key of Object.keys(settings); track key) {
+              <tr>
+                <td>{{ getSettingLabel(key) }}</td>
+                <td>
+                  @if (editingSettings) {
+                    <input type="text" [(ngModel)]="editedSettings[key]" />
+                  } @else {
+                    {{ settings[key] }}
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        @if (editingSettings) {
+          <div class="actions">
+            <button (click)="cancelEditingSettings()">Cancel</button>
+            <button (click)="saveSettings()">Save Changes</button>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <!-- Delivery Zones Tab -->
+  @if (activeTab === 'zones') {
+    <div class="section">
+      <div class="section-header">
+        <h3>Delivery Zones</h3>
+        <button (click)="openAddZoneModal()">Add Zone</button>
+      </div>
+
+      @if (deliveryZones.length === 0) {
+        <p>No delivery zones configured</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Zone Name</th>
+              <th>City</th>
+              <th>Postal Codes</th>
+              <th>Delivery Fee</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (zone of deliveryZones; track zone.id) {
+              <tr>
+                <td>{{ zone.name }}</td>
+                <td>{{ zone.city }}</td>
+                <td><small>{{ zone.postalCodes.join(', ') }}</small></td>
+                <td>€{{ zone.deliveryFee.toFixed(2) }}</td>
+                <td>
+                  <span class="status-badge" [class.active]="zone.isActive" [class.inactive]="!zone.isActive">
+                    {{ zone.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <button (click)="openEditZoneModal(zone)">Edit</button>
+                  <button (click)="toggleZoneStatus(zone)">{{ zone.isActive ? 'Disable' : 'Enable' }}</button>
+                  <button (click)="deleteZone(zone)">Delete</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+
+  <!-- Vouchers Tab -->
+  @if (activeTab === 'vouchers') {
+    <div class="section">
+      <div class="section-header">
+        <h3>Vouchers & Promo Codes</h3>
+        <button (click)="openAddVoucherModal()">Add Voucher</button>
+      </div>
+
+      @if (vouchers.length === 0) {
+        <p>No vouchers configured</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Restaurant</th>
+              <th>Discount</th>
+              <th>Min Order</th>
+              <th>Uses</th>
+              <th>Validity</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (voucher of vouchers; track voucher.id) {
+              <tr>
+                <td>
+                  <strong>{{ voucher.code }}</strong>
+                  @if (voucher.description) {
+                    <br><small>{{ voucher.description }}</small>
+                  }
+                </td>
+                <td>
+                  @if (voucher.restaurantName) {
+                    <small>{{ voucher.restaurantName }}</small>
+                  } @else {
+                    <small class="platform-wide">Platform-wide</small>
+                  }
+                </td>
+                <td>{{ formatVoucherDiscount(voucher) }}</td>
+                <td>{{ voucher.minOrderValue ? '€' + voucher.minOrderValue.toFixed(2) : '-' }}</td>
+                <td>{{ voucher.currentUses }}{{ voucher.maxUses ? '/' + voucher.maxUses : '' }}</td>
+                <td>
+                  @if (voucher.startDate || voucher.endDate) {
+                    <small>
+                      {{ voucher.startDate ? (voucher.startDate | date:'shortDate') : 'Any' }}
+                      -
+                      {{ voucher.endDate ? (voucher.endDate | date:'shortDate') : 'Any' }}
+                    </small>
+                  } @else {
+                    <small>No limit</small>
+                  }
+                </td>
+                <td>
+                  <span class="status-badge" [class.active]="voucher.isActive" [class.inactive]="!voucher.isActive">
+                    {{ voucher.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <button (click)="openEditVoucherModal(voucher)">Edit</button>
+                  <button (click)="toggleVoucherStatus(voucher)">{{ voucher.isActive ? 'Disable' : 'Enable' }}</button>
+                  <button (click)="deleteVoucher(voucher)">Delete</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+
+  <!-- Zone Modal -->
+  @if (showZoneModal) {
+    <div class="modal-overlay" (click)="closeZoneModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h3>{{ editingZone ? 'Edit' : 'Add' }} Delivery Zone</h3>
+        <div class="form-group">
+          <label for="zoneName">Zone Name</label>
+          <input id="zoneName" type="text" [(ngModel)]="zoneForm.name" placeholder="e.g., Vienna Center" />
+        </div>
+        <div class="form-group">
+          <label for="zoneCity">City</label>
+          <input id="zoneCity" type="text" [(ngModel)]="zoneForm.city" placeholder="e.g., Vienna" />
+        </div>
+        <div class="form-group">
+          <label for="zonePostalCodes">Postal Codes (comma-separated)</label>
+          <input id="zonePostalCodes" type="text" [(ngModel)]="zoneForm.postalCodes" placeholder="e.g., 1010, 1020, 1030" />
+        </div>
+        <div class="form-group">
+          <label for="zoneFee">Delivery Fee (€)</label>
+          <input id="zoneFee" type="number" [(ngModel)]="zoneForm.deliveryFee" step="0.5" min="0" />
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="zoneForm.isActive" /> Active
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button (click)="closeZoneModal()">Cancel</button>
+          <button (click)="saveZone()">{{ editingZone ? 'Update' : 'Create' }}</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Voucher Modal -->
+  @if (showVoucherModal) {
+    <div class="modal-overlay" (click)="closeVoucherModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h3>{{ editingVoucher ? 'Edit' : 'Add' }} Voucher</h3>
+        <div class="form-group">
+          <label for="voucherCode">Voucher Code</label>
+          <input id="voucherCode" type="text" [(ngModel)]="voucherForm.code" placeholder="e.g., SUMMER20" />
+        </div>
+        <div class="form-group">
+          <label for="voucherDesc">Description</label>
+          <input id="voucherDesc" type="text" [(ngModel)]="voucherForm.description" placeholder="e.g., Summer discount" />
+        </div>
+        <div class="form-group">
+          <label for="voucherRestaurant">Restaurant (optional)</label>
+          <select id="voucherRestaurant" [(ngModel)]="voucherForm.restaurantId">
+            <option [ngValue]="null">Platform-wide (all restaurants)</option>
+            @for (restaurant of restaurants; track restaurant.id) {
+              <option [ngValue]="restaurant.id">{{ restaurant.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="discountType">Discount Type</label>
+            <select id="discountType" [(ngModel)]="voucherForm.discountType">
+              <option value="fixed">Fixed (€)</option>
+              <option value="percentage">Percentage (%)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="discountValue">Value</label>
+            <input id="discountValue" type="number" [(ngModel)]="voucherForm.discountValue" step="0.5" min="0" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="minOrder">Min Order (€)</label>
+            <input id="minOrder" type="number" [(ngModel)]="voucherForm.minOrderValue" step="0.5" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="maxUses">Max Uses</label>
+            <input id="maxUses" type="number" [(ngModel)]="voucherForm.maxUses" min="1" placeholder="Unlimited" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startDate">Start Date</label>
+            <input id="startDate" type="date" [(ngModel)]="voucherForm.startDate" />
+          </div>
+          <div class="form-group">
+            <label for="endDate">End Date</label>
+            <input id="endDate" type="date" [(ngModel)]="voucherForm.endDate" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" [(ngModel)]="voucherForm.isActive" /> Active
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button (click)="closeVoucherModal()">Cancel</button>
+          <button (click)="saveVoucher()">{{ editingVoucher ? 'Update' : 'Create' }}</button>
+        </div>
+      </div>
+    </div>
+  }
+</app-admin-layout>

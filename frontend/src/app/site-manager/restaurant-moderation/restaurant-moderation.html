@@ -1,19 +1,18 @@
-<div>
-  <button (click)="onBack()">← Back to Dashboard</button>
+<app-admin-layout activePage="restaurants">
   <h2>Restaurant Moderation</h2>
   <p>Approve or reject restaurant registration requests</p>
 
   @if (error) {
     <div class="alert-error">
       {{ error }}
-      <button (click)="error = null">X</button>
+      <button (click)="error = null">×</button>
     </div>
   }
 
   @if (success) {
     <div class="alert-success">
       {{ success }}
-      <button (click)="success = null">X</button>
+      <button (click)="success = null">×</button>
     </div>
   }
 
@@ -115,4 +114,4 @@
       </div>
     </div>
   }
-</div>
+</app-admin-layout>
