@@ -49,7 +49,11 @@ export class CartService {
     this.writeToStorage();
   }
 
-  loadCart(): CartItemDto[] {
+  clearCart() {
+    this.cart.update(currentCart => [])
+  }
+
+  private loadCart(): CartItemDto[] {
     let localstorage_string = localStorage.getItem(this.localstorage_name)
 
     if (localstorage_string) {
@@ -63,7 +67,7 @@ export class CartService {
     return [];
   }
 
-  writeToStorage() {
+  private writeToStorage() {
     localStorage.setItem(this.localstorage_name, JSON.stringify(this.cart()));
   }
 

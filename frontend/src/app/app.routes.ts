@@ -7,6 +7,7 @@ import {Dashboard} from "./site-manager/dashboard/dashboard";
 import {RestaurantModeration} from "./site-manager/restaurant-moderation/restaurant-moderation";
 import {UserModeration} from "./site-manager/user-moderation/user-moderation";
 import {RestaurantView} from './customer/restaurant-details/restaurant-view/restaurant-view.component';
+import {OrderConfirmation} from './customer/order-confirmation/order-confirmation.component';
 
 
 export const routes: Routes = [
@@ -17,6 +18,10 @@ export const routes: Routes = [
   {
     path: 'restaurant/:restaurantId',
     component: RestaurantView
+  },
+  {
+    path: 'order-confirmation',
+    component: OrderConfirmation
   },
   {
     path: 'restaurants/:restaurantId/menu-management',

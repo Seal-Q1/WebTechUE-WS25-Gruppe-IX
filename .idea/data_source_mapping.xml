@@ -7,6 +7,7 @@
     <file url="file://$PROJECT_DIR$/backend/src/routes/admin.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$PROJECT_DIR$/backend/src/routes/cuisines.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$PROJECT_DIR$/backend/src/routes/menu-items.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
+    <file url="file://$PROJECT_DIR$/backend/src/routes/order-placement.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$PROJECT_DIR$/backend/src/routes/orders.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$PROJECT_DIR$/backend/src/routes/restaurants.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$PROJECT_DIR$/backend/src/routes/users.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />

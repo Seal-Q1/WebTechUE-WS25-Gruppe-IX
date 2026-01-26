@@ -9,3 +9,19 @@
 .cart-total {
   margin-top: 20px;
 }
+
+.cart-checkout-container {
+  margin-top: 20px;
+}
+
+.cart-checkout-button {
+  color: white;
+  background-color: var(--primary);
+
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.cart-checkout-button:hover {
+  background-color: var(--primary-darkened);
+}
