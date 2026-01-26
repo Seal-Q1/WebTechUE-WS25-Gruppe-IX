@@ -15,8 +15,7 @@
 
 .overlay-content {
   background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid #000;
   max-width: 600px;
   width: 90%;
   max-height: 80vh;
@@ -86,7 +85,6 @@
 .form-group select:focus {
   outline: none;
   border-color: #ff7300;
-  box-shadow: 0 0 0 3px rgba(255, 115, 0, 0.1);
 }
 
 .form-group textarea {

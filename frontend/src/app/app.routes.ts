@@ -18,83 +18,101 @@ import {LoyaltyDashboardComponent} from "./loyalty/loyalty-dashboard/loyalty-das
 import {LoyaltyHistoryComponent} from "./loyalty/loyalty-history/loyalty-history";
 import {AdminGuard} from "./guards/admin.guard";
 import {AuthGuard} from "./guards/auth.guard";
+import {environment} from '../environment/environment';
 
 
 export const routes: Routes = [
   {
     path: '',
-    component: Home
+    component: Home,
+    title: environment.appName
   },
   {
     path: 'restaurant/:restaurantId',
-    component: RestaurantView
+    component: RestaurantView,
+    title: 'Restaurant Details'
   },
   {
     path: 'order-confirmation',
-    component: OrderConfirmation
+    component: OrderConfirmation,
+    title: 'Order Confirmation'
   },
   {
     path: 'login',
-    component: Login
+    component: Login,
+    title: 'Login'
   },
   {
     path: 'register',
-    component: Register
+    component: Register,
+    title: 'Register'
   },
   {
     path: 'forgot-password',
-    component: ForgotPassword
+    component: ForgotPassword,
+    title: 'Reset Password'
   },
   {
     path: 'profile',
     component: Profile,
+    title: 'Profile',
     canActivate: [AuthGuard]
   },
   {
     path: 'loyalty',
     component: LoyaltyDashboardComponent,
+    title: 'Loyalty Dashboard',
     canActivate: [AuthGuard]
   },
   {
     path: 'loyalty/history',
     component: LoyaltyHistoryComponent,
+    title: 'Loyalty History',
     canActivate: [AuthGuard]
   },
   {
     path: 'restaurants/:restaurantId/menu-management',
-    component: MenuManagement
+    component: MenuManagement,
+    title: 'Restaurant Menu Management'
   },
   {
     path: 'restaurants/:restaurantId/manage-profile',
-    component: ManageProfile
+    component: ManageProfile,
+    title: 'Restaurant Profile Management'
   },
   {
     path: 'restaurants',
-    component: RestaurantList
+    component: RestaurantList,
+    title: 'Restaurant List'
   },
   {
     path: 'admin',
     component: Dashboard,
+    title: 'Admin Dashboard',
     canActivate: [AdminGuard]
   },
   {
     path: 'admin/restaurants',
     component: RestaurantModeration,
+    title: 'Restaurant Moderation',
     canActivate: [AdminGuard]
   },
   {
     path: 'admin/users',
     component: UserModeration,
+    title: 'User Moderation',
     canActivate: [AdminGuard]
   },
   {
     path: 'admin/settings',
     component: GlobalSettings,
+    title: 'Global Settings',
     canActivate: [AdminGuard]
   },
   {
     path: 'admin/reports',
     component: Reporting,
+    title: 'Reports',
     canActivate: [AdminGuard]
   }
 ];
