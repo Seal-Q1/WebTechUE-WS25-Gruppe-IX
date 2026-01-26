@@ -88,6 +88,7 @@ export class MenuManagement implements OnInit {
       this.showDishForm = false;
       this.selectedDish = null;
       this.fetchDishes();
+      this.cdr.markForCheck();
     });
   }
 
@@ -132,6 +133,7 @@ export class MenuManagement implements OnInit {
       this.showCuisineForm = false;
       this.selectedCuisine = null;
       this.fetchCuisines();
+      this.cdr.markForCheck();
     });
   }
 

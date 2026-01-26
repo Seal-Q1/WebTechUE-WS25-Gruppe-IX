@@ -29,7 +29,10 @@ export class RestaurantList {
 
   fetchRestaurants(): void {
     this.restaurantService.getAllRestaurants().subscribe((data) => {
-      this.restaurants = data;
+      setTimeout(() => { //HACK
+        this.restaurants = data;
+        this.cdr.markForCheck();
+      });
     });
   }
 
@@ -44,6 +47,7 @@ export class RestaurantList {
         this.showRestaurantOverlay = false;
         this.selectedRestaurant = null;
         this.fetchRestaurants();
+        this.cdr.markForCheck();
       });
     } else {
       this.restaurantService.createRestaurant({
@@ -55,6 +59,7 @@ export class RestaurantList {
       }).subscribe(() => {
         this.showRestaurantOverlay = false;
         this.fetchRestaurants();
+        this.cdr.markForCheck();
       });
     }
   }
