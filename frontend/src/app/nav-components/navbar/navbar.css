@@ -31,4 +31,42 @@ a {
 
 a:hover {
   background-color: var(--primary-darkened)
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.username {
+  font-weight: 500;
+  color: white;
+}
+
+.login-btn {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6px 16px;
+  border-radius: 6px;
+  text-decoration: none !important;
+  transition: background 0.2s;
+}
+
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.logout-btn {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  text-decoration: none !important;
+  transition: background 0.2s;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
 }

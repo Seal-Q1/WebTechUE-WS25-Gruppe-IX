@@ -1,0 +1,27 @@
+@if (isVisible) {
+  <div class="modal-overlay" (click)="close()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="warning-icon">⚠️</span>
+        <h2>{{ title }}</h2>
+      </div>
+      <div class="modal-body">
+        <p class="warning-message">{{ message }}</p>
+        @if (warningCount > 0) {
+          <p class="warning-count">
+            You currently have <strong>{{ warningCount }}</strong> warning(s) on your account.
+          </p>
+          <p class="warning-info">
+            Please review your behavior to avoid account suspension.
+            Users with excessive warnings may be temporarily or permanently suspended.
+          </p>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="acknowledge-button" (click)="close()">
+          I Understand
+        </button>
+      </div>
+    </div>
+  </div>
+}

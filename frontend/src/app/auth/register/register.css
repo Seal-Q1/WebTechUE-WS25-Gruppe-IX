@@ -1,0 +1,147 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.register-card {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  width: 100%;
+  max-width: 450px;
+  border: 1px solid #e5e5e5;
+}
+
+.register-card h1 {
+  margin: 0 0 6px 0;
+  font-size: 22px;
+  text-align: center;
+}
+
+.subtitle {
+  color: #666;
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: #555;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-group input:disabled {
+  background-color: #f5f5f5;
+}
+
+.register-button {
+  width: 100%;
+  padding: 10px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.register-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 10px 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #667eea;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+.address-section {
+  margin-bottom: 16px;
+}
+
+.toggle-address-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  color: #666;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.toggle-address-btn:hover {
+  background-color: #eee;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.address-fields {
+  margin-top: 12px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #e5e5e5;
+}
+
+.flex-1 { flex: 1; }
+.flex-2 { flex: 2; }
+
+@media (max-width: 500px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}

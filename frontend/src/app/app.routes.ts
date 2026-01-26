@@ -8,6 +8,16 @@ import {RestaurantModeration} from "./site-manager/restaurant-moderation/restaur
 import {UserModeration} from "./site-manager/user-moderation/user-moderation";
 import {RestaurantView} from './customer/restaurant-details/restaurant-view/restaurant-view.component';
 import {OrderConfirmation} from './customer/order-confirmation/order-confirmation.component';
+import {GlobalSettings} from "./site-manager/global-settings/global-settings";
+import {Reporting} from "./site-manager/reporting/reporting";
+import {Login} from "./auth/login/login";
+import {Register} from "./auth/register/register";
+import {ForgotPassword} from "./auth/forgot-password/forgot-password";
+import {Profile} from "./auth/profile/profile";
+import {LoyaltyDashboardComponent} from "./loyalty/loyalty-dashboard/loyalty-dashboard";
+import {LoyaltyHistoryComponent} from "./loyalty/loyalty-history/loyalty-history";
+import {AdminGuard} from "./guards/admin.guard";
+import {AuthGuard} from "./guards/auth.guard";
 
 
 export const routes: Routes = [
@@ -22,6 +32,31 @@ export const routes: Routes = [
   {
     path: 'order-confirmation',
     component: OrderConfirmation
+    path: 'login',
+    component: Login
+  },
+  {
+    path: 'register',
+    component: Register
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPassword
+  },
+  {
+    path: 'profile',
+    component: Profile,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'loyalty',
+    component: LoyaltyDashboardComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'loyalty/history',
+    component: LoyaltyHistoryComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'restaurants/:restaurantId/menu-management',
@@ -37,14 +72,27 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    component: Dashboard
+    component: Dashboard,
+    canActivate: [AdminGuard]
   },
   {
     path: 'admin/restaurants',
-    component: RestaurantModeration
+    component: RestaurantModeration,
+    canActivate: [AdminGuard]
   },
   {
     path: 'admin/users',
-    component: UserModeration
+    component: UserModeration,
+    canActivate: [AdminGuard]
+  },
+  {
+    path: 'admin/settings',
+    component: GlobalSettings,
+    canActivate: [AdminGuard]
+  },
+  {
+    path: 'admin/reports',
+    component: Reporting,
+    canActivate: [AdminGuard]
   }
 ];

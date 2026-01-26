@@ -1,1 +1,9 @@
 <app-persistent-nav></app-persistent-nav>
+
+<app-warning-modal
+  [isVisible]="showWarningModal"
+  [warningCount]="warningCount"
+  title="Account Warning"
+  message="Your account has received warnings from our moderation team."
+  (closed)="onWarningModalClosed()">
+</app-warning-modal>

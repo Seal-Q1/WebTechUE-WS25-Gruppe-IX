@@ -1,3 +1,4 @@
+import {Component, OnInit} from '@angular/core';
 import {Component, ChangeDetectorRef} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Router} from '@angular/router';
@@ -15,7 +16,7 @@ import type {RestaurantFormData} from '../../shared/editing-overlay';
   styleUrl: './restaurant-list.css',
 })
 
-export class RestaurantList {
+export class RestaurantList implements OnInit {
   restaurants: RestaurantDto[] = [];
   showRestaurantOverlay = false;
   selectedRestaurant: RestaurantDto | null = null;
@@ -26,6 +27,10 @@ export class RestaurantList {
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
+
+  ngOnInit(): void {
+    this.fetchRestaurants();
+  }
 
   fetchRestaurants(): void {
     this.restaurantService.getAllRestaurants().subscribe((data) => {

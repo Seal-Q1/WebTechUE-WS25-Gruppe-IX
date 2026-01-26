@@ -1,0 +1,37 @@
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.sidebar {
+  width: 200px;
+  background: #1f2937;
+  color: #fff;
+  padding: 20px 0;
+  flex-shrink: 0;
+}
+.sidebar h3 {
+  padding: 0 20px;
+  margin: 0 0 20px 0;
+  font-size: 1.1rem;
+}
+.sidebar nav { display: flex; flex-direction: column; }
+.nav-item {
+  padding: 12px 20px;
+  color: #9ca3af;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover { background: #374151; color: #fff; }
+.nav-item.active {
+  background: #374151;
+  color: #fff;
+  border-left-color: #3b82f6;
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}

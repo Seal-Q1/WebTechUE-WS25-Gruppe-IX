@@ -1,0 +1,15 @@
+<div class="admin-layout">
+  <aside class="sidebar">
+    <h3>Admin Panel</h3>
+    <nav>
+      <a class="nav-item" [class.active]="activePage === 'dashboard'" (click)="navigate('dashboard')">Dashboard</a>
+      <a class="nav-item" [class.active]="activePage === 'restaurants'" (click)="navigate('restaurants')">Restaurants</a>
+      <a class="nav-item" [class.active]="activePage === 'users'" (click)="navigate('users')">Users</a>
+      <a class="nav-item" [class.active]="activePage === 'settings'" (click)="navigate('settings')">Settings</a>
+      <a class="nav-item" [class.active]="activePage === 'reports'" (click)="navigate('reports')">Reports</a>
+    </nav>
+  </aside>
+  <main class="main-content">
+    <ng-content></ng-content>
+  </main>
+</div>

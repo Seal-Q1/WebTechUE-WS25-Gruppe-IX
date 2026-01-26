@@ -5,5 +5,20 @@
     <li><a><fa-icon [icon]="faBurger"/> Essen</a></li>
     <li><a><fa-icon [icon]="faUser"/> Mein Profil</a></li>
     <li><a (click)="onAdmin()"><fa-icon [icon]="faUserTie"/> Admin</a></li>
+    <li><a (click)="onRestaurants()">Restaurants</a></li>
+    <li><a>Essen</a></li>
+    @if (isLoggedIn) {
+      <li><app-points-badge></app-points-badge></li>
+      <li><a (click)="onProfile()">My Profile</a></li>
+      @if (isAdmin) {
+        <li><a (click)="onAdmin()">Admin</a></li>
+      }
+      <li class="user-info">
+        <span class="username">{{ currentUser?.userName }}</span>
+        <a (click)="onLogout()" class="logout-btn">Logout</a>
+      </li>
+    } @else {
+      <li><a (click)="onLogin()" class="login-btn">Login</a></li>
+    }
   </ul>
 </nav>

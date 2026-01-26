@@ -1,0 +1,201 @@
+<div class="loyalty-dashboard">
+  @if (loading) {
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading your rewards...</p>
+    </div>
+  } @else if (error) {
+    <div class="error-container">
+      <p class="error-message">{{ error }}</p>
+      <button class="btn-primary" (click)="loadDashboard()">Try Again</button>
+    </div>
+  } @else if (dashboard) {
+    <!-- Points Summary -->
+    <div class="points-card">
+      <div class="points-header">
+        <h2>My Rewards</h2>
+        @if (dashboard.activePromotions.length > 0) {
+          <div class="bonus-badge">
+            {{ dashboard.activePromotions[0].multiplier }}x Points Active!
+          </div>
+        }
+      </div>
+      <div class="points-display">
+        <span class="points-value">{{ dashboard.points.currentBalance }}</span>
+        <span class="points-label">Points</span>
+      </div>
+      <div class="points-info">
+        <span>Total Earned: {{ dashboard.points.totalPointsEarned }} points</span>
+        <span class="points-hint">Earn 1 point per €10 spent</span>
+      </div>
+    </div>
+
+    <!-- Active Promotions -->
+    @if (dashboard.activePromotions.length > 0) {
+      <div class="section promotions-section">
+        <h3>Active Promotions</h3>
+        <div class="promotions-list">
+          @for (promotion of dashboard.activePromotions; track promotion.id) {
+            <div class="promotion-card" [class.active-today]="isPromotionActiveToday(promotion)">
+              <div class="promotion-multiplier">{{ promotion.multiplier }}x</div>
+              <div class="promotion-details">
+                <h4>{{ promotion.name }}</h4>
+                @if (promotion.description) {
+                  <p>{{ promotion.description }}</p>
+                }
+                <div class="promotion-meta">
+                  <span class="promotion-days">{{ getPromotionDays(promotion) }}</span>
+                  <span class="promotion-dates">
+                    Until {{ formatDate(promotion.endDate) }}
+                  </span>
+                </div>
+              </div>
+              @if (isPromotionActiveToday(promotion)) {
+                <div class="promotion-active-badge">Active Now</div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Available Rewards -->
+    <div class="section rewards-section">
+      <h3>Available Rewards</h3>
+      @if (dashboard.availableRewards.length === 0) {
+        <p class="empty-message">No rewards available at the moment.</p>
+      } @else {
+        <div class="rewards-grid">
+          @for (reward of dashboard.availableRewards; track reward.id) {
+            <div class="reward-card" [class.can-afford]="reward.canAfford" [class.limited-time]="reward.isLimitedTime">
+              @if (reward.isLimitedTime) {
+                <div class="limited-badge">Limited</div>
+              }
+              <div class="reward-icon">{{ getRewardIcon(reward.rewardType) }}</div>
+              <h4>{{ reward.name }}</h4>
+              <div class="reward-value">{{ getRewardValue(reward) }}</div>
+              <div class="reward-cost">
+                <span class="cost-value">{{ reward.pointsCost }}</span>
+                <span class="cost-label">points</span>
+              </div>
+              @if (reward.minOrderValue > 0) {
+                <div class="min-order">Min. order €{{ reward.minOrderValue }}</div>
+              }
+              @if (reward.description) {
+                <p class="reward-description">{{ reward.description }}</p>
+              }
+              <button 
+                class="btn-redeem" 
+                [class.disabled]="!reward.canAfford"
+                (click)="openRedeemModal(reward)"
+                [disabled]="!reward.canAfford"
+              >
+                @if (reward.canAfford) {
+                  Redeem
+                } @else {
+                  Need {{ reward.pointsCost - (dashboard.points.currentBalance) }} more
+                }
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Pending Redemptions -->
+    @if (dashboard.pendingRedemptions.length > 0) {
+      <div class="section pending-section">
+        <h3>Your Vouchers</h3>
+        <p class="section-subtitle">Ready to use on your next order</p>
+        <div class="vouchers-list">
+          @for (redemption of dashboard.pendingRedemptions; track redemption.id) {
+            <div class="voucher-card">
+              <div class="voucher-icon">{{ getRewardIcon(redemption.rewardType) }}</div>
+              <div class="voucher-details">
+                <h4>{{ redemption.rewardName }}</h4>
+                <p class="voucher-date">Redeemed {{ formatDateTime(redemption.redeemedAt) }}</p>
+              </div>
+              <div class="voucher-value">
+                @if (redemption.rewardType === 'fixed_discount') {
+                  €{{ redemption.discountValue }} off
+                } @else if (redemption.rewardType === 'percentage_discount') {
+                  {{ redemption.discountValue }}% off
+                } @else {
+                  Free Item
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Recent Transactions -->
+    <div class="section transactions-section">
+      <h3>Recent Activity</h3>
+      @if (dashboard.recentTransactions.length === 0) {
+        <p class="empty-message">No activity yet. Start ordering to earn points!</p>
+      } @else {
+        <div class="transactions-list">
+          @for (transaction of dashboard.recentTransactions; track transaction.id) {
+            <div class="transaction-item" [class]="getTransactionClass(transaction.transactionType)">
+              <div class="transaction-icon">{{ getTransactionIcon(transaction.transactionType) }}</div>
+              <div class="transaction-details">
+                <span class="transaction-description">{{ transaction.description }}</span>
+                <span class="transaction-date">{{ formatDateTime(transaction.createdAt) }}</span>
+              </div>
+              <div class="transaction-points" [class.positive]="transaction.points > 0" [class.negative]="transaction.points < 0">
+                {{ transaction.points > 0 ? '+' : '' }}{{ transaction.points }}
+              </div>
+            </div>
+          }
+        </div>
+        <a routerLink="/loyalty/history" class="view-all-link">View All History →</a>
+      }
+    </div>
+  }
+</div>
+
+<!-- Redeem Modal -->
+@if (showRedeemModal && selectedReward) {
+  <div class="modal-overlay" (click)="closeRedeemModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      @if (redeemSuccess) {
+        <div class="success-content">
+          <div class="success-icon">✓</div>
+          <h3>Reward Redeemed</h3>
+          <p>Your voucher is ready to use.</p>
+          <button class="btn-primary" (click)="closeRedeemModal()">OK</button>
+        </div>
+      } @else {
+        <h3>Redeem Reward</h3>
+        <div class="modal-reward-info">
+          <div class="reward-icon large">{{ getRewardIcon(selectedReward.rewardType) }}</div>
+          <h4>{{ selectedReward.name }}</h4>
+          <div class="reward-value">{{ getRewardValue(selectedReward) }}</div>
+          <div class="cost-display">
+            <span>Cost:</span>
+            <strong>{{ selectedReward.pointsCost }} points</strong>
+          </div>
+          <div class="balance-after">
+            <span>Balance after:</span>
+            <strong>{{ (dashboard?.points?.currentBalance || 0) - selectedReward.pointsCost }} points</strong>
+          </div>
+        </div>
+        @if (redeemError) {
+          <p class="error-message">{{ redeemError }}</p>
+        }
+        <div class="modal-actions">
+          <button class="btn-secondary" (click)="closeRedeemModal()" [disabled]="redeeming">Cancel</button>
+          <button class="btn-primary" (click)="confirmRedeem()" [disabled]="redeeming">
+            @if (redeeming) {
+              Redeeming...
+            } @else {
+              Confirm
+            }
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+}

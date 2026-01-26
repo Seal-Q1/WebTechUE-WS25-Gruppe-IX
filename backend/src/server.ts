@@ -1,14 +1,6 @@
 import express, {type Request, type Response} from 'express';
 import cors from 'cors';
-import {
-    adminRouter,
-    cuisinesRouter,
-    menuItemsRouter,
-    orderPlacementRouter,
-    ordersRouter,
-    restaurantsRouter,
-    usersRouter
-} from './routes';
+import {adminRouter, authRouter, bankingRouter, cuisinesRouter, loyaltyRouter, menuItemsRouter, ordersRouter, restaurantsRouter, usersRouter} from './routes';
 
 const app = express();
 
@@ -20,6 +12,7 @@ app.get('/', (_req: Request, res: Response) => {
 });
 
 // Delegate incoming requests to routers
+app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/place-order', orderPlacementRouter);
 app.use('/api/restaurants/:restaurantId/orders', ordersRouter);
@@ -27,6 +20,8 @@ app.use('/api/restaurants/:restaurantId/menu-items', menuItemsRouter);
 app.use('/api/cuisines', cuisinesRouter);
 app.use('/api/restaurants', restaurantsRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/loyalty', loyaltyRouter);
+app.use('/api/user', bankingRouter);
 
 const port = 3000;
 app.listen(port, () => {

@@ -1,0 +1,337 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>Profile Settings</h1>
+  </div>
+
+  <div class="profile-sections">
+    <!-- Account Status / Warnings Section -->
+    @if (accountStatus && (accountStatus.warningCount > 0 || accountStatus.status !== 'ok')) {
+      <section class="profile-section warnings-section">
+        <h2>Account Status</h2>
+        <div class="account-status" [class.warned]="accountStatus.status === 'warned'" [class.suspended]="accountStatus.status === 'suspended'">
+          <div class="status-badge">
+            <span class="status-label">Status:</span>
+            <span class="status-value">{{ getStatusLabel(accountStatus.status) }}</span>
+          </div>
+          @if (accountStatus.warningCount > 0) {
+            <div class="warning-count">
+              <span>Warnings: {{ accountStatus.warningCount }}</span>
+              <small>After 3 warnings, your account may be suspended.</small>
+            </div>
+          }
+        </div>
+        
+        @if (warnings.length > 0) {
+          <div class="warnings-list">
+            <h3>Warning History</h3>
+            @for (warning of warnings; track warning.id) {
+              <div class="warning-item">
+                <div class="warning-reason">{{ warning.reason }}</div>
+                <div class="warning-date">{{ warning.createdAt | date:'medium' }}</div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    }
+
+    <!-- Loyalty Card -->
+    <section class="profile-section loyalty-card">
+      <div class="loyalty-card-content">
+        <div class="loyalty-info">
+          <h2>Rewards</h2>
+          <p>Earn points with orders and redeem for rewards</p>
+        </div>
+        <a routerLink="/loyalty" class="btn btn-loyalty">View Rewards</a>
+      </div>
+    </section>
+
+    <!-- Personal Information -->
+    <section class="profile-section">
+      <h2>Personal Information</h2>
+      
+      @if (profileMessage) {
+        <div class="message" [class.success]="profileMessage.type === 'success'" [class.error]="profileMessage.type === 'error'">
+          {{ profileMessage.text }}
+        </div>
+      }
+
+      <form (ngSubmit)="onUpdateProfile()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" [(ngModel)]="profileData.firstName" name="firstName" [disabled]="isLoadingProfile" />
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" [(ngModel)]="profileData.lastName" name="lastName" [disabled]="isLoadingProfile" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" [(ngModel)]="profileData.email" name="email" [disabled]="isLoadingProfile" />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" [(ngModel)]="profileData.phone" name="phone" [disabled]="isLoadingProfile" />
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="isLoadingProfile">
+          {{ isLoadingProfile ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </form>
+    </section>
+
+    <!-- Addresses Section -->
+    <section class="profile-section">
+      <div class="section-header">
+        <h2>Addresses</h2>
+        <button class="btn btn-secondary btn-sm" (click)="openAddressForm()" [disabled]="showAddressForm">Add</button>
+      </div>
+
+      @if (addressMessage) {
+        <div class="message" [class.success]="addressMessage.type === 'success'" [class.error]="addressMessage.type === 'error'">
+          {{ addressMessage.text }}
+        </div>
+      }
+
+      @if (isLoadingAddresses) {
+        <p class="loading-text">Loading...</p>
+      } @else if (addresses.length === 0 && !showAddressForm) {
+        <p class="empty-text">No addresses saved</p>
+      }
+
+      @if (!showAddressForm) {
+        <div class="items-list">
+          @for (addr of addresses; track addr.id) {
+            <div class="item-card" [class.default]="addr.isDefault">
+              <div class="item-info">
+                <div class="item-header">
+                  <span class="item-name">{{ addr.name }}</span>
+                  @if (addr.isDefault) {
+                    <span class="default-badge">Default</span>
+                  }
+                </div>
+                <p class="item-details">{{ addr.address.street }} {{ addr.address.houseNr }}@if (addr.address.door) {, {{ addr.address.door }}}</p>
+                <p class="item-details">{{ addr.address.postalCode }} {{ addr.address.city }}</p>
+              </div>
+              <div class="item-actions">
+                @if (!addr.isDefault) {
+                  <button class="btn btn-outline btn-sm" (click)="setDefaultAddress(addr.id)">Set Default</button>
+                }
+                <button class="btn btn-outline btn-sm" (click)="openAddressForm(addr)">Edit</button>
+                <button class="btn btn-danger btn-sm" (click)="deleteAddress(addr.id)">Delete</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (showAddressForm) {
+        <div class="item-form">
+          <h3>{{ editingAddressId ? 'Edit Address' : 'New Address' }}</h3>
+          
+          <div class="form-group">
+            <label for="addrName">Name</label>
+            <input type="text" id="addrName" [(ngModel)]="addressForm.name" placeholder="Home, Work, etc." />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-2">
+              <label for="addrStreet">Street</label>
+              <input type="text" id="addrStreet" [(ngModel)]="addressForm.address.street" />
+            </div>
+            <div class="form-group flex-1">
+              <label for="addrHouseNr">Nr</label>
+              <input type="text" id="addrHouseNr" [(ngModel)]="addressForm.address.houseNr" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="addrPostal">Postal Code</label>
+              <input type="text" id="addrPostal" [(ngModel)]="addressForm.address.postalCode" />
+            </div>
+            <div class="form-group flex-2">
+              <label for="addrCity">City</label>
+              <input type="text" id="addrCity" [(ngModel)]="addressForm.address.city" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="addrDoor">Door/Apt</label>
+            <input type="text" id="addrDoor" [(ngModel)]="addressForm.address.door" />
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label><input type="checkbox" [(ngModel)]="addressForm.isDefault" /> Default address</label>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-secondary" type="button" (click)="cancelAddressForm()">Cancel</button>
+            <button class="btn btn-primary" type="button" (click)="saveAddress()" [disabled]="isLoadingAddresses">
+              {{ editingAddressId ? 'Update' : 'Add' }}
+            </button>
+          </div>
+        </div>
+      }
+    </section>
+
+    <!-- Payment Cards Section -->
+    <section class="profile-section">
+      <div class="section-header">
+        <h2>Payment Cards</h2>
+        <button class="btn btn-secondary btn-sm" (click)="openCardForm()" [disabled]="showCardForm">Add</button>
+      </div>
+
+      @if (cardMessage) {
+        <div class="message" [class.success]="cardMessage.type === 'success'" [class.error]="cardMessage.type === 'error'">
+          {{ cardMessage.text }}
+        </div>
+      }
+
+      @if (isLoadingCards) {
+        <p class="loading-text">Loading...</p>
+      } @else if (paymentCards.length === 0 && !showCardForm) {
+        <p class="empty-text">No cards saved</p>
+      }
+
+      @if (!showCardForm) {
+        <div class="items-list">
+          @for (card of paymentCards; track card.id) {
+            <div class="item-card card-item" [class.default]="card.isDefault">
+              <div class="item-info">
+                <div class="item-header">
+                  <span class="item-name">{{ card.cardName }}</span>
+                  @if (card.isDefault) {
+                    <span class="default-badge">Default</span>
+                  }
+                </div>
+                <p class="item-details card-number">{{ formatCardNumber(card.last4) }}</p>
+                <p class="item-details">{{ card.cardHolderName }} · {{ card.expiryMonth }}/{{ card.expiryYear }}</p>
+                <p class="item-details card-type">{{ card.cardType | uppercase }}</p>
+              </div>
+              <div class="item-actions">
+                @if (!card.isDefault) {
+                  <button class="btn btn-outline btn-sm" (click)="setDefaultCard(card.id)">Set Default</button>
+                }
+                <button class="btn btn-danger btn-sm" (click)="deleteCard(card.id)">Delete</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      @if (showCardForm) {
+        <div class="item-form card-form">
+          <h3>Add Card</h3>
+          
+          <div class="form-group">
+            <label for="cardName">Card Name</label>
+            <input type="text" id="cardName" [(ngModel)]="cardForm.cardName" placeholder="Personal, Work, etc." />
+          </div>
+
+          <div class="form-group">
+            <label for="cardHolder">Cardholder Name</label>
+            <input type="text" id="cardHolder" [(ngModel)]="cardForm.cardHolderName" />
+          </div>
+
+          <div class="form-group">
+            <label for="cardNumber">Card Number</label>
+            <input type="text" id="cardNumber" [(ngModel)]="cardForm.cardNumber" maxlength="19" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expMonth">Month</label>
+              <select id="expMonth" [(ngModel)]="cardForm.expiryMonth">
+                @for (m of months; track m) {
+                  <option [value]="m">{{ m < 10 ? '0' + m : m }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="expYear">Year</label>
+              <select id="expYear" [(ngModel)]="cardForm.expiryYear">
+                @for (y of years; track y) {
+                  <option [value]="y">{{ y }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="cvv">CVV</label>
+              <input type="password" id="cvv" [(ngModel)]="cardForm.cvv" maxlength="4" />
+            </div>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label><input type="checkbox" [(ngModel)]="cardForm.isDefault" /> Default card</label>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-secondary" type="button" (click)="cancelCardForm()">Cancel</button>
+            <button class="btn btn-primary" type="button" (click)="saveCard()" [disabled]="isLoadingCards">Add</button>
+          </div>
+        </div>
+      }
+    </section>
+
+    <!-- Change Password -->
+    <section class="profile-section">
+      <h2>Change Password</h2>
+      
+      @if (passwordMessage) {
+        <div class="message" [class.success]="passwordMessage.type === 'success'" [class.error]="passwordMessage.type === 'error'">
+          {{ passwordMessage.text }}
+        </div>
+      }
+
+      <form (ngSubmit)="onChangePassword()">
+        <div class="form-group">
+          <label for="currentPassword">Current Password</label>
+          <input type="password" id="currentPassword" [(ngModel)]="passwordData.currentPassword" name="currentPassword" [disabled]="isLoadingPassword" />
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" [(ngModel)]="passwordData.newPassword" name="newPassword" [disabled]="isLoadingPassword" />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmNewPassword">Confirm Password</label>
+          <input type="password" id="confirmNewPassword" [(ngModel)]="confirmNewPassword" name="confirmNewPassword" [disabled]="isLoadingPassword" />
+        </div>
+
+        <button type="submit" class="btn btn-secondary" [disabled]="isLoadingPassword">
+          {{ isLoadingPassword ? 'Changing...' : 'Change Password' }}
+        </button>
+      </form>
+    </section>
+
+    <!-- Restaurant Management -->
+    @if (userRestaurants.length > 0) {
+      <section class="profile-section">
+        <h2>My Restaurants</h2>
+
+        @if (isLoadingRestaurants) {
+          <p>Loading...</p>
+        } @else {
+          <div class="restaurant-list">
+            @for (restaurant of userRestaurants; track restaurant.id) {
+              <div class="restaurant-card">
+                <div class="restaurant-info">
+                  <h3>{{ restaurant.name }}</h3>
+                  <p>{{ restaurant.email }} · {{ restaurant.phone }}</p>
+                  <p class="address">{{ restaurant.address.street }} {{ restaurant.address.houseNr }}, {{ restaurant.address.city }}</p>
+                </div>
+                <a [routerLink]="['/restaurants', restaurant.id, 'manage-profile']" class="btn btn-outline">Edit</a>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    }
+  </div>
+</div>

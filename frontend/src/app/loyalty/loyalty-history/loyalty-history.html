@@ -1,0 +1,116 @@
+<div class="loyalty-history">
+  <div class="header">
+    <a routerLink="/loyalty" class="back-link">← Back to Rewards</a>
+    <h1>Reward History</h1>
+  </div>
+
+  <div class="tabs">
+    <button 
+      class="tab" 
+      [class.active]="activeTab === 'transactions'"
+      (click)="setTab('transactions')"
+    >
+      Point Transactions
+    </button>
+    <button 
+      class="tab" 
+      [class.active]="activeTab === 'redemptions'"
+      (click)="setTab('redemptions')"
+    >
+      Redemptions
+    </button>
+  </div>
+
+  @if (error) {
+    <div class="error-message">{{ error }}</div>
+  }
+
+  <!-- Transactions Tab -->
+  @if (activeTab === 'transactions') {
+    <div class="tab-content">
+      @if (loadingTransactions) {
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <p>Loading transactions...</p>
+        </div>
+      } @else if (transactions.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">-</div>
+          <h3>No Transactions Yet</h3>
+          <p>Start ordering to earn points.</p>
+        </div>
+      } @else {
+        <div class="transactions-list">
+          @for (transaction of transactions; track transaction.id) {
+            <div class="transaction-card" [class]="transaction.transactionType">
+              <div class="transaction-left">
+                <div class="transaction-icon">{{ getTransactionIcon(transaction.transactionType) }}</div>
+                <div class="transaction-info">
+                  <span class="transaction-type">{{ getTransactionLabel(transaction.transactionType) }}</span>
+                  <span class="transaction-description">{{ transaction.description }}</span>
+                  @if (transaction.promotionName) {
+                    <span class="transaction-promotion">{{ transaction.promotionName }}</span>
+                  }
+                  <span class="transaction-date">{{ formatDateTime(transaction.createdAt) }}</span>
+                </div>
+              </div>
+              <div class="transaction-points" [class.positive]="transaction.points > 0" [class.negative]="transaction.points < 0">
+                {{ transaction.points > 0 ? '+' : '' }}{{ transaction.points }}
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Redemptions Tab -->
+  @if (activeTab === 'redemptions') {
+    <div class="tab-content">
+      @if (loadingRedemptions) {
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <p>Loading redemptions...</p>
+        </div>
+      } @else if (redemptions.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">-</div>
+          <h3>No Redemptions Yet</h3>
+          <p>Redeem your points for rewards.</p>
+        </div>
+      } @else {
+        <div class="redemptions-list">
+          @for (redemption of redemptions; track redemption.id) {
+            <div class="redemption-card" [class]="getRedemptionStatusClass(redemption)">
+              <div class="redemption-left">
+                <div class="redemption-icon">{{ getRewardIcon(redemption.rewardType) }}</div>
+                <div class="redemption-info">
+                  <span class="redemption-name">{{ redemption.rewardName }}</span>
+                  <span class="redemption-value">
+                    @if (redemption.rewardType === 'fixed_discount') {
+                      €{{ redemption.discountValue }} off
+                    } @else if (redemption.rewardType === 'percentage_discount') {
+                      {{ redemption.discountValue }}% off
+                    } @else {
+                      Free Item
+                    }
+                  </span>
+                  <span class="redemption-date">Redeemed: {{ formatDateTime(redemption.redeemedAt) }}</span>
+                  @if (redemption.usedAt) {
+                    <span class="redemption-used">Used: {{ formatDateTime(redemption.usedAt) }}</span>
+                  }
+                </div>
+              </div>
+              <div class="redemption-right">
+                <span class="redemption-cost">-{{ redemption.pointsSpent }} pts</span>
+                <span class="redemption-status" [class]="getRedemptionStatusClass(redemption)">
+                  {{ getRedemptionStatus(redemption) }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -1,19 +1,19 @@
-<div>
-  <h2>Site Manager Dashboard</h2>
-  <p>Overview and management of the food delivery platform</p>
+<app-admin-layout activePage="dashboard">
+  <div class="header">
+    <h2>Dashboard</h2>
+    <button class="refresh-btn" (click)="loadDashboardData()">Refresh</button>
+  </div>
 
   @if (error) {
     <div class="error-banner">
       {{ error }}
-      <button (click)="error = null">X</button>
+      <button (click)="error = null">×</button>
     </div>
   }
 
-  <button (click)="loadDashboardData()">Refresh Data</button>
-
   <!-- Statistics -->
-  <div>
-    <h3>Key Statistics</h3>
+  <section class="section">
+    <h3>Overview</h3>
     <div class="stats-grid">
       <div class="stat-card">
         <span class="stat-value">{{ stats?.totalOrders ?? '-' }}</span>
@@ -31,62 +31,70 @@
         <span class="stat-value">{{ stats?.activeRestaurants ?? activeRestaurants.length }}</span>
         <span class="stat-label">Active Restaurants</span>
       </div>
-      <div class="stat-card">
+      <div class="stat-card highlight">
         <span class="stat-value">{{ stats?.ordersToday ?? '-' }}</span>
         <span class="stat-label">Orders Today</span>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" [class.highlight-warning]="(stats?.pendingRestaurants ?? pendingRestaurants.length) > 0">
         <span class="stat-value">{{ stats?.pendingRestaurants ?? pendingRestaurants.length }}</span>
         <span class="stat-label">Pending Approvals</span>
       </div>
     </div>
-  </div>
-
-  <!-- Quick Actions -->
-  <div>
-    <h3>Quick Actions</h3>
-    <button (click)="onManageRestaurants()">Manage Restaurants</button>
-    <button (click)="onManageUsers()">Manage Users</button>
-  </div>
+  </section>
 
   <!-- Pending Restaurants -->
-  <div>
-    <h3>Pending Restaurant Registrations</h3>
-    @if (isLoading) {
-      <p>Loading pending requests...</p>
-    } @else if (pendingRestaurants.length === 0) {
-      <p>No pending restaurant registrations</p>
-    } @else {
-      @for (restaurant of pendingRestaurants; track restaurant.id) {
-        <div class="pending-card">
-          <div>
-            <strong>{{ restaurant.name }}</strong>
-            <span>{{ restaurant.address.city }} | {{ restaurant.email }} | {{ restaurant.phone }}</span>
-          </div>
-          <div>
-            <button (click)="quickApprove(restaurant.id)">Approve</button>
-            <button (click)="quickReject(restaurant.id)">Reject</button>
-          </div>
-        </div>
+  <section class="section">
+    <div class="section-header">
+      <h3>Pending Restaurant Registrations</h3>
+      @if (pendingRestaurants.length > 0) {
+        <span class="badge">{{ pendingRestaurants.length }}</span>
       }
+    </div>
+    @if (isLoading) {
+      <p class="muted">Loading pending requests...</p>
+    } @else if (pendingRestaurants.length === 0) {
+      <p class="muted">No pending restaurant registrations</p>
+    } @else {
+      <div class="card-list">
+        @for (restaurant of pendingRestaurants; track restaurant.id) {
+          <div class="pending-card">
+            <div class="card-info">
+              <strong>{{ restaurant.name }}</strong>
+              <span class="card-meta">{{ restaurant.address.city }} • {{ restaurant.email }} • {{ restaurant.phone }}</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-approve" (click)="quickApprove(restaurant.id)">Approve</button>
+              <button class="btn-reject" (click)="quickReject(restaurant.id)">Reject</button>
+            </div>
+          </div>
+        }
+      </div>
     }
-  </div>
+  </section>
 
   <!-- Active Restaurants -->
-  <div>
-    <h3>Active Restaurants</h3>
+  <section class="section">
+    <div class="section-header">
+      <h3>Active Restaurants</h3>
+      <button class="btn-link" (click)="onManageRestaurants()">View All →</button>
+    </div>
     @if (isLoading) {
-      <p>Loading restaurants...</p>
+      <p class="muted">Loading restaurants...</p>
     } @else if (activeRestaurants.length === 0) {
-      <p>No active restaurants yet</p>
+      <p class="muted">No active restaurants yet</p>
     } @else {
-      @for (restaurant of activeRestaurants; track restaurant.id) {
-        <div class="restaurant-card">
-          <strong>{{ restaurant.name }}</strong>
-          <span>{{ restaurant.locationName }} | {{ restaurant.address.city }}</span>
-          <span>{{ restaurant.email }}</span>
-        </div>
+      <div class="restaurant-grid">
+        @for (restaurant of activeRestaurants.slice(0, 6); track restaurant.id) {
+          <div class="restaurant-card">
+            <strong>{{ restaurant.name }}</strong>
+            <span class="card-meta">{{ restaurant.locationName }}</span>
+            <span class="card-meta">{{ restaurant.address.city }}</span>
+          </div>
+        }
+      </div>
+      @if (activeRestaurants.length > 6) {
+        <p class="muted">+ {{ activeRestaurants.length - 6 }} more restaurants</p>
       }
     }
-  </div>
-</div>
+  </section>
+</app-admin-layout>

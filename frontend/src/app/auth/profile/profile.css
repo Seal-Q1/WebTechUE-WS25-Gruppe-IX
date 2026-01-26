@@ -1,0 +1,325 @@
+.profile-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.profile-header h1 {
+  margin: 0 0 24px 0;
+  font-size: 24px;
+}
+
+.profile-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+}
+
+.profile-section h2 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.profile-section h3 {
+  margin: 16px 0 12px 0;
+  font-size: 14px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-group {
+  flex: 1;
+  margin-bottom: 12px;
+}
+
+.flex-1 { flex: 1; }
+.flex-2 { flex: 2; }
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: #555;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-group input:disabled {
+  background-color: #f5f5f5;
+}
+
+.message {
+  padding: 10px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.message.success {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.message.error {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-secondary {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-outline {
+  background: white;
+  color: #667eea;
+  border: 1px solid #667eea;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.section-header h2 {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+/* Items List */
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+.item-card.default {
+  background: #fef9c3;
+  border-color: #f59e0b;
+}
+
+.item-info { flex: 1; }
+
+.item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.item-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.default-badge {
+  background: #f59e0b;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.item-details {
+  margin: 0 0 2px 0;
+  color: #666;
+  font-size: 13px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.card-number {
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+.card-type {
+  font-size: 11px;
+  color: #888;
+}
+
+/* Item Form */
+.item-form {
+  background: #f9f9f9;
+  padding: 16px;
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+.item-form h3 {
+  margin: 0 0 12px 0;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* Loyalty Card */
+.loyalty-card {
+  background: #f59e0b;
+  color: white;
+}
+
+.loyalty-card h2 {
+  color: white;
+  border-bottom-color: rgba(255,255,255,0.3);
+}
+
+.loyalty-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.loyalty-info p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 13px;
+}
+
+.btn-loyalty {
+  background: white;
+  color: #f59e0b;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+/* Restaurant List */
+.restaurant-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.restaurant-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+.restaurant-info h3 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+}
+
+.restaurant-info p {
+  margin: 0;
+  color: #666;
+  font-size: 13px;
+}
+
+.restaurant-info .address {
+  color: #888;
+  font-size: 12px;
+}
+
+.loading-text,
+.empty-text {
+  color: #888;
+  text-align: center;
+  padding: 16px;
+  font-size: 13px;
+}
+
+@media (max-width: 600px) {
+  .form-row { flex-direction: column; gap: 0; }
+  .restaurant-card, .item-card { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .item-actions { width: 100%; }
+  .loyalty-card-content { flex-direction: column; text-align: center; gap: 12px; }
+}
