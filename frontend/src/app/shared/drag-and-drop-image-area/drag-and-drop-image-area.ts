@@ -96,6 +96,7 @@ export class DragAndDropImageArea implements AfterViewInit {
     serializeImageToBase64(file).then((base64) => {
       this.pendingBase64 = base64;
       this.localImageDto = { id: this.savedImageDto?.id ?? 0, image: base64 };
+      this.cdr.markForCheck();
     });
   }
 
@@ -106,6 +107,7 @@ export class DragAndDropImageArea implements AfterViewInit {
         this.localImageDto = null;
         this.pendingBase64 = null;
         this.imageSaved.emit(resultDto);
+        this.cdr.markForCheck();
       });
     }
   }
@@ -113,6 +115,7 @@ export class DragAndDropImageArea implements AfterViewInit {
   onReset(): void {
     this.localImageDto = null;
     this.pendingBase64 = null;
+    this.cdr.markForCheck();
   }
 
   onClear(): void {
@@ -122,6 +125,7 @@ export class DragAndDropImageArea implements AfterViewInit {
         this.localImageDto = null;
         this.pendingBase64 = null;
         this.imageCleared.emit();
+        this.cdr.markForCheck();
       });
     }
   }
