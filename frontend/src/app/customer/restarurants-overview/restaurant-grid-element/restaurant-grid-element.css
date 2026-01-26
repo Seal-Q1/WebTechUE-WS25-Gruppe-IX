@@ -10,4 +10,9 @@
 
   border: 2px solid #ddd;
   background-color: #fff;
+  transition: border-color 0.2s;
+}
+
+.restaurant-grid-element:hover {
+  border-color: #000;
 }

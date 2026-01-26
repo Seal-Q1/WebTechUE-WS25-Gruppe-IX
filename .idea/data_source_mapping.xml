@@ -5,6 +5,7 @@
     <file url="file://$PROJECT_DIR$/backend/initdb/02_setup-tables.sql" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$PROJECT_DIR$/backend/initdb/03_insert-sample-data.sql" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$PROJECT_DIR$/backend/src/routes/admin.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
+    <file url="file://$PROJECT_DIR$/backend/src/routes/auth.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$PROJECT_DIR$/backend/src/routes/cuisines.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$PROJECT_DIR$/backend/src/routes/menu-items.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
     <file url="file://$PROJECT_DIR$/backend/src/routes/order-placement.routes.ts" value="ce0febc2-750e-4d7c-9891-725d05e5544a" />
