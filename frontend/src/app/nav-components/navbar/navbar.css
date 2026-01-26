@@ -4,6 +4,8 @@ nav {
   background-color: var(--primary);
   position: sticky;
   color: #ffffff;
+  padding: 10px;
+  /*box-shadow: 10px 5px 84px 38px rgba(0,0,0,0.4);*/
 }
 
 nav a.nav-home {
@@ -21,8 +23,8 @@ nav ul {
 
 a {
   display: inline-block;
-  text-decoration: underline;
   cursor: pointer;
+  border-radius: 30px;
   padding: 20px;
   height: 100%;
 }
