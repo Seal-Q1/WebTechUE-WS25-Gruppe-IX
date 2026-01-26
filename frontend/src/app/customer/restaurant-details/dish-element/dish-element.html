@@ -1,0 +1,10 @@
+<div class="dish-grid-element">
+  <div class="dish-image">
+    <app-image-display [imageDto]="imageDto()"></app-image-display>
+  </div>
+  <div class="dish-name">{{dish().name}}</div>
+  <div class="dish-name">{{dish().price.toFixed(2)}} €</div>
+  <div class="dish-controls">
+    <button class="add-to-cart-btn" title="Add to cart">Add to cart</button>
+  </div>
+</div>

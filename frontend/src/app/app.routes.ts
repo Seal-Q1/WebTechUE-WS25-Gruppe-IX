@@ -6,12 +6,17 @@ import {RestaurantList} from "./restaurant-owner/restaurant-list/restaurant-list
 import {Dashboard} from "./site-manager/dashboard/dashboard";
 import {RestaurantModeration} from "./site-manager/restaurant-moderation/restaurant-moderation";
 import {UserModeration} from "./site-manager/user-moderation/user-moderation";
+import {RestaurantView} from './customer/restaurant-details/restaurant-view/restaurant-view.component';
 
 
 export const routes: Routes = [
   {
     path: '',
     component: Home
+  },
+  {
+    path: 'restaurant/:restaurantId',
+    component: RestaurantView
   },
   {
     path: 'restaurants/:restaurantId/menu-management',

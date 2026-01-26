@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {RestaurantGrid} from '../customer/restarurant-overview/restaurant-grid/restaurant-grid.component';
+import {RestaurantGrid} from '../customer/restarurants-overview/restaurant-grid/restaurant-grid.component';
 
 @Component({
   selector: 'app-home',

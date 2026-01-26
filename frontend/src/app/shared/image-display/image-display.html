@@ -1,5 +1,11 @@
 <div class="image-display-container">
-  <span *ngIf="isLoading()">Loading . . .</span>
-  <span *ngIf="!isLoading() && !hasImage()">No Image :(</span>
-  <img *ngIf="!isLoading() && hasImage()" [src]="getImageUrl()" alt="Image">
+  @if (isLoading()) {
+    <span>Loading...</span>
+  }
+  @if (!isLoading() && !hasImage()) {
+    <span>No Image :(</span>
+  }
+  @if (!isLoading() && hasImage()) {
+    <img [src]="getImageUrl()" alt="Image">
+  }
 </div>

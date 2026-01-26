@@ -1,0 +1,27 @@
+import {Component, inject, input, Input} from '@angular/core';
+import {MenuItemDto} from '@shared/types';
+import {ImageDisplay} from '../../../shared/image-display/image-display';
+import {toObservable, toSignal} from '@angular/core/rxjs-interop';
+import {switchMap} from 'rxjs';
+import {MenuItemService} from '../../../services/menu-item-service';
+
+@Component({
+  selector: 'app-dish-grid-element',
+  imports: [
+    ImageDisplay
+  ],
+  templateUrl: './dish-element.html',
+  styleUrl: './dish-element.css',
+})
+export class DishGridElement {
+  private menuItemService = inject(MenuItemService)
+
+  dish = input.required<MenuItemDto>();
+
+  imageDto = toSignal(
+    toObservable(this.dish).pipe(
+      switchMap(restaurant => this.menuItemService.getMenuItemImage(this.dish().restaurantId, this.dish().id))
+    ),
+    { initialValue: null }
+  );
+}
