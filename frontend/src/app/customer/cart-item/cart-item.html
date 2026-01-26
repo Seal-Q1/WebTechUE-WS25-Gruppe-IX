@@ -6,4 +6,8 @@
     <div class="cart-item-title">{{cartItem().itemInfo.name}} (x{{cartItem().quantity}})</div>
     <div class="cart-item-price">{{getTotalPrice()}} €</div>
   </div>
+  <div class="cart-button-container">
+    <button class="cart-button-add" title="Add item" (click)="addItem()">+</button>
+    <button class="cart-button-remove" title="Remove item" (click)="removeItem()">-</button>
+  </div>
 </div>

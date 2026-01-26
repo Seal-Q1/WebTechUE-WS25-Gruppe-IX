@@ -17,7 +17,7 @@ export class CartService {
   }
 
   setCartEntry(menuItem: MenuItemDto, quantity: number) {
-    if(quantity == 0){
+    if(quantity <= 0){
       this.deleteCartEntry(menuItem);
       return;
     }

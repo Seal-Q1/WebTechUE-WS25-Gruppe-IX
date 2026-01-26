@@ -6,3 +6,30 @@
 .cart-item-title {
   font-weight: bold;
 }
+
+.cart-button-container {
+  margin-left: 20px;
+}
+
+.cart-button-container button {
+  font-family: monospace;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  padding: 5px 10px;
+}
+
+.cart-button-add {
+  background-color: #219c21;
+}
+.cart-button-add:hover {
+  background-color: #176517;
+}
+
+.cart-button-remove {
+  background-color: #c82929;
+}
+.cart-button-remove:hover {
+  background-color: #951f1f;
+}
+
