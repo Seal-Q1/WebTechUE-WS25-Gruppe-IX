@@ -30,7 +30,7 @@ a {
 }
 
 a:hover {
-  background-color: var(--primary-darkened)
+  background-color: var(--primary-darkened);
   text-decoration: underline;
   cursor: pointer;
 }

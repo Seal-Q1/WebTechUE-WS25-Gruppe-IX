@@ -1,13 +1,5 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router} from '@angular/router';
-import {FaIconComponent} from '@fortawesome/angular-fontawesome';
-import {faBurger, faStar, faUser, faUserTie, faUtensils} from '@fortawesome/free-solid-svg-icons';
-
-@Component({
-  selector: 'app-navbar',
-  imports: [
-    FaIconComponent
-  ],
 import {CommonModule} from '@angular/common';
 import {Subscription} from 'rxjs';
 import {AuthService} from '../../services/auth.service';
@@ -52,11 +44,6 @@ export class Navbar implements OnInit, OnDestroy {
   onAdmin = (): void => {
     this.router.navigate(['/admin']);
   };
-  protected readonly faUtensils = faUtensils;
-  protected readonly faBurger = faBurger;
-  protected readonly faUser = faUser;
-  protected readonly faUserTie = faUserTie;
-  protected readonly faStar = faStar;
 
   onLogin = (): void => {
     this.router.navigate(['/login']);

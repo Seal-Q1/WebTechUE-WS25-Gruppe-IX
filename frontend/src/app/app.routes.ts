@@ -32,6 +32,8 @@ export const routes: Routes = [
   {
     path: 'order-confirmation',
     component: OrderConfirmation
+  },
+  {
     path: 'login',
     component: Login
   },
