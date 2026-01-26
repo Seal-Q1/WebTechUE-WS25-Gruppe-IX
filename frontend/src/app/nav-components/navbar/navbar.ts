@@ -3,11 +3,6 @@ import {Router} from '@angular/router';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faBurger, faStar, faUser, faUserTie, faUtensils} from '@fortawesome/free-solid-svg-icons';
 
-@Component({
-  selector: 'app-navbar',
-  imports: [
-    FaIconComponent
-  ],
 import {CommonModule} from '@angular/common';
 import {Subscription} from 'rxjs';
 import {AuthService} from '../../services/auth.service';
@@ -16,7 +11,7 @@ import type {AuthUserDto} from '@shared/types';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, PointsBadgeComponent],
+  imports: [CommonModule, PointsBadgeComponent, FaIconComponent],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
