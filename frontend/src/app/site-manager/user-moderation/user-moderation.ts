@@ -3,6 +3,8 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import {SiteManagerService, UserWithStatus} from '../site-manager-service';
+import {AuthService} from '../../services/auth.service';
+import type {AuthUserDto} from '@shared/types';
 
 @Component({
   selector: 'app-user-moderation',
@@ -37,15 +39,21 @@ export class UserModeration implements OnInit {
   selectedUser: UserWithStatus | null = null;
   actionReason = '';
 
+  // Admin management
+  adminUsers: AuthUserDto[] = [];
+  adminUserIds: Set<number> = new Set();
+
   constructor(
     private siteManagerService: SiteManagerService,
     private changeDetectorRef: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
   }
 
   ngOnInit(): void {
     this.loadUsers();
+    this.loadAdmins();
   }
 
   loadUsers = (): void => {
@@ -200,5 +208,61 @@ export class UserModeration implements OnInit {
 
   onBack = (): void => {
     this.router.navigate(['/admin']);
+  };
+
+  // Admin management methods
+  loadAdmins = (): void => {
+    this.authService.getAdmins().subscribe({
+      next: (admins) => {
+        this.adminUsers = admins;
+        this.adminUserIds = new Set(admins.map(a => a.id));
+        this.changeDetectorRef.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to load admins:', err);
+      }
+    });
+  };
+
+  isUserAdmin = (userId: number): boolean => {
+    return this.adminUserIds.has(userId);
+  };
+
+  toggleAdminStatus = (user: UserWithStatus): void => {
+    if (this.isUserAdmin(user.id)) {
+      // Remove admin
+      this.authService.removeAdmin(user.id).subscribe({
+        next: () => {
+          this.success = `${user.userName} has been removed from admin list`;
+          this.loadAdmins();
+          setTimeout(() => {
+            this.success = null;
+            this.changeDetectorRef.detectChanges();
+          }, 3000);
+        },
+        error: (err) => {
+          console.error('Failed to remove admin:', err);
+          this.error = err.error?.error || 'Failed to remove admin';
+          this.changeDetectorRef.detectChanges();
+        }
+      });
+    } else {
+      // Add admin
+      this.authService.addAdmin(user.id).subscribe({
+        next: () => {
+          this.success = `${user.userName} has been added to admin list`;
+          this.loadAdmins();
+          setTimeout(() => {
+            this.success = null;
+            this.changeDetectorRef.detectChanges();
+          }, 3000);
+        },
+        error: (err) => {
+          console.error('Failed to add admin:', err);
+          this.error = err.error?.error || 'Failed to add admin';
+          this.changeDetectorRef.detectChanges();
+        }
+      });
+    }
   };
 }

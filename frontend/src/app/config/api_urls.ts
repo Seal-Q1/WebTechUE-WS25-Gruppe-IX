@@ -54,4 +54,16 @@ export const apiUrls = {
     `${environment.apiUrl}/admin/users/${userId}/suspend`,
   adminActivateUserEndpoint: (userId: number) =>
     `${environment.apiUrl}/admin/users/${userId}/activate`,
+
+  // Auth endpoints
+  authLoginEndpoint: () =>
+    `${environment.apiUrl}/auth/login`,
+  authRegisterEndpoint: () =>
+    `${environment.apiUrl}/auth/register`,
+  authMeEndpoint: () =>
+    `${environment.apiUrl}/auth/me`,
+  authAdminsEndpoint: () =>
+    `${environment.apiUrl}/auth/admins`,
+  authAddAdminEndpoint: (userId: number) =>
+    `${environment.apiUrl}/auth/admins/${userId}`,
 }

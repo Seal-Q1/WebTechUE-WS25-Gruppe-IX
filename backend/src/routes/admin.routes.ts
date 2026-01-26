@@ -57,7 +57,7 @@ router.get("/restaurants/pending", async (_req: Request, res: Response) => {
                    location_name, address_street, address_house_nr, address_postal_code,
                    address_city, address_door, opening_hours_monday, opening_hours_tuesday,
                    opening_hours_wednesday, opening_hours_thursday, opening_hours_friday,
-                   opening_hours_saturday, opening_hours_sunday
+                   opening_hours_saturday, opening_hours_sunday, order_index
             FROM restaurant
             WHERE restaurant_status_id = 'pending'
             ORDER BY restaurant_id DESC
@@ -76,7 +76,7 @@ router.get("/restaurants/active", async (_req: Request, res: Response) => {
                    location_name, address_street, address_house_nr, address_postal_code,
                    address_city, address_door, opening_hours_monday, opening_hours_tuesday,
                    opening_hours_wednesday, opening_hours_thursday, opening_hours_friday,
-                   opening_hours_saturday, opening_hours_sunday
+                   opening_hours_saturday, opening_hours_sunday, order_index
             FROM restaurant
             WHERE restaurant_status_id = 'accepted'
             ORDER BY restaurant_name ASC
@@ -99,7 +99,7 @@ router.post("/restaurants/:restaurantId/approve", async (req: Request, res: Resp
                       location_name, address_street, address_house_nr, address_postal_code,
                       address_city, address_door, opening_hours_monday, opening_hours_tuesday,
                       opening_hours_wednesday, opening_hours_thursday, opening_hours_friday,
-                      opening_hours_saturday, opening_hours_sunday
+                      opening_hours_saturday, opening_hours_sunday, order_index
         `;
         const result = await pool.query<RestaurantRow>(query, [restaurantId]);
         if (result.rows.length === 0) {
@@ -123,7 +123,7 @@ router.post("/restaurants/:restaurantId/reject", async (req: Request, res: Respo
                       location_name, address_street, address_house_nr, address_postal_code,
                       address_city, address_door, opening_hours_monday, opening_hours_tuesday,
                       opening_hours_wednesday, opening_hours_thursday, opening_hours_friday,
-                      opening_hours_saturday, opening_hours_sunday
+                      opening_hours_saturday, opening_hours_sunday, order_index
         `;
         const result = await pool.query<RestaurantRow>(query, [restaurantId]);
         if (result.rows.length === 0) {

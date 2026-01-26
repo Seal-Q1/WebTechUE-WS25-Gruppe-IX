@@ -29,11 +29,16 @@ router.get("/", async (_req: Request, res: Response) => {
                    opening_hours_sunday,
                    order_index
             FROM restaurant
+            WHERE restaurant_status_id IN ('pending', 'accepted', 'rejected')
             ORDER BY order_index ASC, restaurant_id ASC
         `;
         const result = await pool.query<RestaurantRow>(query);
-        res.json(restaurantSerializer.serialize_multiple(result.rows));
+        console.log("Fetched restaurants:", result.rows.length, "rows");
+        const serialized = restaurantSerializer.serialize_multiple(result.rows);
+        console.log("Serialized restaurants:", serialized.length);
+        res.json(serialized);
     } catch (error) {
+        console.error("Full error:", error);
         sendInternalError(res, error, "occurred while fetching restaurants");
     }
 });

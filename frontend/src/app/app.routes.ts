@@ -6,12 +6,35 @@ import {RestaurantList} from "./restaurant-owner/restaurant-list/restaurant-list
 import {Dashboard} from "./site-manager/dashboard/dashboard";
 import {RestaurantModeration} from "./site-manager/restaurant-moderation/restaurant-moderation";
 import {UserModeration} from "./site-manager/user-moderation/user-moderation";
+import {Login} from "./auth/login/login";
+import {Register} from "./auth/register/register";
+import {ForgotPassword} from "./auth/forgot-password/forgot-password";
+import {Profile} from "./auth/profile/profile";
+import {AdminGuard} from "./guards/admin.guard";
+import {AuthGuard} from "./guards/auth.guard";
 
 
 export const routes: Routes = [
   {
     path: '',
     component: Home
+  },
+  {
+    path: 'login',
+    component: Login
+  },
+  {
+    path: 'register',
+    component: Register
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPassword
+  },
+  {
+    path: 'profile',
+    component: Profile,
+    canActivate: [AuthGuard]
   },
   {
     path: 'restaurants/:restaurantId/menu-management',
@@ -27,14 +50,17 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    component: Dashboard
+    component: Dashboard,
+    canActivate: [AdminGuard]
   },
   {
     path: 'admin/restaurants',
-    component: RestaurantModeration
+    component: RestaurantModeration,
+    canActivate: [AdminGuard]
   },
   {
     path: 'admin/users',
-    component: UserModeration
+    component: UserModeration,
+    canActivate: [AdminGuard]
   }
 ];

@@ -1,19 +1,89 @@
 \connect food_delivery_platform;
 
+-- Role table (customer, restaurantOwner, admin)
+CREATE TABLE public.role
+(
+    role_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    role_name TEXT NOT NULL UNIQUE
+);
+
+-- Insert default roles
+INSERT INTO public.role (role_name) VALUES ('customer'), ('restaurantOwner'), ('admin');
+
+-- UserStatus table (ok, warned, suspended)
+CREATE TABLE public.user_status
+(
+    user_status_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    status_name    TEXT NOT NULL UNIQUE,
+    status_message TEXT
+);
+
+-- Insert default statuses
+INSERT INTO public.user_status (status_name, status_message) VALUES 
+    ('ok', NULL),
+    ('warned', 'Your account has received warnings'),
+    ('suspended', 'Your account has been suspended');
+
+-- UserLocation table for addresses
+CREATE TABLE public.user_location
+(
+    location_id         INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    location_name       TEXT,
+    address_street      TEXT NOT NULL,
+    address_house_nr    TEXT NOT NULL,
+    address_postal_code TEXT NOT NULL,
+    address_city        TEXT NOT NULL,
+    address_door        TEXT
+);
+
+-- Users table with foreign keys
 CREATE TABLE public.users
 (
-    user_id       INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_name     TEXT        NOT NULL,
-    first_name    TEXT        NOT NULL,
-    last_name     TEXT        NOT NULL,
-    email         TEXT UNIQUE NOT NULL,
-    phone         TEXT        NOT NULL,
-    password_hash TEXT        NOT NULL,
-    user_status   TEXT        NOT NULL DEFAULT 'active',
-    warning_count INT         NOT NULL DEFAULT 0
+    user_id              INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_name            TEXT        NOT NULL,
+    first_name           TEXT        NOT NULL,
+    last_name            TEXT        NOT NULL,
+    email                TEXT UNIQUE NOT NULL,
+    phone                TEXT        NOT NULL,
+    password_hash        TEXT        NOT NULL,
+    role_id              INT         NOT NULL REFERENCES public.role (role_id) ON DELETE RESTRICT,
+    location_id          INT         REFERENCES public.user_location (location_id) ON DELETE SET NULL,
+    user_status_id       INT         NOT NULL REFERENCES public.user_status (user_status_id) ON DELETE RESTRICT,
+    password_reset_token TEXT,
+    password_reset_expires TIMESTAMPTZ
 );
---INSERT INTO public.users (user_name, first_name, last_name, email, phone, password_hash)
--- VALUES ('mustermaxi_hd', 'Maximilian', 'Mustermann', 'maxim@gmail.com', '+123', 'password')
+
+-- LoginStat table for tracking login history
+CREATE TABLE public.login_stat
+(
+    login_stat_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id       INT         NOT NULL REFERENCES public.users (user_id) ON DELETE CASCADE,
+    timestamp     TIMESTAMPTZ NOT NULL DEFAULT now(),
+    location      TEXT
+);
+
+-- StoredPaymentType base table
+CREATE TABLE public.stored_payment_type
+(
+    ref_nr  INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES public.users (user_id) ON DELETE CASCADE
+);
+
+-- CreditCardPaymentType (extends StoredPaymentType)
+CREATE TABLE public.credit_card_payment_type
+(
+    ref_nr      INT PRIMARY KEY REFERENCES public.stored_payment_type (ref_nr) ON DELETE CASCADE,
+    card_nr     TEXT      NOT NULL,
+    cvv         SMALLINT  NOT NULL,
+    expiry_date TIMESTAMPTZ NOT NULL
+);
+
+-- Q1PayPaymentType (extends StoredPaymentType)
+CREATE TABLE public.q1pay_payment_type
+(
+    ref_nr      INT PRIMARY KEY REFERENCES public.stored_payment_type (ref_nr) ON DELETE CASCADE,
+    account_sso TEXT NOT NULL
+);
 
 CREATE TABLE public.coupon_code
 (
@@ -136,4 +206,22 @@ CREATE TABLE public.restaurant_cuisine_map
     cuisine_id            INT NOT NULL REFERENCES public.cuisine (cuisine_id) ON DELETE RESTRICT,
     UNIQUE (restaurant_id, cuisine_id)
 );
+
+-- Table to store users who have admin access
+-- Users can be added to this list by existing admins
+CREATE TABLE public.admin_list
+(
+    admin_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id    INT UNIQUE NOT NULL REFERENCES users (user_id) ON DELETE CASCADE,
+    added_by   INT REFERENCES users (user_id) ON DELETE SET NULL,
+    added_at   TIMESTAMPTZ DEFAULT now()
+);
+
+-- Insert default admin user with password 'admin' (role_id=3 is admin, user_status_id=1 is 'ok')
+INSERT INTO public.users (user_name, first_name, last_name, email, phone, password_hash, role_id, user_status_id)
+VALUES ('admin', 'Admin', 'Admin', 'admin@admin.com', '+43123456789', 'admin', 3, 1);
+
+-- Add the admin user to the admin list
+INSERT INTO public.admin_list (user_id, added_by)
+SELECT user_id, user_id FROM public.users WHERE user_name = 'admin';
 

@@ -1,0 +1,215 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <h1>Profile Settings</h1>
+    <p class="subtitle">Manage your account information</p>
+  </div>
+
+  <div class="profile-sections">
+    <!-- Personal Information -->
+    <section class="profile-section">
+      <h2>Personal Information</h2>
+      
+      @if (profileMessage) {
+        <div class="message" [class.success]="profileMessage.type === 'success'" [class.error]="profileMessage.type === 'error'">
+          {{ profileMessage.text }}
+        </div>
+      }
+
+      <form (ngSubmit)="onUpdateProfile()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input
+              type="text"
+              id="firstName"
+              [(ngModel)]="profileData.firstName"
+              name="firstName"
+              [disabled]="isLoadingProfile"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input
+              type="text"
+              id="lastName"
+              [(ngModel)]="profileData.lastName"
+              name="lastName"
+              [disabled]="isLoadingProfile"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="profileData.email"
+            name="email"
+            [disabled]="isLoadingProfile"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input
+            type="tel"
+            id="phone"
+            [(ngModel)]="profileData.phone"
+            name="phone"
+            [disabled]="isLoadingProfile"
+          />
+        </div>
+
+        <h3>Address</h3>
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label for="street">Street</label>
+            <input
+              type="text"
+              id="street"
+              [(ngModel)]="address.street"
+              name="street"
+              [disabled]="isLoadingProfile"
+            />
+          </div>
+          <div class="form-group flex-1">
+            <label for="houseNr">House Nr</label>
+            <input
+              type="text"
+              id="houseNr"
+              [(ngModel)]="address.houseNr"
+              name="houseNr"
+              [disabled]="isLoadingProfile"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="postalCode">Postal Code</label>
+            <input
+              type="text"
+              id="postalCode"
+              [(ngModel)]="address.postalCode"
+              name="postalCode"
+              [disabled]="isLoadingProfile"
+            />
+          </div>
+          <div class="form-group flex-2">
+            <label for="city">City</label>
+            <input
+              type="text"
+              id="city"
+              [(ngModel)]="address.city"
+              name="city"
+              [disabled]="isLoadingProfile"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="door">Door/Apartment</label>
+          <input
+            type="text"
+            id="door"
+            [(ngModel)]="address.door"
+            name="door"
+            [disabled]="isLoadingProfile"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="isLoadingProfile">
+          @if (isLoadingProfile) {
+            <span>Saving...</span>
+          } @else {
+            <span>Save Changes</span>
+          }
+        </button>
+      </form>
+    </section>
+
+    <!-- Change Password -->
+    <section class="profile-section">
+      <h2>Change Password</h2>
+      
+      @if (passwordMessage) {
+        <div class="message" [class.success]="passwordMessage.type === 'success'" [class.error]="passwordMessage.type === 'error'">
+          {{ passwordMessage.text }}
+        </div>
+      }
+
+      <form (ngSubmit)="onChangePassword()">
+        <div class="form-group">
+          <label for="currentPassword">Current Password</label>
+          <input
+            type="password"
+            id="currentPassword"
+            [(ngModel)]="passwordData.currentPassword"
+            name="currentPassword"
+            [disabled]="isLoadingPassword"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input
+            type="password"
+            id="newPassword"
+            [(ngModel)]="passwordData.newPassword"
+            name="newPassword"
+            placeholder="At least 4 characters"
+            [disabled]="isLoadingPassword"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmNewPassword">Confirm New Password</label>
+          <input
+            type="password"
+            id="confirmNewPassword"
+            [(ngModel)]="confirmNewPassword"
+            name="confirmNewPassword"
+            [disabled]="isLoadingPassword"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-secondary" [disabled]="isLoadingPassword">
+          @if (isLoadingPassword) {
+            <span>Changing...</span>
+          } @else {
+            <span>Change Password</span>
+          }
+        </button>
+      </form>
+    </section>
+
+    <!-- Restaurant Management (for restaurant owners) -->
+    @if (userRestaurants.length > 0) {
+      <section class="profile-section">
+        <h2>My Restaurants</h2>
+        <p class="section-description">Manage your restaurant profiles</p>
+
+        @if (isLoadingRestaurants) {
+          <p>Loading restaurants...</p>
+        } @else {
+          <div class="restaurant-list">
+            @for (restaurant of userRestaurants; track restaurant.id) {
+              <div class="restaurant-card">
+                <div class="restaurant-info">
+                  <h3>{{ restaurant.name }}</h3>
+                  <p>{{ restaurant.email }} · {{ restaurant.phone }}</p>
+                  <p class="address">{{ restaurant.address.street }} {{ restaurant.address.houseNr }}, {{ restaurant.address.city }}</p>
+                </div>
+                <a [routerLink]="['/restaurants', restaurant.id, 'manage-profile']" class="btn btn-outline">
+                  Edit Restaurant
+                </a>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    }
+  </div>
+</div>

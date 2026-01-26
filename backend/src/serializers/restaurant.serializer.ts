@@ -22,7 +22,7 @@ export interface RestaurantRow {
   opening_hours_friday: string | null;
   opening_hours_saturday: string | null;
   opening_hours_sunday: string | null;
-  order_index: number;
+  order_index?: number;
 }
 
 export class RestaurantSerializer extends Serializable<RestaurantRow, RestaurantDto> {
@@ -41,7 +41,7 @@ export class RestaurantSerializer extends Serializable<RestaurantRow, Restaurant
         city: row.address_city,
         door: row.address_door ?? undefined
       },
-      orderIndex: row.order_index
+      orderIndex: row.order_index ?? 0
     };
 
     if (row.owner_id) {

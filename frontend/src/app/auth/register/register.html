@@ -1,0 +1,193 @@
+<div class="register-container">
+  <div class="register-card">
+    <h1>Create Account</h1>
+    <p class="subtitle">Join our food delivery platform</p>
+
+    @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            [(ngModel)]="userData.firstName"
+            name="firstName"
+            placeholder="John"
+            [disabled]="isLoading"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            [(ngModel)]="userData.lastName"
+            name="lastName"
+            placeholder="Doe"
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="userName">Username</label>
+        <input
+          type="text"
+          id="userName"
+          [(ngModel)]="userData.userName"
+          name="userName"
+          placeholder="johndoe123"
+          [disabled]="isLoading"
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="userData.email"
+          name="email"
+          placeholder="john@example.com"
+          [disabled]="isLoading"
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input
+          type="tel"
+          id="phone"
+          [(ngModel)]="userData.phone"
+          name="phone"
+          placeholder="+1234567890"
+          [disabled]="isLoading"
+          autocomplete="tel"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="userData.password"
+          name="password"
+          placeholder="At least 4 characters"
+          [disabled]="isLoading"
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          placeholder="Repeat your password"
+          [disabled]="isLoading"
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div class="address-section">
+        <button type="button" class="toggle-address-btn" (click)="toggleAddressFields()">
+          @if (showAddressFields) {
+            <span>− Hide Address (Optional)</span>
+          } @else {
+            <span>+ Add Address (Optional)</span>
+          }
+        </button>
+
+        @if (showAddressFields) {
+          <div class="address-fields">
+            <div class="form-row">
+              <div class="form-group flex-2">
+                <label for="street">Street</label>
+                <input
+                  type="text"
+                  id="street"
+                  [(ngModel)]="address.street"
+                  name="street"
+                  placeholder="Main Street"
+                  [disabled]="isLoading"
+                />
+              </div>
+              <div class="form-group flex-1">
+                <label for="houseNr">House Nr</label>
+                <input
+                  type="text"
+                  id="houseNr"
+                  [(ngModel)]="address.houseNr"
+                  name="houseNr"
+                  placeholder="123"
+                  [disabled]="isLoading"
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="postalCode">Postal Code</label>
+                <input
+                  type="text"
+                  id="postalCode"
+                  [(ngModel)]="address.postalCode"
+                  name="postalCode"
+                  placeholder="12345"
+                  [disabled]="isLoading"
+                />
+              </div>
+              <div class="form-group flex-2">
+                <label for="city">City</label>
+                <input
+                  type="text"
+                  id="city"
+                  [(ngModel)]="address.city"
+                  name="city"
+                  placeholder="Vienna"
+                  [disabled]="isLoading"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="door">Door/Apartment (Optional)</label>
+              <input
+                type="text"
+                id="door"
+                [(ngModel)]="address.door"
+                name="door"
+                placeholder="Apt 4B"
+                [disabled]="isLoading"
+              />
+            </div>
+          </div>
+        }
+      </div>
+
+      <button type="submit" class="register-button" [disabled]="isLoading">
+        @if (isLoading) {
+          <span>Creating account...</span>
+        } @else {
+          <span>Create Account</span>
+        }
+      </button>
+    </form>
+
+    <div class="login-link">
+      Already have an account? <a routerLink="/login">Sign in here</a>
+    </div>
+  </div>
+</div>

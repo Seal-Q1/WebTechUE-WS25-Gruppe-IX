@@ -4,3 +4,4 @@ export {default as menuItemsRouter} from './menu-items.routes';
 export {default as cuisinesRouter} from './cuisines.routes';
 export {default as restaurantsRouter} from './restaurants.routes';
 export {default as adminRouter} from './admin.routes';
+export {default as authRouter} from './auth.routes';

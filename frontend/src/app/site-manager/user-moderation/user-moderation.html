@@ -55,6 +55,7 @@
           <th>User</th>
           <th>Contact</th>
           <th>Status</th>
+          <th>Admin</th>
           <th>Warnings</th>
           <th>Actions</th>
         </tr>
@@ -74,6 +75,13 @@
               <span class="status-badge status-{{ user.status }}">{{ getStatusLabel(user.status) }}</span>
             </td>
             <td>
+              @if (isUserAdmin(user.id)) {
+                <span class="admin-badge">Admin</span>
+              } @else {
+                <span class="user-badge">User</span>
+              }
+            </td>
+            <td>
               <span class="warning-count" [class.has-warnings]="user.warningCount > 0">{{ user.warningCount }}</span>
             </td>
             <td>
@@ -83,6 +91,17 @@
               } @else {
                 <button (click)="activateUser(user)">Reactivate</button>
               }
+              <button 
+                (click)="toggleAdminStatus(user)"
+                [class.admin-remove]="isUserAdmin(user.id)"
+                [class.admin-add]="!isUserAdmin(user.id)"
+              >
+                @if (isUserAdmin(user.id)) {
+                  Remove Admin
+                } @else {
+                  Make Admin
+                }
+              </button>
             </td>
           </tr>
         }
