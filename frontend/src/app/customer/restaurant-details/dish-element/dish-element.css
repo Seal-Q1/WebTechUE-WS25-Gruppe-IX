@@ -32,6 +32,7 @@ button.add-to-cart-btn {
   background-color: #1c1c1c;
   border-radius: 20px;
   padding: 5px 10px;
+  transition: all 0.2s;
 }
 
 button.add-to-cart-btn:hover {

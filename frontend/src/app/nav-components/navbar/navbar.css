@@ -27,11 +27,12 @@ a {
   border-radius: 30px;
   padding: 20px;
   height: 100%;
+  transition: all 0.2s;
 }
 
 a:hover {
   background-color: var(--primary-darkened);
-  text-decoration: underline;
+  text-decoration: none;
   cursor: pointer;
 }
 
