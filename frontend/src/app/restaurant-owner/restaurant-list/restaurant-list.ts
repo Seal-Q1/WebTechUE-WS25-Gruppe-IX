@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectorRef} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Router} from '@angular/router';
 import {RestaurantDto} from '@shared/types';
@@ -23,7 +23,8 @@ export class RestaurantList {
 
   constructor(
     private restaurantService: RestaurantService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   fetchRestaurants(): void {
@@ -71,6 +72,7 @@ export class RestaurantList {
     this.restaurantService.getRestaurantProfile(restaurantId).subscribe(profile => {
       this.selectedRestaurant = profile;
       this.showRestaurantOverlay = true;
+      this.cdr.markForCheck();
     });
   }
 
@@ -78,7 +80,8 @@ export class RestaurantList {
     this.restaurantService.deleteRestaurant(restaurantId).subscribe(() => {
       this.showRestaurantOverlay = false;
       this.selectedRestaurant = null;
-      this.restaurants = this.restaurants.filter(r => r.id !== restaurantId);
+      this.fetchRestaurants();
+      this.cdr.markForCheck();
     });
   }
 
