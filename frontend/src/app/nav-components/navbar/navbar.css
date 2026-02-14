@@ -1,8 +1,13 @@
+:host {
+  position: sticky;
+  top: 0;
+  left: 0;
+}
+
 nav {
   display: flex;
   flex-direction: row;
   background-color: var(--primary);
-  position: sticky;
   color: #ffffff;
   padding: 10px;
   /*box-shadow: 10px 5px 84px 38px rgba(0,0,0,0.4);*/
