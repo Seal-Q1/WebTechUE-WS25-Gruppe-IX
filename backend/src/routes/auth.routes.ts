@@ -1,8 +1,20 @@
-import {Router, type Request, type Response} from 'express';
+import {type Request, type Response, Router} from 'express';
 import pool from '../pool';
+import cfg from '../../config.json';
 import {sendBadRequest, sendInternalError, sendNotFound} from '../utils';
-import type {AuthResponseDto, AuthUserDto, LoginRequestDto, RegisterRequestDto, UpdateProfileDto, ChangePasswordDto, AddressDto, UserAddressDto, PaymentCardDto, CardType} from '@shared/types';
+import type {
+    AuthResponseDto,
+    AuthUserDto,
+    CardType,
+    ChangePasswordDto,
+    LoginRequestDto,
+    PaymentCardDto,
+    RegisterRequestDto,
+    UpdateProfileDto,
+    UserAddressDto
+} from '@shared/types';
 import crypto from 'crypto';
+import jwt from "jsonwebtoken";
 
 const router = Router();
 
@@ -138,9 +150,13 @@ async function serializeAuthUser(row: UserRowWithPassword): Promise<AuthUserDto>
     return authUser;
 }
 
-// Simple token generation (in production, use JWT)
-function generateToken(userId: number): string {
-    return Buffer.from(`${userId}:${Date.now()}`).toString('base64');
+function generateToken(userId: number, roleId: number): string {
+    const payload = {
+        id: userId,
+        roleId: roleId,
+    }
+    const secret = cfg.jwt.secret
+    return jwt.sign(payload, secret, {expiresIn: '1h'});
 }
 
 // SQL query to get user with all joined data
@@ -188,7 +204,7 @@ router.post("/login", async (req: Request, res: Response) => {
         const user = await serializeAuthUser(userRow);
         const response: AuthResponseDto = {
             user,
-            token: generateToken(userRow.user_id)
+            token: generateToken(userRow.user_id, userRow.role_id)
         };
         res.json(response);
     } catch (error) {
@@ -247,7 +263,7 @@ router.post("/register", async (req: Request, res: Response) => {
         const user = await serializeAuthUser(newUserRow);
         const response: AuthResponseDto = {
             user,
-            token: generateToken(newUserRow.user_id)
+            token: generateToken(newUserRow.user_id, newUserRow.role_id)
         };
         res.status(201).json(response);
     } catch (error) {
