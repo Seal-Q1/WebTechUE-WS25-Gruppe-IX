@@ -1,4 +1,6 @@
 export { sendNotFound, sendBadRequest, sendInternalError } from './errors';
+export {requiresAdmin, requiresAuth, parseTokenUserId} from './auth-check';
+export type { AuthJwtPayload } from './auth-check';
 
 //TODO REMOVE ME AFTER TESTING
 export function randomDelay(): Promise<void> {

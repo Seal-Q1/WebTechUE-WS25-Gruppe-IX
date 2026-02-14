@@ -1,7 +1,8 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {apiUrls} from '../config/api_urls';
 import {RestaurantDto, UserDto} from '@shared/types';
+import {AuthService} from '../services/auth.service';
 
 export interface DashboardStats {
   totalOrders: number;
@@ -74,6 +75,8 @@ export class SiteManagerService {
   constructor(private http: HttpClient) {
   }
 
+  authService = inject(AuthService)
+
   // Dashboard Statistics
   getDashboardStats() {
     return this.http.get<DashboardStats>(apiUrls.adminStatsEndpoint());
@@ -102,7 +105,7 @@ export class SiteManagerService {
 
   // User Management
   getAllUsers() {
-    return this.http.get<UserWithStatus[]>(apiUrls.adminUsersEndpoint());
+    return this.http.get<UserWithStatus[]>(apiUrls.adminUsersEndpoint(), this.authService.getAuthHeader());
   }
 
   suspendUser(userId: number, reason: string) {

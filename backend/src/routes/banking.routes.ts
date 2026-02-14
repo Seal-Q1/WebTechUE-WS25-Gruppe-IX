@@ -1,6 +1,6 @@
 import {Router, type Request, type Response} from 'express';
 import pool from '../pool';
-import {sendInternalError, sendBadRequest} from '../utils';
+import {sendInternalError, sendBadRequest, parseTokenUserId} from '../utils';
 import type {
     UserAddressDto, 
     CreateUserAddressDto, 
@@ -74,21 +74,6 @@ function serializeCard(row: CardRow): PaymentCardDto {
         isDefault: row.is_default,
         createdAt: row.created_at?.toISOString()
     };
-}
-
-// Simple token parser (in real app, use proper JWT verification)
-function parseTokenUserId(authHeader: string | undefined): number | null {
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return null;
-    }
-    const token = authHeader.substring(7);
-    const decoded = Buffer.from(token, 'base64').toString('utf-8');
-    const parts = decoded.split(':');
-    if (parts.length === 0 || !parts[0]) {
-        return null;
-    }
-    const userId = parseInt(parts[0]);
-    return isNaN(userId) ? null : userId;
 }
 
 // Detect card type from number

@@ -5,5 +5,8 @@
     "database": "food_delivery_platform",
     "user": "postgres",
     "password": "123456"
+  },
+  "jwt": {
+    "secret": "TopSecret123"
   }
 }

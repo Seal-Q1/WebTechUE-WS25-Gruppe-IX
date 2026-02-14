@@ -14,14 +14,14 @@ const WARNING_KEY = 'warning_shown';
 })
 export class AuthService {
   private http = inject(HttpClient);
-  
+
   private currentUserSubject = new BehaviorSubject<AuthUserDto | null>(this.getStoredUser());
   public currentUser$ = this.currentUserSubject.asObservable();
-  
+
   // Observable to notify when a warning should be shown
   private showWarningSubject = new BehaviorSubject<{show: boolean; warningCount: number}>({show: false, warningCount: 0});
   public showWarning$ = this.showWarningSubject.asObservable();
-  
+
   // Callback to clear loyalty cache on logout
   private onLogoutCallback: (() => void) | null = null;
 
@@ -29,7 +29,7 @@ export class AuthService {
     // Try to restore session on service init
     this.restoreSession();
   }
-  
+
   // Method for LoyaltyService to register its cache clear callback
   registerLogoutCallback(callback: () => void): void {
     this.onLogoutCallback = callback;
@@ -68,7 +68,7 @@ export class AuthService {
         localStorage.setItem(TOKEN_KEY, response.token);
         localStorage.setItem(USER_KEY, JSON.stringify(response.user));
         this.currentUserSubject.next(response.user);
-        
+
         // Check if user has warnings and hasn't dismissed the modal in this session
         if (response.user.warningCount > 0 && !sessionStorage.getItem(WARNING_KEY)) {
           this.showWarningSubject.next({show: true, warningCount: response.user.warningCount});
@@ -98,7 +98,7 @@ export class AuthService {
     sessionStorage.removeItem(WARNING_KEY);
     this.currentUserSubject.next(null);
     this.showWarningSubject.next({show: false, warningCount: 0});
-    
+
     // Clear loyalty cache
     if (this.onLogoutCallback) {
       this.onLogoutCallback();
@@ -107,6 +107,10 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem(TOKEN_KEY);
+  }
+
+  getAuthHeader() {
+    return {headers: {"Authorization": "Bearer " + this.getToken()}}
   }
 
   getCurrentUser(): Observable<AuthUserDto> {

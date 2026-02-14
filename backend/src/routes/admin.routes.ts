@@ -1,7 +1,7 @@
 import {type Request, type Response, Router} from 'express';
 import pool from '../pool';
 import {type RestaurantRow, restaurantSerializer, type UserRow, userSerializer} from '../serializers';
-import {sendBadRequest, sendInternalError, sendNotFound} from '../utils';
+import {requiresAdmin, sendBadRequest, sendInternalError, sendNotFound} from '../utils';
 
 const router = Router();
 
@@ -143,7 +143,7 @@ interface UserRowExtended extends UserRow {
     status_name?: string;
 }
 
-router.get("/users", async (_req: Request, res: Response) => {
+router.get("/users", requiresAdmin, async (_req: Request, res: Response) => {
     try {
         const query = `
             SELECT u.user_id, u.user_name, u.first_name, u.last_name, u.email, u.phone,

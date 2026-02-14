@@ -1,7 +1,7 @@
 import {type Request, type Response, Router} from 'express';
 import pool from '../pool';
 import cfg from '../../config.json';
-import {sendBadRequest, sendInternalError, sendNotFound} from '../utils';
+import {AuthJwtPayload, parseTokenUserId, sendBadRequest, sendInternalError, sendNotFound} from '../utils';
 import type {
     AuthResponseDto,
     AuthUserDto,
@@ -151,8 +151,8 @@ async function serializeAuthUser(row: UserRowWithPassword): Promise<AuthUserDto>
 }
 
 function generateToken(userId: number, roleId: number): string {
-    const payload = {
-        id: userId,
+    const payload: AuthJwtPayload = {
+        userId: userId,
         roleId: roleId,
     }
     const secret = cfg.jwt.secret
@@ -270,21 +270,6 @@ router.post("/register", async (req: Request, res: Response) => {
         sendInternalError(res, error, "occurred during registration");
     }
 });
-
-// Helper function to parse token and get user ID
-function parseTokenUserId(authHeader: string | undefined): number | null {
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return null;
-    }
-    const token = authHeader.substring(7);
-    const decoded = Buffer.from(token, 'base64').toString('utf-8');
-    const parts = decoded.split(':');
-    if (parts.length === 0 || !parts[0]) {
-        return null;
-    }
-    const userId = parseInt(parts[0]);
-    return isNaN(userId) ? null : userId;
-}
 
 // Get current user (for session validation)
 router.get("/me", async (req: Request, res: Response) => {
