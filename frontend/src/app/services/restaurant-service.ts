@@ -2,11 +2,14 @@ import {Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
 import {ImageDto, OpeningHoursDto, RestaurantDto} from '@shared/types';
+import {of, tap} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RestaurantService {
+  images: Map<number, ImageDto> = new Map();
+
   constructor(private http: HttpClient) {
   }
 
@@ -38,7 +41,12 @@ export class RestaurantService {
   }
 
   getRestaurantImage(restaurantId: number) {
-    return this.http.get<ImageDto>(apiUrls.restaurantImageEndpoint(restaurantId));
+    if(this.images.has(restaurantId)) {
+      return of(this.images.get(restaurantId)!);
+    }
+    return this.http.get<ImageDto>(apiUrls.restaurantImageEndpoint(restaurantId)).pipe(
+      tap(res => this.images.set(restaurantId, res)),
+    );
   }
 
   updateRestaurantImage(restaurantId: number, image: string | null) {

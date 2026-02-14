@@ -1,6 +1,11 @@
-<div class="restaurant-grid">
-  @for (restaurant of restaurants(); track restaurant.id) {
-    <app-restaurant-grid-element [restaurant]="restaurant">
-    </app-restaurant-grid-element>
-  }
+<div class="restaurant-overview">
+  <div class="restaurant-filters">
+    <input type="text" id="name-search" name="name-search" placeholder="Search for restaurants..." (input)="onNameSearch($event)">
+  </div>
+  <div class="restaurant-grid">
+    @for (restaurant of filteredRestaurants(); track restaurant.id) {
+      <app-restaurant-grid-element [restaurant]="restaurant">
+      </app-restaurant-grid-element>
+    }
+  </div>
 </div>

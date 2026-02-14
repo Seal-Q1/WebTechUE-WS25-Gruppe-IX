@@ -1,7 +1,5 @@
-import { Component, inject } from '@angular/core';
-import {RestaurantDto} from '@shared/types';
+import {Component, computed, inject, signal} from '@angular/core';
 import {RestaurantService} from '../../../services/restaurant-service';
-import {Router} from '@angular/router';
 import {RestaurantGridElement} from '../restaurant-grid-element/restaurant-grid-element';
 import {toSignal} from '@angular/core/rxjs-interop';
 
@@ -17,4 +15,18 @@ export class RestaurantGrid {
   private restaurantService = inject(RestaurantService);
 
   restaurants = toSignal(this.restaurantService.getAllRestaurants(), { initialValue: [] });
+
+  nameSearchTerm = signal('');
+
+  filteredRestaurants = computed(() => {
+    const searchTerm = this.nameSearchTerm().toLowerCase();
+    return this.restaurants().filter((restaurant) => {
+      return restaurant.name.toLowerCase().includes(searchTerm);
+    });
+  })
+
+  onNameSearch(e: Event) {
+    const target = e.target as HTMLInputElement;
+    this.nameSearchTerm.set(target.value);
+  }
 }
