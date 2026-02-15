@@ -3,7 +3,7 @@ import type {PaymentCardDto} from "@shared/types/banking.dto";
 
 export interface OrderRequestDto {
     items: OrderRequestItemDto[],
-    couponCode: string,
+    couponCode?: string,
     address: AddressDto,
     card: PaymentCardDto
 }

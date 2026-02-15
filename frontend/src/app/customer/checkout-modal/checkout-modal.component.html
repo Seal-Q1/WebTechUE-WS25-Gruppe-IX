@@ -32,14 +32,19 @@
     </div>
 
     <div class="checkout-discount-container">
-      <label>
+      <label class="discount-label">
         Discount Code
-        @if(discountError()) {
-          <span class="discount-error-symbol">!</span>
-        }
-        <input type="text" class="discount-field" placeholder="Discount code" (input)="discountEntered($event)">
+        <span class="discount-input-wrapper">
+          <input type="text" class="discount-field" placeholder="Discount code" [value]="couponCode" (input)="discountEntered($event)">
+          <input type="submit" class="discount-apply-btn" (click)="discountSubmitted()" value="Apply">
+          @if(discountError()) {
+            <span class="discount-error-symbol">!</span>
+          }
+        </span>
       </label>
-      <input type="submit" class="discount-apply-btn" (click)="discountSubmitted()" value="Apply">
+      @if(discountErrorMessage()) {
+        <div class="discount-error-message">{{ discountErrorMessage() }}</div>
+      }
     </div>
 
     <div class="checkout-address-container">

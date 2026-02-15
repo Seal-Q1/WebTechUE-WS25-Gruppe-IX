@@ -1,5 +1,5 @@
 <app-admin-layout activePage="users">
-  <h2>User Moderation</h2>
+  <h2 class="admin-title">User Moderation</h2>
   <p>Manage users, issue warnings, and handle suspensions</p>
 
   @if (error) {
@@ -85,24 +85,25 @@
             </td>
             <td>
               @if (user.status !== 'suspended') {
-                <button (click)="openWarnModal(user)">Warn</button>
-                <button (click)="openSuspendModal(user)">Suspend</button>
+                <button class="action-btn warn" (click)="openWarnModal(user)">Warn</button>
+                <button class="action-btn suspend" (click)="openSuspendModal(user)">Suspend</button>
               } @else {
-                <button (click)="activateUser(user)">Reactivate</button>
+                <button class="action-btn reactivate" (click)="activateUser(user)">Reactivate</button>
               }
-              <button 
-                (click)="toggleAdminStatus(user)"
-                [class.admin-remove]="isUserAdmin(user.id)"
-                [class.admin-add]="!isUserAdmin(user.id)"
-                [disabled]="!canToggleAdmin(user)"
-                [title]="isCurrentUser(user.id) ? 'Cannot remove your own admin status' : (user.status === 'suspended' ? 'Cannot make suspended user an admin' : '')"
-              >
-                @if (isUserAdmin(user.id)) {
-                  Remove Admin
-                } @else {
-                  Make Admin
-                }
-              </button>
+                <button 
+                  class="action-btn make-admin"
+                  (click)="toggleAdminStatus(user)"
+                  [class.admin-remove]="isUserAdmin(user.id)"
+                  [class.admin-add]="!isUserAdmin(user.id)"
+                  [disabled]="!canToggleAdmin(user)"
+                  [title]="isCurrentUser(user.id) ? 'Cannot remove your own admin status' : (user.status === 'suspended' ? 'Cannot make suspended user an admin' : '')"
+                >
+                  @if (isUserAdmin(user.id)) {
+                    Remove Admin
+                  } @else {
+                    Make Admin
+                  }
+                </button>
             </td>
           </tr>
         }

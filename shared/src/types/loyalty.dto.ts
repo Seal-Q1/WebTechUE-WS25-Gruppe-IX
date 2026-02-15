@@ -62,6 +62,7 @@ export interface RewardRedemptionDto {
   redeemedAt: string;
   usedAt?: string | undefined;
   discountValue?: number | undefined;
+  couponCode?: string | undefined;
 }
 
 // Request DTOs

@@ -14,7 +14,7 @@ export class OrderService {
 
   private authService = inject(AuthService)
 
-  placeOrderRequest(cartItems: CartItemDto[], address: AddressDto, card: PaymentCardDto, couponCode: string) {
+  placeOrderRequest(cartItems: CartItemDto[], address: AddressDto, card: PaymentCardDto, couponCode?: string) {
     let orderRequestItems: OrderRequestItemDto[] = []
     for (const order of cartItems) {
       orderRequestItems.push({
@@ -25,9 +25,11 @@ export class OrderService {
     }
     let orderRequestDto: OrderRequestDto = {
       items: orderRequestItems,
-      couponCode: couponCode,
       address: address,
       card: card
+    };
+    if (couponCode && couponCode.trim() !== "") {
+      orderRequestDto.couponCode = couponCode;
     }
     return this.http.post<OrderRequestDto>(apiUrls.placeOrderEndpoint(), orderRequestDto, this.authService.getAuthHeader());
   }

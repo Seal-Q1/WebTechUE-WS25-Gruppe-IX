@@ -33,6 +33,7 @@ export class CheckoutModal {
   activeDiscount = signal("");
   effectiveDiscount = signal(0);
   discountError = signal(false);
+  discountErrorMessage = signal<string | null>(null);
 
   // Sets default address + card
   constructor() {
@@ -64,22 +65,50 @@ export class CheckoutModal {
     const target = event.target as HTMLInputElement;
     this.couponCode = target.value;
     this.discountError.set(false);
+    this.discountErrorMessage.set(null);
   }
 
   discountSubmitted() {
+    if (!this.couponCode || this.couponCode.trim() === "") {
+      this.discountError.set(true);
+      this.discountErrorMessage.set("Please enter a discount code.");
+      this.activeDiscount.set("");
+      this.effectiveDiscount.set(0);
+      return;
+    }
     this.orderService.getCouponCode(this.couponCode).subscribe({
       next: (res) => {
+        // Immediate client-side min order check for better UX
+        const cartTotal = this.cartService.getTotalPrice();
+        if (res.minOrderValue && cartTotal < res.minOrderValue) {
+          this.discountError.set(true);
+          this.discountErrorMessage.set(`This coupon requires a minimum order of €${res.minOrderValue}. It has not been applied.`);
+          // clear coupon input and any applied discount
+          this.couponCode = '';
+          this.activeDiscount.set('');
+          this.effectiveDiscount.set(0);
+          return;
+        }
+
         if (res.discountType === 'fixed') {
-          this.effectiveDiscount.set(res.discountValue * 1); // workaround, for some reason I get an error if I don't multiply this
+          this.effectiveDiscount.set(res.discountValue * 1);
         } else {
           this.effectiveDiscount.set(this.cartService.getTotalPrice() * res.discountValue * 0.01);
         }
         this.activeDiscount.set(res.couponCode);
+        this.discountError.set(false);
+        this.discountErrorMessage.set(null);
       },
-      error: () => {
+      error: (err) => {
         this.activeDiscount.set('');
         this.effectiveDiscount.set(0);
         this.discountError.set(true);
+        // show backend error message if provided
+        const be = err?.error;
+        const msg = be?.message || be?.error || JSON.stringify(be) || 'Invalid coupon';
+        this.discountErrorMessage.set(msg);
+        // clear coupon input so user doesn't keep trying
+        this.couponCode = '';
       }
     });
   }
@@ -92,7 +121,20 @@ export class CheckoutModal {
         this.router.navigate([`/order-confirmation`]);
         this.dialogRef.close();
       },
-      error: () => {
+      error: (err) => {
+        // If backend returns minimum-order error for the coupon, show a clear message and clear the input
+        const backendError = err?.error;
+        const structuredErrors = ['coupon_min_order','coupon_not_found','coupon_inactive','coupon_expired','coupon_exhausted'];
+        if (structuredErrors.includes(backendError?.error)) {
+          this.discountError.set(true);
+          this.discountErrorMessage.set(backendError?.message || 'Coupon invalid');
+          // clear coupon input and applied discount
+          this.couponCode = '';
+          this.activeDiscount.set('');
+          this.effectiveDiscount.set(0);
+          return;
+        }
+
         alert("Order could not be placed! Please try again!");
       }
     });

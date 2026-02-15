@@ -1,5 +1,5 @@
 <app-admin-layout activePage="restaurants">
-  <h2>Restaurant Moderation</h2>
+  <h2 class="admin-title">Restaurant Moderation</h2>
   <p>Approve or reject restaurant registration requests</p>
 
   @if (error) {
@@ -78,12 +78,12 @@
             </td>
             <td>
               @if (restaurant.status === 'pending') {
-                <button (click)="approveRestaurant(restaurant)">Approve</button>
-                <button (click)="openRejectModal(restaurant)">Reject</button>
+                <button class="action-btn approve" (click)="approveRestaurant(restaurant)">Approve</button>
+                <button class="action-btn reject" (click)="openRejectModal(restaurant)">Reject</button>
               } @else if (restaurant.status === 'rejected') {
-                <button (click)="approveRestaurant(restaurant)">Re-approve</button>
+                <button class="action-btn approve" (click)="approveRestaurant(restaurant)">Re-approve</button>
               } @else {
-                <button (click)="openRejectModal(restaurant)">Suspend</button>
+                <button class="action-btn suspend" (click)="openRejectModal(restaurant)">Suspend</button>
               }
             </td>
           </tr>

@@ -15,8 +15,7 @@ import type { UserPointsDto, PromotionDto } from '@shared/types';
         @if (hasActivePromotion) {
           <span class="promo-indicator" [title]="promotionText">★</span>
         }
-        <span class="points-value">{{ points?.currentBalance ?? 0 }}</span>
-        <span class="points-label">pts</span>
+        <span class="points-value">{{ points?.currentBalance ?? 0 }} pts</span>
       </a>
     }
   `,
@@ -27,12 +26,16 @@ import type { UserPointsDto, PromotionDto } from '@shared/types';
       gap: 4px;
       background: #f59e0b;
       color: white;
-      padding: 4px 10px;
-      border-radius: 4px;
+      padding: 6px 12px;
+      border-radius: 20px;
       text-decoration: none;
       font-size: 13px;
       font-weight: 600;
-      position: relative;
+      transition: background 0.2s;
+    }
+    
+    .points-badge:hover {
+      background: #d97706;
     }
     
     .points-badge.has-promotion {
@@ -45,11 +48,6 @@ import type { UserPointsDto, PromotionDto } from '@shared/types';
     
     .points-value {
       font-size: 13px;
-    }
-    
-    .points-label {
-      font-size: 11px;
-      opacity: 0.9;
     }
   `]
 })
