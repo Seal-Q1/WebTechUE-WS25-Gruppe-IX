@@ -18,6 +18,8 @@ import jwt from "jsonwebtoken";
 
 const router = Router();
 
+const ROLE_ID_RESTR_OWNER = 2;
+
 interface UserRowWithPassword {
     user_id: number;
     user_name: string;
@@ -85,6 +87,7 @@ interface CardRow {
 // Helper function to serialize user with admin status, addresses and cards
 async function serializeAuthUser(row: UserRowWithPassword): Promise<AuthUserDto> {
     const isAdmin = await isUserAdmin(row.user_id, row.role_id);
+    const isRestaurantOwner = row.role_id === ROLE_ID_RESTR_OWNER;
     const warningCount = row.warning_count || 0;
     
     // Fetch all user addresses
@@ -138,6 +141,7 @@ async function serializeAuthUser(row: UserRowWithPassword): Promise<AuthUserDto>
         email: row.email,
         phone: row.phone,
         isAdmin,
+        isRestaurantOwner,
         warningCount,
         addresses,
         paymentCards

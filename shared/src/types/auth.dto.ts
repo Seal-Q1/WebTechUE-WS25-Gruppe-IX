@@ -29,6 +29,7 @@ export interface AuthUserDto {
   email: string;
   phone: string;
   isAdmin: boolean;
+  isRestaurantOwner: boolean;
   warningCount: number;
   address?: AddressDto; // Default/primary address (for backwards compatibility)
   addresses: UserAddressDto[]; // All user addresses

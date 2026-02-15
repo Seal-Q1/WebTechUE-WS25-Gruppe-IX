@@ -5,6 +5,7 @@ import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {switchMap} from 'rxjs';
 import {MenuItemService} from '../../../services/menu-item-service';
 import {CartService} from '../../../services/cart-service';
+import {AuthService} from '../../../services/auth.service';
 
 @Component({
   selector: 'app-dish-grid-element',
@@ -17,6 +18,7 @@ import {CartService} from '../../../services/cart-service';
 export class DishGridElement {
   private menuItemService = inject(MenuItemService);
   private cartService = inject(CartService);
+  authService = inject(AuthService);
 
   dish = input.required<MenuItemDto>();
 

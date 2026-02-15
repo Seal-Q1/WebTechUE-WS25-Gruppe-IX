@@ -15,7 +15,9 @@
       }
     </div>
   </div>
-  <div class="cart-section">
-    <app-cart-sidebar></app-cart-sidebar>
-  </div>
+  @if(authService.isLoggedIn()) {
+    <div class="cart-section">
+      <app-cart-sidebar></app-cart-sidebar>
+    </div>
+  }
 </div>

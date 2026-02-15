@@ -1,9 +1,11 @@
 <nav>
   <a class="nav-home" (click)="onHomeClicked()"><fa-icon [icon]="faStar"/> Q1 Food</a>
   <ul>
-    <li><a (click)="onRestaurants()"><fa-icon [icon]="faUtensils"/> Restaurants</a></li>
-    <li><a><fa-icon [icon]="faBurger"/> Food </a></li>
     @if (isLoggedIn) {
+      <li><a><fa-icon [icon]="faTruckFast"/> My Orders </a></li>
+      @if(isRestaurantOwner) {
+        <li><a (click)="onRestaurants()"><fa-icon [icon]="faUtensils"/> Manage Restaurant</a></li>
+      }
       <li><app-points-badge></app-points-badge></li>
       <li><a (click)="onProfile()"><fa-icon [icon]="faUser"/> My Profile</a></li>
       @if (isAdmin) {

@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Router} from '@angular/router';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
-import {faBurger, faStar, faUser, faUserTie, faUtensils} from '@fortawesome/free-solid-svg-icons';
+import {faStar, faTruckFast, faUser, faUserTie, faUtensils} from '@fortawesome/free-solid-svg-icons';
 
 import {CommonModule} from '@angular/common';
 import {Subscription} from 'rxjs';
@@ -47,11 +47,6 @@ export class Navbar implements OnInit, OnDestroy {
   onAdmin = (): void => {
     this.router.navigate(['/admin']);
   };
-  protected readonly faUtensils = faUtensils;
-  protected readonly faBurger = faBurger;
-  protected readonly faUser = faUser;
-  protected readonly faUserTie = faUserTie;
-  protected readonly faStar = faStar;
 
   onLogin = (): void => {
     this.router.navigate(['/login']);
@@ -70,7 +65,17 @@ export class Navbar implements OnInit, OnDestroy {
     return this.authService.isLoggedIn();
   }
 
+  get isRestaurantOwner(): boolean {
+    return this.authService.isRestaurantOwner();
+  }
+
   get isAdmin(): boolean {
     return this.authService.isAdmin();
   }
+
+  protected readonly faUtensils = faUtensils;
+  protected readonly faUser = faUser;
+  protected readonly faUserTie = faUserTie;
+  protected readonly faStar = faStar;
+  protected readonly faTruckFast = faTruckFast;
 }

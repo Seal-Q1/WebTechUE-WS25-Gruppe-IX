@@ -121,6 +121,10 @@ export class AuthService {
     return !!this.getToken() && !!this.currentUserSubject.value;
   }
 
+  isRestaurantOwner(): boolean {
+    return this.isAdmin() || (this.currentUserSubject.value?.isRestaurantOwner ?? false);
+  }
+
   isAdmin(): boolean {
     return this.currentUserSubject.value?.isAdmin ?? false;
   }

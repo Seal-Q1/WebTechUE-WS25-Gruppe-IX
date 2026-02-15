@@ -6,6 +6,7 @@ import {ImageDisplay} from '../../../shared/image-display/image-display';
 import {MenuItemService} from '../../../services/menu-item-service';
 import {DishGridElement} from '../dish-element/dish-element';
 import {CartSidebar} from '../../cart-sidebar/cart-sidebar';
+import {AuthService} from '../../../services/auth.service';
 
 @Component({
   selector: 'app-restaurant-view',
@@ -21,6 +22,7 @@ export class RestaurantView {
   private route = inject(ActivatedRoute);
   private restaurantService = inject(RestaurantService);
   private menuItemService = inject(MenuItemService);
+  authService = inject(AuthService);
 
   restaurantId: number = parseInt(this.route.snapshot.paramMap.get('restaurantId')!);
 
