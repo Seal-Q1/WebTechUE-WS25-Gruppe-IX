@@ -2,12 +2,13 @@ import {Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef} from 
 import {CommonModule} from '@angular/common';
 import {ImageDisplay} from '../../image-display/image-display';
 import {GridListElementBase} from '../grid-list-element';
+import {GridListElementAbstract} from '../grid-list-element-abstract';
 import {RestaurantDto} from '@shared/types';
 import {RestaurantService} from '../../../services/restaurant-service';
 
 @Component({
   selector: 'app-restaurant-grid-list-element',
-  imports: [CommonModule, ImageDisplay],
+  imports: [CommonModule, ImageDisplay, GridListElementAbstract],
   templateUrl: './restaurant-grid-list-element.html',
   styleUrl: './restaurant-grid-list-element.css',
 })

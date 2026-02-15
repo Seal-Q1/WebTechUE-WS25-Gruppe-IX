@@ -1,0 +1,14 @@
+<div class="restaurant-grid-list-container">
+  <app-grid-list
+    [items]="restaurants"
+    [reorderEnabled]="reorderEnabled"
+    (orderChanged)="onOrderChanged($event)">
+    <ng-template #itemTemplate let-item>
+      <app-restaurant-grid-list-element
+        [restaurant]="item"
+        (itemClick)="onItemClick(item.id)"
+        (settingsClick)="onSettingsClick(item.id)">
+      </app-restaurant-grid-list-element>
+    </ng-template>
+  </app-grid-list>
+</div>

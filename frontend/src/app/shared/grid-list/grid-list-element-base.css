@@ -1,0 +1,55 @@
+:host {
+	display: block;
+}
+
+.grid-element {
+	aspect-ratio: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	border: 2px solid black;
+	background-color: #fff;
+	cursor: pointer;
+	overflow: hidden;
+	position: relative;
+}
+
+.grid-element:hover {
+	border-color: #000;
+}
+
+.element-image {
+	flex: 1;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+
+.element-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.element-placeholder {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 32px;
+	color: #ccc;
+}
+
+.element-name {
+	width: 100%;
+	padding: 8px;
+	text-align: center;
+	font-weight: 500;
+	background-color: rgba(0, 0, 0, 0.05);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
