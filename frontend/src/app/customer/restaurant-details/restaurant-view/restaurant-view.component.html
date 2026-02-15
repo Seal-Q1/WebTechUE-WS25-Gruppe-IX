@@ -3,16 +3,23 @@
     <div class="restaurant-image">
       <app-image-display [imageDto]="imageDto()"></app-image-display>
     </div>
-    <h1>{{restaurant()?.name}}</h1>
+    <div class="restaurant-content">
+      <h1>{{restaurant()?.name}}</h1>
+      <div class="restaurant-options">
+        @if(authService.isLoggedIn()) {
+          <button (click)="openReviewModal()"><fa-icon [icon]="faStar"></fa-icon> Review</button>
+        }
+      </div>
 
-    <div class="dish-grid">
-      @for (dish of dishes(); track dish.id) {
-        <app-dish-grid-element [dish]="dish">
-        </app-dish-grid-element>
-      }
-      @empty {
-        <p class="empty-message">Restaurant has no dishes available.</p>
-      }
+      <div class="dish-grid">
+        @for (dish of dishes(); track dish.id) {
+          <app-dish-grid-element [dish]="dish">
+          </app-dish-grid-element>
+        }
+        @empty {
+          <p class="empty-message">Restaurant has no dishes available.</p>
+        }
+      </div>
     </div>
   </div>
   @if(authService.isLoggedIn()) {

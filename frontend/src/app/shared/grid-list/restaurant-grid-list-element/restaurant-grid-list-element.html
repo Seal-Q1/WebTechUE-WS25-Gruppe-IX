@@ -1,9 +1,12 @@
-<div class="grid-element" (click)="onItemClicked()">
+<app-grid-list-element-abstract
+  [displayName]="displayName"
+  (itemClick)="onItemClicked()">
+
   <button class="settings-button" (click)="onSettingsClick($event)" title="Settings">
     Settings
   </button>
   <div class="element-image">
     <app-image-display [imageDto]="imageDto"></app-image-display>
   </div>
-  <div class="element-name">{{ displayName }}</div>
-</div>
+
+</app-grid-list-element-abstract>

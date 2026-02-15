@@ -1,0 +1,18 @@
+<div class="dish-details-modal">
+  <div class="dish-details-image">
+    <app-image-display [imageDto]="data.imageDto"></app-image-display>
+  </div>
+  <div class="dish-details-info">
+    <div class="dish-details-overview">
+      <h2 class="dish-name">{{data.menuItemDto.name}}</h2>
+      <div class="dish-description">{{data.menuItemDto.description}}</div>
+    </div>
+    <div class="dish-price">{{data.menuItemDto.price.toFixed(2)}} €</div>
+  </div>
+  <div class="dish-controls">
+    @if(authService.isLoggedIn()) {
+      <button (click)="openReviewModal()"><fa-icon [icon]="faStar"></fa-icon> Review</button>
+      <button class="add-to-cart-btn" title="Add to cart" (click)="onAddToCart()"><fa-icon [icon]="faPlus"></fa-icon>Add to cart</button>
+    }
+  </div>
+</div>

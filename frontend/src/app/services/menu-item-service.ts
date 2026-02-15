@@ -1,7 +1,14 @@
 import {inject, Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
-import {ImageDto, MenuItemDto} from '@shared/types';
+import {
+  DishReviewDto,
+  DishReviewDtoToServer,
+  ImageDto,
+  MenuItemDto,
+  RestaurantReviewDto,
+  RestaurantReviewDtoToServer
+} from '@shared/types';
 import {AuthService} from './auth.service';
 
 @Injectable({
@@ -42,5 +49,13 @@ export class MenuItemService {
 
   updateMenuItemsOrder(restaurantId: number, items: { id: number; orderIndex: number }[]) {
     return this.http.patch<void>(apiUrls.menuItemsOrderEndpoint(restaurantId), items, this.authService.getAuthHeader());
+  }
+
+  getReviews(restaurantId: number, itemId: number) {
+    return this.http.get<DishReviewDto[]>(apiUrls.menuItemReviewEndpoint(restaurantId, itemId));
+  }
+
+  submitReview(restaurantId: number, itemId: number, review: DishReviewDtoToServer) {
+    return this.http.post<DishReviewDto>(apiUrls.menuItemReviewEndpoint(restaurantId, itemId), review, this.authService.getAuthHeader()).subscribe((res) => console.log(res));
   }
 }

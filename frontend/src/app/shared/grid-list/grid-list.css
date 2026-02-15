@@ -23,9 +23,7 @@
   opacity: 0.5;
 }
 
-.grid-list-item.drag-over app-restaurant-grid-list-element .grid-element,
-.grid-list-item.drag-over app-cuisine-grid-list-element .grid-element,
-.grid-list-item.drag-over app-menu-item-grid-list-element .grid-element {
+.grid-list-item.drag-over app-grid-list-element-abstract .grid-element {
   border-color: var(--primary);
   border-style: dashed;
   background-color: rgba(255, 115, 0, 0.1);

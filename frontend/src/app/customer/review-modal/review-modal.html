@@ -1,0 +1,13 @@
+<div class="review-modal">
+  <h2>Review</h2>
+  <label>
+    Rating
+    <input type="number" min="1" max="5" value="1" class="rating" (change)="onRatingChange($event)">
+  </label>
+  <textarea placeholder="Your review..." (input)="onTextChange($event)"></textarea>
+
+  <div class="review-buttons">
+    <button class="cancel" (click)="onCancel()">Cancel</button>
+    <button class="submit" (click)="onSubmit()">Submit</button>
+  </div>
+</div>

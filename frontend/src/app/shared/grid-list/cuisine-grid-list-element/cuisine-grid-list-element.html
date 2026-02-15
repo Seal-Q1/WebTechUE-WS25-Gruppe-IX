@@ -1,6 +1,9 @@
-<div class="grid-element" (click)="onItemClicked()">
+<app-grid-list-element-abstract
+  [displayName]="displayName"
+  (itemClick)="onItemClicked()">
+
   <div class="element-emoji">
     <span>{{ getEmoji() }}</span>
   </div>
-  <div class="element-name">{{ displayName }}</div>
-</div>
+
+</app-grid-list-element-abstract>

@@ -1,11 +1,12 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {GridListElementBase} from '../grid-list-element';
+import {GridListElementAbstract} from '../grid-list-element-abstract';
 import {CuisineDto} from '@shared/types';
 
 @Component({
   selector: 'app-cuisine-grid-list-element',
-  imports: [CommonModule],
+  imports: [CommonModule, GridListElementAbstract],
   templateUrl: './cuisine-grid-list-element.html',
   styleUrl: './cuisine-grid-list-element.css',
 })
