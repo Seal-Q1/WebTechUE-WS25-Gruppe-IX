@@ -6,7 +6,8 @@ import {
     type ImageRow,
     imageSerializer,
     RestaurantReviewRow,
-    restaurantReviewSerializer, DishReviewRow, dishReviewSerializer
+    restaurantReviewSerializer, DishReviewRow, dishReviewSerializer, restaurantReviewAggregateSerializer,
+    RestaurantReviewAggregateRow, DishReviewAggregateRow, dishReviewAggregateSerializer
 } from '../serializers';
 import {sendInternalError, sendNotFound, randomDelay, requiresAuth, parseTokenUserId} from '../utils';
 import {RestaurantReviewDto, RestaurantReviewDtoToServer} from "@shared/types";
@@ -52,6 +53,20 @@ router.get("/", async (_req: Request, res: Response) => {
     }
 });
 
+router.get("/reviews", async (req: Request, res: Response) => {
+    try {
+        const query = `
+            SELECT restaurant_id, count(*), avg(rating)
+            FROM restaurant_review
+            GROUP BY restaurant_id
+        `;
+        const result = await pool.query<RestaurantReviewAggregateRow>(query);
+        res.json(restaurantReviewAggregateSerializer.serialize_multiple(result.rows));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while fetching aggregated restaurant reviews");
+    }
+});
+
 router.get("/:restaurantId/reviews", async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
@@ -63,7 +78,7 @@ router.get("/:restaurantId/reviews", async (req: Request, res: Response) => {
         const result = await pool.query<RestaurantReviewRow>(query, [restaurantId]);
         res.json(restaurantReviewSerializer.serialize_multiple(result.rows));
     } catch (error) {
-        sendInternalError(res, error, "occurred while fetching dish reviews");
+        sendInternalError(res, error, "occurred while fetching restaurant reviews");
     }
 });
 
@@ -113,6 +128,23 @@ router.post("/:restaurantId/reviews", requiresAuth, async (req: Request, res: Re
         res.status(201).json(restaurantReviewSerializer.serialize(result.rows[0]!));
     } catch (error) {
         sendInternalError(res, error, "occurred while inserting restaurant review");
+    }
+});
+
+router.get("/:restaurantId/menu-item-reviews", async (req: Request, res: Response) => {
+    try {
+        const restaurantId = parseInt(req.params.restaurantId!);
+        const query = `
+            SELECT dish_review.item_id, count(*), avg(rating)
+            FROM dish_review
+            NATURAL JOIN menu_item
+            WHERE restaurant_id = $1
+            GROUP BY dish_review.item_id
+        `;
+        const result = await pool.query<DishReviewAggregateRow>(query, [restaurantId]);
+        res.json(dishReviewAggregateSerializer.serialize_multiple(result.rows));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while fetching aggregated dish reviews");
     }
 });
 

@@ -7,6 +7,10 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  max-width: 80vw;
+  max-height: 90vh;
+  overflow: scroll;
 }
 
 h2 {
@@ -25,6 +29,12 @@ div.dish-details-info {
 
 div.dish-details-overview {
   flex: 1;
+}
+
+div.reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 div.dish-price {

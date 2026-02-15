@@ -9,6 +9,12 @@
 
   border: 2px solid #ddd;
   background-color: #fff;
+
+  cursor: pointer;
+}
+
+.dish-grid-element:hover {
+  border: 2px solid #000;
 }
 
 .dish-image {

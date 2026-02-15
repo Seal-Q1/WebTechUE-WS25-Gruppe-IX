@@ -1,19 +1,30 @@
 import {Component, Inject, inject} from '@angular/core';
 import {Dialog, DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
-import {DishReviewDtoToServer, MenuItemWithImageDto, RestaurantReviewDtoToServer} from '@shared/types';
+import {
+  DishReviewAggregateDto,
+  DishReviewDtoToServer,
+  MenuItemWithImageDto,
+  RestaurantReviewAggregateDto,
+  RestaurantReviewDtoToServer
+} from '@shared/types';
 import {ImageDisplay} from '../../../shared/image-display/image-display';
 import {AuthService} from '../../../services/auth.service';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faPlus, faStar} from '@fortawesome/free-solid-svg-icons';
-import {ReviewModal} from '../../review-modal/review-modal';
+import {WriteReviewModal} from '../../write-review-modal/write-review-modal.component';
 import {MenuItemService} from '../../../services/menu-item-service';
 import {CartService} from '../../../services/cart-service';
+import {Review} from '../../review/review';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {StarRating} from '../../star-rating/star-rating';
 
 @Component({
   selector: 'app-dish-details',
   imports: [
     ImageDisplay,
-    FaIconComponent
+    FaIconComponent,
+    Review,
+    StarRating
   ],
   templateUrl: './dish-details-modal.component.html',
   styleUrl: './dish-details-modal.component.css',
@@ -25,10 +36,27 @@ export class DishDetailsModal {
   private menuItemService = inject(MenuItemService);
   private cartService = inject(CartService);
 
-  constructor(@Inject(DIALOG_DATA) public data: MenuItemWithImageDto) {};
+
+  data = inject<MenuItemWithImageDto>(DIALOG_DATA);
+  dishReviews = toSignal(this.menuItemService.getReviews(this.data.menuItemDto.restaurantId, this.data.menuItemDto.id), { initialValue: [] });
+
+  getDishRating() {
+    let ratingSum = 0;
+    let count = 0;
+    for(let rating of this.dishReviews()) {
+      ratingSum += rating.rating;
+      count += 1;
+    }
+    const rating: DishReviewAggregateDto = {
+      itemId: this.data.menuItemDto.id,
+      count: count,
+      avg: ratingSum/count
+    }
+    return rating;
+  }
 
   openReviewModal() {
-    const dialogRef = this.dialog.open(ReviewModal, {disableClose: true});
+    const dialogRef = this.dialog.open(WriteReviewModal, {disableClose: true});
     dialogRef.closed.subscribe((review) => {
       console.log(review);
       if (review) {

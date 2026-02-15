@@ -9,6 +9,19 @@
     </div>
     <div class="dish-price">{{data.menuItemDto.price.toFixed(2)}} €</div>
   </div>
+  <details>
+    <summary>Reviews: <app-star-rating [rating]="getDishRating().avg"></app-star-rating> ({{getDishRating().count}})</summary>
+    <div class="reviews">
+      @for(review of dishReviews(); track review.id) {
+        <app-review
+          [rating]="review.rating"
+          [reviewText]="review.reviewText"
+          [timestamp]="review.timestamp"
+        >
+        </app-review>
+      }
+    </div>
+  </details>
   <div class="dish-controls">
     @if(authService.isLoggedIn()) {
       <button (click)="openReviewModal()"><fa-icon [icon]="faStar"></fa-icon> Review</button>

@@ -12,8 +12,8 @@ export interface RestaurantReviewDtoToServer {
     reviewText: string;
 }
 
-export interface AggregateRestaurantReviewDto {
+export interface RestaurantReviewAggregateDto {
     restaurantId: number;
-    rating: number;
     count: number;
+    avg: number;
 }

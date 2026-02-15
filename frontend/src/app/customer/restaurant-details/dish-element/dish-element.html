@@ -4,9 +4,12 @@
   </div>
   <div class="dish-name">{{dish().name}}</div>
   <div class="dish-name">{{dish().price.toFixed(2)}} €</div>
-  @if(authService.isLoggedIn()) {
-    <div class="dish-controls">
-      <button class="add-to-cart-btn" title="Add to cart" (click)="onAddToCart()">Add to cart</button>
-    </div>
-  }
+  <div class="dish-rating"><app-star-rating [rating]="rating().avg"></app-star-rating> ({{rating().count}})</div>
+  <div class="dish-controls">
+    @if(authService.isLoggedIn()) {
+      <div class="dish-controls">
+        <button class="add-to-cart-btn" title="Add to cart" (click)="onAddToCart()">Add to cart</button>
+      </div>
+    }
+  </div>
 </div>

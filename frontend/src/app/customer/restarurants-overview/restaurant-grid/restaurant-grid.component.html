@@ -4,7 +4,7 @@
   </div>
   <div class="restaurant-grid">
     @for (restaurant of filteredRestaurants(); track restaurant.id) {
-      <app-restaurant-grid-element [restaurant]="restaurant">
+      <app-restaurant-grid-element [restaurant]="restaurant" [rating]="getRestaurantRating(restaurant.id)">
       </app-restaurant-grid-element>
     }
   </div>

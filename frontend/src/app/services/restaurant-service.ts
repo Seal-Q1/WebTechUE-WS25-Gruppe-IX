@@ -4,7 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {
   ImageDto,
   OpeningHoursDto,
-  RestaurantDto,
+  RestaurantDto, RestaurantReviewAggregateDto,
   RestaurantReviewDto,
   RestaurantReviewDtoToServer
 } from '@shared/types';
@@ -67,6 +67,10 @@ export class RestaurantService {
 
   deleteRestaurant(restaurantId: number) {
     return this.http.delete<void>(apiUrls.restaurantEndpoint(restaurantId));
+  }
+
+  getAggregatedReviews() {
+    return this.http.get<RestaurantReviewAggregateDto[]>(apiUrls.restaurantAggregateReviewsEndpoint());
   }
 
   getReviews(restaurantId: number) {

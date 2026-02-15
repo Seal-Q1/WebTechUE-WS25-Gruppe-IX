@@ -12,6 +12,7 @@ input#name-search {
 .restaurant-grid {
   padding-top: 20px;
   display: grid;
+  grid-auto-rows: 1fr;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
+  gap: 20px;
 }

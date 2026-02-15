@@ -12,8 +12,8 @@ export interface DishReviewDtoToServer {
     reviewText: string;
 }
 
-export interface AggregateDishReviewDto {
+export interface DishReviewAggregateDto {
     itemId: number;
-    rating: number;
     count: number;
+    avg: number;
 }

@@ -1,18 +1,22 @@
 import {Component, inject, input, Input} from '@angular/core';
-import {MenuItemDto, MenuItemWithImageDto} from '@shared/types';
+import {DishReviewAggregateDto, MenuItemDto, MenuItemWithImageDto, RestaurantReviewAggregateDto} from '@shared/types';
 import {ImageDisplay} from '../../../shared/image-display/image-display';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
 import {switchMap} from 'rxjs';
 import {MenuItemService} from '../../../services/menu-item-service';
 import {CartService} from '../../../services/cart-service';
 import {AuthService} from '../../../services/auth.service';
-import {Dialog, DialogRef} from '@angular/cdk/dialog';
+import {Dialog} from '@angular/cdk/dialog';
 import {DishDetailsModal} from '../dish-details-modal/dish-details-modal.component';
+import {StarRating} from '../../star-rating/star-rating';
+import {Review} from '../../review/review';
 
 @Component({
   selector: 'app-dish-grid-element',
   imports: [
-    ImageDisplay
+    ImageDisplay,
+    StarRating,
+    Review
   ],
   templateUrl: './dish-element.html',
   styleUrl: './dish-element.css',
@@ -24,6 +28,7 @@ export class DishGridElement {
   authService = inject(AuthService);
 
   dish = input.required<MenuItemDto>();
+  rating = input.required<DishReviewAggregateDto>();
 
   imageDto = toSignal(
     toObservable(this.dish).pipe(

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReviewModal } from './review-modal';
+import { WriteReviewModal } from './write-review-modal.component';
 
 describe('ReviewModal', () => {
-  let component: ReviewModal;
-  let fixture: ComponentFixture<ReviewModal>;
+  let component: WriteReviewModal;
+  let fixture: ComponentFixture<WriteReviewModal>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReviewModal]
+      imports: [WriteReviewModal]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ReviewModal);
+    fixture = TestBed.createComponent(WriteReviewModal);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

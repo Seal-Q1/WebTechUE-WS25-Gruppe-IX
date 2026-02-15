@@ -2,10 +2,11 @@ import {inject, Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
 import {
+  DishReviewAggregateDto,
   DishReviewDto,
   DishReviewDtoToServer,
   ImageDto,
-  MenuItemDto,
+  MenuItemDto, RestaurantReviewAggregateDto,
   RestaurantReviewDto,
   RestaurantReviewDtoToServer
 } from '@shared/types';
@@ -49,6 +50,10 @@ export class MenuItemService {
 
   updateMenuItemsOrder(restaurantId: number, items: { id: number; orderIndex: number }[]) {
     return this.http.patch<void>(apiUrls.menuItemsOrderEndpoint(restaurantId), items);
+  }
+
+  getAggregatedReviews(restaurantId: number) {
+    return this.http.get<DishReviewAggregateDto[]>(apiUrls.menuItemAggregateReviewsEndpoint(restaurantId));
   }
 
   getReviews(restaurantId: number, itemId: number) {

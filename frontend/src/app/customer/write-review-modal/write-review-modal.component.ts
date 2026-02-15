@@ -5,10 +5,10 @@ import {RestaurantReviewDtoToServer} from '@shared/types';
 @Component({
   selector: 'app-review-modal',
   imports: [],
-  templateUrl: './review-modal.html',
-  styleUrl: './review-modal.css',
+  templateUrl: './write-review-modal.component.html',
+  styleUrl: './write-review-modal.component.css',
 })
-export class ReviewModal {
+export class WriteReviewModal {
   private dialogRef = inject(DialogRef)
 
   rating: number = 1;

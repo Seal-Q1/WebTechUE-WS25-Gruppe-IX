@@ -10,8 +10,13 @@ import {AuthService} from '../../../services/auth.service';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faStar} from '@fortawesome/free-solid-svg-icons';
 import {Dialog} from '@angular/cdk/dialog';
-import {ReviewModal} from '../../review-modal/review-modal';
-import {RestaurantReviewDto, RestaurantReviewDtoToServer} from '@shared/types';
+import {WriteReviewModal} from '../../write-review-modal/write-review-modal.component';
+import {
+  DishReviewAggregateDto, RestaurantReviewAggregateDto,
+  RestaurantReviewDtoToServer
+} from '@shared/types';
+import {StarRating} from '../../star-rating/star-rating';
+import {ShowReviewsModal} from '../show-reviews-modal/show-reviews-modal';
 
 @Component({
   selector: 'app-restaurant-view',
@@ -19,7 +24,8 @@ import {RestaurantReviewDto, RestaurantReviewDtoToServer} from '@shared/types';
     ImageDisplay,
     DishGridElement,
     CartSidebar,
-    FaIconComponent
+    FaIconComponent,
+    StarRating
   ],
   templateUrl: './restaurant-view.component.html',
   styleUrl: './restaurant-view.component.css',
@@ -34,11 +40,46 @@ export class RestaurantView {
   restaurantId: number = parseInt(this.route.snapshot.paramMap.get('restaurantId')!);
 
   restaurant = toSignal(this.restaurantService.getRestaurantProfile(this.restaurantId), { initialValue: null});
+  restaurantReviews = toSignal(this.restaurantService.getReviews(this.restaurantId), { initialValue: [] });
+  menuItemRatings = toSignal(this.menuItemService.getAggregatedReviews(this.restaurantId), { initialValue: [] });
   imageDto = toSignal(this.restaurantService.getRestaurantImage(this.restaurantId), { initialValue: null});
   dishes = toSignal(this.menuItemService.getAllMenuItems(this.restaurantId), { initialValue: []});
 
+  getMenuItemRating(itemId: number) {
+    for(let rating of this.menuItemRatings()) {
+      if(itemId === rating.itemId) {
+        return rating;
+      }
+    }
+    const noRating: DishReviewAggregateDto = {
+      itemId: itemId,
+      count: 0,
+      avg: 0
+    }
+    return noRating;
+  }
+
+  getRestaurantRating() {
+    let ratingSum = 0;
+    let count = 0;
+    for(let rating of this.restaurantReviews()) {
+      ratingSum += rating.rating;
+      count += 1;
+    }
+    const rating: RestaurantReviewAggregateDto = {
+      restaurantId: this.restaurantId,
+      count: count,
+      avg: ratingSum/count
+    }
+    return rating;
+  }
+
   openReviewModal() {
-    const dialogRef = this.dialog.open(ReviewModal, {disableClose: true});
+    this.dialog.open(ShowReviewsModal, {data: this.restaurantId});
+  }
+
+  openWriteReviewModal() {
+    const dialogRef = this.dialog.open(WriteReviewModal, {disableClose: true});
     dialogRef.closed.subscribe((review) => {
       console.log(review);
       if (review) {

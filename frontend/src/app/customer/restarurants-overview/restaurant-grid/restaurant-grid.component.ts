@@ -2,6 +2,7 @@ import {Component, computed, inject, signal} from '@angular/core';
 import {RestaurantService} from '../../../services/restaurant-service';
 import {RestaurantGridElement} from '../restaurant-grid-element/restaurant-grid-element';
 import {toSignal} from '@angular/core/rxjs-interop';
+import {RestaurantReviewAggregateDto} from '@shared/types';
 
 @Component({
   selector: 'app-restaurant-grid',
@@ -15,6 +16,7 @@ export class RestaurantGrid {
   private restaurantService = inject(RestaurantService);
 
   restaurants = toSignal(this.restaurantService.getAllRestaurants(), { initialValue: [] });
+  restaurantRatings = toSignal(this.restaurantService.getAggregatedReviews(), { initialValue: [] });
 
   nameSearchTerm = signal('');
 
@@ -28,5 +30,19 @@ export class RestaurantGrid {
   onNameSearch(e: Event) {
     const target = e.target as HTMLInputElement;
     this.nameSearchTerm.set(target.value);
+  }
+
+  getRestaurantRating(restaurantId: number) {
+    for(let rating of this.restaurantRatings()) {
+      if(restaurantId === rating.restaurantId) {
+        return rating;
+      }
+    }
+    const noRating: RestaurantReviewAggregateDto = {
+      restaurantId: restaurantId,
+      count: 0,
+      avg: 0
+    }
+    return noRating;
   }
 }

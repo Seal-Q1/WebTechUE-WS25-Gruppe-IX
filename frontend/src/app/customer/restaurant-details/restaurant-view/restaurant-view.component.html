@@ -5,15 +5,20 @@
     </div>
     <div class="restaurant-content">
       <h1>{{restaurant()?.name}}</h1>
+
+
       <div class="restaurant-options">
+        <div class="restaurant-rating-container" (click)="openReviewModal()">
+          <span class="restaurant-rating"><app-star-rating [rating]="getRestaurantRating().avg"></app-star-rating> ({{getRestaurantRating().count}})</span>
+        </div>
         @if(authService.isLoggedIn()) {
-          <button (click)="openReviewModal()"><fa-icon [icon]="faStar"></fa-icon> Review</button>
+          <button (click)="openWriteReviewModal()"><fa-icon [icon]="faStar"></fa-icon> Review</button>
         }
       </div>
 
       <div class="dish-grid">
         @for (dish of dishes(); track dish.id) {
-          <app-dish-grid-element [dish]="dish">
+          <app-dish-grid-element [dish]="dish" [rating]="getMenuItemRating(dish.id)">
           </app-dish-grid-element>
         }
         @empty {

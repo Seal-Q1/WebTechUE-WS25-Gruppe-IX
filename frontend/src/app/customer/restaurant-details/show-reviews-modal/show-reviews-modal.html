@@ -1,0 +1,13 @@
+<div class="show-reviews-modal">
+  <h2>Reviews</h2>
+  <div class="reviews">
+    @for(review of reviews(); track review.id) {
+      <app-review
+        [rating]="review.rating"
+        [reviewText]="review.reviewText"
+        [timestamp]="review.timestamp"
+      >
+      </app-review>
+    }
+  </div>
+</div>

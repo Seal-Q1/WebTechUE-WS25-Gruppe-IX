@@ -5,8 +5,9 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  overflow: hidden;
   cursor: pointer;
+  height: 100%;
+  width: 100%;
 
   border: 2px solid #ddd;
   background-color: #fff;

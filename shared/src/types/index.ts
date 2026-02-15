@@ -1,12 +1,12 @@
 export type { AddressDto } from './address.dto';
 export type { MenuItemDto, MenuItemWithImageDto } from './menu-item.dto';
-export type { DishReviewDto, DishReviewDtoToServer, AggregateDishReviewDto } from './dish-review.dto';
+export type { DishReviewDto, DishReviewDtoToServer, DishReviewAggregateDto } from './dish-review.dto';
 export type { OrderDto } from './order.dto';
 export type { OrderItemDto } from './order-item.dto';
 export type { OrderRequestDto } from './order-request.dto';
 export type { UserDto } from './user.dto';
 export type {RestaurantDto, OpeningHoursDto} from './restaurant.dto';
-export type { RestaurantReviewDto, RestaurantReviewDtoToServer, AggregateRestaurantReviewDto } from './restaurant-review.dto';
+export type { RestaurantReviewDto, RestaurantReviewDtoToServer, RestaurantReviewAggregateDto } from './restaurant-review.dto';
 export type { CuisineDto } from './cuisine.dto';
 export type { CouponCodeDto } from './coupon-code.dto';
 export type { ImageDto } from './image.dto';
