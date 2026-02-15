@@ -4,6 +4,30 @@
   flex-grow: 1;
 }
 
+.restaurant-content {
+  padding: 20px;
+}
+
+.restaurant-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  gap: 10px;
+}
+
+.restaurant-options button {
+  color: white;
+  background-color: var(--primary);
+
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.2s;
+}
+
+.restaurant-options button:hover {
+  background-color: var(--primary-darkened);
+}
+
 .dish-section {
   flex-grow: 1;
 }

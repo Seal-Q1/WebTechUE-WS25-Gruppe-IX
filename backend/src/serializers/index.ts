@@ -15,3 +15,7 @@ export {imageSerializer, ImageSerializer} from './image.serializer';
 export type { ImageRow } from './image.serializer';
 export {couponCodeSerializer, CouponCodeSerializer} from './coupon-code.serializer';
 export type { CouponCodeRow } from './coupon-code.serializer';
+export {dishReviewSerializer, DishReviewSerializer} from './dish-review.serializer';
+export type { DishReviewRow } from './dish-review.serializer';
+export {restaurantReviewSerializer, RestaurantReviewSerializer} from './restaurant-review.serializer';
+export type { RestaurantReviewRow } from './restaurant-review.serializer';

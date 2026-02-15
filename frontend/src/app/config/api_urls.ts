@@ -22,6 +22,8 @@ export const apiUrls = {
     `${environment.apiUrl}/restaurants/${restaurantId}/menu-items/${itemId}`,
   menuItemImageEndpoint: (restaurantId: number, itemId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}/menu-items/${itemId}/image`,
+  menuItemReviewEndpoint: (restaurantId: number, itemId: number) =>
+    `${environment.apiUrl}/restaurants/${restaurantId}/menu-items/reviews`,
   menuItemsOrderEndpoint: (restaurantId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}/menu-items/order`,
   allCuisinesEndpoint: () =>
@@ -34,6 +36,8 @@ export const apiUrls = {
     `${environment.apiUrl}/restaurants`,
   restaurantEndpoint: (restaurantId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}`,
+  restaurantReviewEndpoint: (restaurantId: number) =>
+    `${environment.apiUrl}/restaurants/${restaurantId}/reviews`,
   restaurantProfileEndpoint: (restaurantId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}/manage-profile`,
   restaurantImageEndpoint: (restaurantId: number) =>

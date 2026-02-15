@@ -1,14 +1,22 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
-import {ImageDto, OpeningHoursDto, RestaurantDto} from '@shared/types';
+import {
+  ImageDto,
+  OpeningHoursDto,
+  RestaurantDto,
+  RestaurantReviewDto,
+  RestaurantReviewDtoToServer
+} from '@shared/types';
 import {of, tap} from 'rxjs';
+import {AuthService} from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RestaurantService {
   images: Map<number, ImageDto> = new Map();
+  private authService = inject(AuthService);
 
   constructor(private http: HttpClient) {
   }
@@ -59,5 +67,14 @@ export class RestaurantService {
 
   deleteRestaurant(restaurantId: number) {
     return this.http.delete<void>(apiUrls.restaurantEndpoint(restaurantId));
+  }
+
+  getReviews(restaurantId: number) {
+    return this.http.get<RestaurantReviewDto[]>(apiUrls.restaurantReviewEndpoint(restaurantId));
+  }
+
+  submitReview(restaurantId: number, review: RestaurantReviewDtoToServer) {
+    console.log(restaurantId);
+    return this.http.post<RestaurantReviewDto>(apiUrls.restaurantReviewEndpoint(restaurantId), review, this.authService.getAuthHeader()).subscribe((res) => console.log(res));
   }
 }

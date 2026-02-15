@@ -1,7 +1,15 @@
 import { Router, type Request, type Response } from 'express';
 import pool from '../pool';
-import { menuItemSerializer, type MenuItemRow, imageSerializer, type ImageRow } from '../serializers';
-import { sendNotFound, sendInternalError, randomDelay } from '../utils';
+import {
+    menuItemSerializer,
+    type MenuItemRow,
+    imageSerializer,
+    type ImageRow,
+    dishReviewSerializer, DishReviewRow
+} from '../serializers';
+import {sendNotFound, sendInternalError, randomDelay, requiresAuth, parseTokenUserId} from '../utils';
+import {DishReviewDto, DishReviewDtoToServer} from "@shared/types";
+import {QueryResult} from "pg";
 
 const router = Router({ mergeParams: true });
 
@@ -54,6 +62,71 @@ router.get("/:itemId", async (req: Request, res: Response) => {
   } catch (error) {
     sendInternalError(res, error, "occurred while fetching menu item");
   }
+});
+
+router.get("/:itemId/reviews", async (req: Request, res: Response) => {
+    try {
+        const itemId = parseInt(req.params.itemId!);
+        const query = `
+            SELECT *
+            FROM dish_review
+            WHERE item_id = $1
+        `;
+        const result = await pool.query<DishReviewRow>(query, [itemId]);
+        res.json(dishReviewSerializer.serialize_multiple(result.rows));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while fetching dish reviews");
+    }
+});
+
+router.post("/:itemId/reviews", requiresAuth, async (req: Request, res: Response) => {
+    try {
+        const itemId = parseInt(req.params.itemId!);
+        const userId = parseTokenUserId(req.headers.authorization);
+        const dto = req.body as DishReviewDtoToServer;
+
+        const oldReviewQuery = `
+            SELECT *
+            FROM dish_review
+            WHERE item_id = $1
+            AND user_id = $2
+        `;
+        const oldReviewResult = await pool.query<DishReviewRow>(oldReviewQuery,
+            [itemId, userId]
+        );
+
+
+        // Change query depending on whether a review already exists
+        let result: QueryResult<DishReviewRow>;
+        if(oldReviewResult.rows.length > 0) {
+            const updateReviewQuery = `
+                UPDATE dish_review
+                SET
+                    rating = $1,
+                    review_text = $2,
+                    timestamp = $3
+                WHERE item_id = $4
+                    AND user_id = $5
+                RETURNING *;
+            `;
+            result = await pool.query<DishReviewRow>(updateReviewQuery,
+                [dto.rating, dto.reviewText, new Date(), itemId, userId]
+            );
+        }
+        else {
+            const insertReviewQuery = `
+                INSERT INTO dish_review (item_id, user_id, rating, review_text, timestamp)
+                VALUES ($1, $2, $3, $4, DEFAULT)
+                RETURNING *;
+            `
+            result = await pool.query<DishReviewRow>(insertReviewQuery,
+                [itemId, userId, dto.rating, dto.reviewText]
+            );
+        }
+        res.status(201).json(dishReviewSerializer.serialize(result.rows[0]!));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while inserting dish review");
+    }
 });
 
 // assumption: no concurrent writes (only one user will change ordering at the same time); simplifies logic

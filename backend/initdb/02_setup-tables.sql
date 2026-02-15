@@ -222,6 +222,16 @@ CREATE TABLE public.restaurant
 
 );
 
+CREATE TABLE public.restaurant_review
+(
+    review_id       INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    restaurant_id   INT REFERENCES restaurant (restaurant_id) ON DELETE CASCADE,
+    user_id         INT REFERENCES users (user_id) ON DELETE CASCADE,
+    rating          INT NOT NULL,
+    review_text     TEXT,
+    timestamp       TIMESTAMPTZ DEFAULT now()
+);
+
 -- Add foreign key to coupon_code now that restaurant table exists
 ALTER TABLE public.coupon_code 
     ADD CONSTRAINT fk_coupon_restaurant 
@@ -237,6 +247,16 @@ CREATE TABLE public.menu_item
     item_picture     TEXT,
     is_deleted       BOOLEAN        NOT NULL DEFAULT FALSE,
     order_index      INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE public.dish_review
+(
+    review_id       INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    item_id         INT REFERENCES menu_item (item_id) ON DELETE CASCADE,
+    user_id         INT REFERENCES users (user_id) ON DELETE CASCADE,
+    rating          INT NOT NULL,
+    review_text     TEXT,
+    timestamp       TIMESTAMPTZ DEFAULT now()
 );
 
 --Association-relation

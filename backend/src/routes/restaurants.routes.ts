@@ -1,7 +1,16 @@
 import {type Request, type Response, Router} from 'express';
 import pool from '../pool';
-import {type RestaurantRow, restaurantSerializer, type ImageRow, imageSerializer} from '../serializers';
-import {sendInternalError, sendNotFound, randomDelay} from '../utils';
+import {
+    type RestaurantRow,
+    restaurantSerializer,
+    type ImageRow,
+    imageSerializer,
+    RestaurantReviewRow,
+    restaurantReviewSerializer, DishReviewRow, dishReviewSerializer
+} from '../serializers';
+import {sendInternalError, sendNotFound, randomDelay, requiresAuth, parseTokenUserId} from '../utils';
+import {RestaurantReviewDto, RestaurantReviewDtoToServer} from "@shared/types";
+import {QueryResult} from "pg";
 
 const router = Router();
 
@@ -40,6 +49,70 @@ router.get("/", async (_req: Request, res: Response) => {
     } catch (error) {
         console.error("Full error:", error);
         sendInternalError(res, error, "occurred while fetching restaurants");
+    }
+});
+
+router.get("/:restaurantId/reviews", async (req: Request, res: Response) => {
+    try {
+        const restaurantId = parseInt(req.params.restaurantId!);
+        const query = `
+            SELECT *
+            FROM restaurant_review
+            WHERE restaurant_id = $1
+        `;
+        const result = await pool.query<RestaurantReviewRow>(query, [restaurantId]);
+        res.json(restaurantReviewSerializer.serialize_multiple(result.rows));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while fetching dish reviews");
+    }
+});
+
+router.post("/:restaurantId/reviews", requiresAuth, async (req: Request, res: Response) => {
+    try {
+        const restaurantId = parseInt(req.params.restaurantId!);
+        const userId = parseTokenUserId(req.headers.authorization);
+        const dto = req.body as RestaurantReviewDtoToServer;
+
+        const oldReviewQuery = `
+            SELECT *
+            FROM restaurant_review
+            WHERE restaurant_id = $1
+            AND user_id = $2
+        `;
+        const oldReviewResult = await pool.query<DishReviewRow>(oldReviewQuery,
+            [restaurantId, userId]
+        );
+
+        // Change query depending on whether a review already exists
+        let result: QueryResult<RestaurantReviewRow>;
+        if(oldReviewResult.rows.length > 0) {
+            const updateReviewQuery = `
+                UPDATE restaurant_review
+                SET
+                    rating = $1,
+                    review_text = $2,
+                    timestamp = $3
+                WHERE restaurant_id = $4
+                    AND user_id = $5
+                RETURNING *;
+            `;
+            result = await pool.query<RestaurantReviewRow>(updateReviewQuery,
+                [dto.rating, dto.reviewText, new Date(), restaurantId, userId]
+            );
+        }
+        else {
+            const insertReviewQuery = `
+                INSERT INTO restaurant_review (restaurant_id, user_id, rating, review_text, timestamp)
+                VALUES ($1, $2, $3, $4, DEFAULT)
+                RETURNING *;
+            `
+            result = await pool.query<RestaurantReviewRow>(insertReviewQuery,
+                [restaurantId, userId, dto.rating, dto.reviewText]
+            );
+        }
+        res.status(201).json(restaurantReviewSerializer.serialize(result.rows[0]!));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while inserting restaurant review");
     }
 });
 
