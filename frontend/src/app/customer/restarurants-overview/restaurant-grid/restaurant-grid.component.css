@@ -2,11 +2,40 @@
   padding: 16px;
 }
 
+.restaurant-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.basic-filters {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
 input#name-search {
   border: 1px solid #ccc;
   border-radius: 20px;
   padding: 5px 10px;
   width: 100%;
+}
+
+button.advanced-filter-btn {
+  background-color: var(--primary);
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+button.advanced-filter-btn:hover {
+  background-color: var(--primary-darkened);
+}
+
+input#min-stars {
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 5px 10px;
 }
 
 .restaurant-grid {

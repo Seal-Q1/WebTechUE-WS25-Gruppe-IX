@@ -1,6 +1,17 @@
 <div class="restaurant-overview">
   <div class="restaurant-filters">
-    <input type="text" id="name-search" name="name-search" placeholder="Search for restaurants..." (input)="onNameSearch($event)">
+    <div class="basic-filters">
+      <input type="text" id="name-search" name="name-search" placeholder="Search for restaurants..." (input)="onNameSearch($event)">
+      <button class="advanced-filter-btn" (click)="toggleAdvancedFilters()"><fa-icon [icon]="faFilter"></fa-icon></button>
+    </div>
+    @if(advancedFilters()) {
+      <div class="advanced-filters">
+        <label>
+          <fa-icon [icon]="faStar"></fa-icon> Min. Rating:
+          <input type="number" id="min-stars" name="min-stars" [defaultValue]="0" value="0" min="0" max="5" (input)="onMinStarsSet($event)">
+        </label>
+      </div>
+    }
   </div>
   <div class="restaurant-grid">
     @for (restaurant of filteredRestaurants(); track restaurant.id) {
