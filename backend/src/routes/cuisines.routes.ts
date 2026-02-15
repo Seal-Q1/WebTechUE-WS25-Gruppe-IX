@@ -1,7 +1,7 @@
 import {Router, type Request, type Response} from 'express';
 import pool from '../pool';
 import {cuisineSerializer, type CuisineRow} from '../serializers';
-import {sendNotFound, sendInternalError} from '../utils';
+import {sendNotFound, sendInternalError, requiresAuth} from '../utils';
 
 const router = Router();
 
@@ -47,7 +47,7 @@ router.get("/:cuisineId", async (req: Request, res: Response) => {
 });
 
 // assumption: no concurrent writes (only one user will change ordering at the same time); simplifies logic
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", requiresAuth, async (req: Request, res: Response) => {
     try {
         const {name, description, emoji} = req.body;
         const query = `
@@ -63,7 +63,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 });
 
-router.put("/:cuisineId", async (req: Request, res: Response) => {
+router.put("/:cuisineId", requiresAuth, async (req: Request, res: Response) => {
     try {
         const cuisineId = parseInt(req.params.cuisineId!);
         const {name, description, emoji} = req.body;
@@ -86,7 +86,7 @@ router.put("/:cuisineId", async (req: Request, res: Response) => {
     }
 });
 
-router.delete("/:cuisineId", async (req: Request, res: Response) => {
+router.delete("/:cuisineId", requiresAuth, async (req: Request, res: Response) => {
     try {
         const cuisineId = parseInt(req.params.cuisineId!);
         const query = `
@@ -106,8 +106,7 @@ router.delete("/:cuisineId", async (req: Request, res: Response) => {
     }
 });
 
-//TODO permission to do so via auth.
-router.patch("/order", async (req: Request, res: Response) => {
+router.patch("/order", requiresAuth, async (req: Request, res: Response) => {
     try {
         const items = req.body as { id: number; orderIndex: number }[];
         const client = await pool.connect();

@@ -7,8 +7,8 @@ import assert from "node:assert";
 
 const router = Router();
 
-router.get("/my", async (req: Request, res: Response) => {
-    const userId = parseTokenUserId(req.headers.authorization);
+router.get("/my", requiresAuth, async (req: Request, res: Response) => {
+    const userId = (req as any).userId;
     try {
         const query = `
       SELECT * FROM "order"
@@ -25,7 +25,7 @@ router.get("/my", async (req: Request, res: Response) => {
 
 router.post("/", requiresAuth, async (req: Request, res: Response) => {
     const dto = req.body as OrderRequestDto;
-    const userId = parseTokenUserId(req.headers.authorization);
+    const userId = (req as any).userId;
 
     assert(dto.items.length > 0, 'At least one item must be ordered');
 
@@ -57,23 +57,30 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
             totalPrice += item.quantity * itemPrice;
         }
 
-        // Retrieve coupon information
-        const couponQuery = `
-            SELECT *
-            FROM coupon_code
-            WHERE coupon_code = $1
-              AND (restaurant_id = $2 OR restaurant_id IS NULL);
-        `
-        const couponResult = await client.query<CouponCodeRow>(couponQuery,
-            [dto.couponCode, restaurantId]
-        );
-        const couponInfo = couponResult.rows[0]!;
-        let effectiveDiscount = 0
-        if (couponInfo.discount_type === 'fixed') {
-            effectiveDiscount = couponInfo.discount_value;
-        }
-        else {
-            effectiveDiscount = totalPrice * couponInfo.discount_value * 0.01;
+        // Retrieve coupon information (optional)
+        let effectiveDiscount = 0;
+        let couponId: number | null = null;
+        
+        if (dto.couponCode) {
+            const couponQuery = `
+                SELECT *
+                FROM coupon_code
+                WHERE coupon_code = $1
+                  AND (restaurant_id = $2 OR restaurant_id IS NULL);
+            `
+            const couponResult = await client.query<CouponCodeRow>(couponQuery,
+                [dto.couponCode, restaurantId]
+            );
+            const couponInfo = couponResult.rows[0];
+            if (couponInfo) {
+                couponId = couponInfo.coupon_id;
+                if (couponInfo.discount_type === 'fixed') {
+                    effectiveDiscount = couponInfo.discount_value;
+                }
+                else {
+                    effectiveDiscount = totalPrice * couponInfo.discount_value * 0.01;
+                }
+            }
         }
 
         await client.query('BEGIN');
@@ -90,7 +97,7 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
         `
         const order = await client.query<OrderRow>(query,
             [dto.address.street, dto.address.houseNr, dto.address.postalCode, dto.address.city,
-                dto.address.door, totalPrice - effectiveDiscount, couponInfo.coupon_id, userId]
+                dto.address.door, totalPrice - effectiveDiscount, couponId, userId]
         );
 
         // Create order item pairs
@@ -110,6 +117,7 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
         }
 
         await client.query('COMMIT');
+        client.release();
         res.status(201).json(orderSerializer.serialize(order.rows[0]!));
     }
     catch (error) {

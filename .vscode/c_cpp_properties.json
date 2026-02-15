@@ -1,0 +1,49 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/wibmer/normal_path_planner/install/vera_my_app/include/**",
+        "/home/wibmer/normal_path_planner/install/vera_wrapper/include/**",
+        "/home/wibmer/normal_path_planner/install/vera_paths/include/**",
+        "/home/wibmer/normal_path_planner/install/vera_fcu/include/**",
+        "/home/wibmer/normal_path_planner/install/vera_msgs/include/**",
+        "/home/wibmer/normal_path_planner/install/px4_ros_com/include/**",
+        "/home/wibmer/normal_path_planner/install/hermes_msgs/include/**",
+        "/home/wibmer/ros2_ws/install/sdformat_urdf/include/**",
+        "/home/wibmer/ros2_ws/install/rtabmap_slam/include/**",
+        "/home/wibmer/ros2_ws/install/rtabmap_odom/include/**",
+        "/home/wibmer/ros2_ws/install/rtabmap_util/include/**",
+        "/home/wibmer/ros2_ws/install/rtabmap_sync/include/**",
+        "/home/wibmer/ros2_ws/install/rtabmap_rviz_plugins/include/**",
+        "/home/wibmer/ros2_ws/install/rtabmap_conversions/include/**",
+        "/home/wibmer/ros2_ws/install/rtabmap_msgs/include/**",
+        "/home/wibmer/ros2_ws/install/ros_ign_interfaces/include/**",
+        "/home/wibmer/ros2_ws/install/ros_gz_sim/include/**",
+        "/home/wibmer/ros2_ws/install/ros_gz_bridge/include/**",
+        "/home/wibmer/ros2_ws/install/ros_gz_interfaces/include/**",
+        "/home/wibmer/ros2_ws/install/micro_ros_agent/include/**",
+        "/home/wibmer/ros2_ws/install/ardupilot_msgs/include/**",
+        "/home/wibmer/px4_ros_ws/install/px4_msgs/include/**",
+        "/home/wibmer/super_ws4/install/super_planner/include/**",
+        "/home/wibmer/super_ws4/install/rog_map/include/**",
+        "/home/wibmer/super_ws4/install/px4_msgs/include/**",
+        "/home/wibmer/super_ws4/install/perfect_drone_sim/include/**",
+        "/home/wibmer/super_ws4/install/mission_planner/include/**",
+        "/home/wibmer/super_ws4/install/marsim_render/include/**",
+        "/home/wibmer/super_ws4/install/mars_quadrotor_msgs/include/**",
+        "/opt/ros/humble/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ros2",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++17"
+    }
+  ],
+  "version": 4
+}

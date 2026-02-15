@@ -1,12 +1,15 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
 import {ImageDto, MenuItemDto} from '@shared/types';
+import {AuthService} from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MenuItemService {
+  private authService = inject(AuthService);
+
   constructor(private http: HttpClient) {}
 
   getAllMenuItems(restaurantId: number) {
@@ -18,15 +21,15 @@ export class MenuItemService {
   }
 
   createMenuItem(restaurantId: number, data: { name: string; price: number; description?: string }) {
-    return this.http.post<MenuItemDto>(apiUrls.allMenuItemsEndpoint(restaurantId), data);
+    return this.http.post<MenuItemDto>(apiUrls.allMenuItemsEndpoint(restaurantId), data, this.authService.getAuthHeader());
   }
 
   updateMenuItem(restaurantId: number, itemId: number, data: { name: string; price: number; description?: string }) {
-    return this.http.put<MenuItemDto>(apiUrls.menuItemEndpoint(restaurantId, itemId), data);
+    return this.http.put<MenuItemDto>(apiUrls.menuItemEndpoint(restaurantId, itemId), data, this.authService.getAuthHeader());
   }
 
   deleteMenuItem(restaurantId: number, itemId: number) {
-    return this.http.delete<void>(apiUrls.menuItemEndpoint(restaurantId, itemId));
+    return this.http.delete<void>(apiUrls.menuItemEndpoint(restaurantId, itemId), this.authService.getAuthHeader());
   }
 
   getMenuItemImage(restaurantId: number, itemId: number) {
@@ -34,10 +37,10 @@ export class MenuItemService {
   }
 
   updateMenuItemImage(restaurantId: number, itemId: number, image: string | null) {
-    return this.http.put<ImageDto>(apiUrls.menuItemImageEndpoint(restaurantId, itemId), { image });
+    return this.http.put<ImageDto>(apiUrls.menuItemImageEndpoint(restaurantId, itemId), { image }, this.authService.getAuthHeader());
   }
 
   updateMenuItemsOrder(restaurantId: number, items: { id: number; orderIndex: number }[]) {
-    return this.http.patch<void>(apiUrls.menuItemsOrderEndpoint(restaurantId), items);
+    return this.http.patch<void>(apiUrls.menuItemsOrderEndpoint(restaurantId), items, this.authService.getAuthHeader());
   }
 }

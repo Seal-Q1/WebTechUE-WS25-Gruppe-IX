@@ -17,7 +17,7 @@ export class OrderFetchService {
   }
 
   getAllOrders(restaurantId: number) {
-    return this.http.get<OrderDto[]>(apiUrls.allOrdersEndpoint(restaurantId));
+    return this.http.get<OrderDto[]>(apiUrls.allOrdersEndpoint(restaurantId), this.authService.getAuthHeader());
   }
 
   getOrder(restaurantId: number, orderId: number) {
@@ -29,10 +29,10 @@ export class OrderFetchService {
   }
 
   updateOrderStatus(restaurantId: number, orderId: number, status: OrderStatusEnum) {
-    return this.http.patch<OrderDto>(apiUrls.orderStatusEndpoint(restaurantId, orderId), { status });
+    return this.http.patch<OrderDto>(apiUrls.orderStatusEndpoint(restaurantId, orderId), { status }, this.authService.getAuthHeader());
   }
 
   deleteOrder(restaurantId: number, orderId: number) {
-    return this.http.delete<void>(apiUrls.orderEndpoint(restaurantId, orderId));
+    return this.http.delete<void>(apiUrls.orderEndpoint(restaurantId, orderId), this.authService.getAuthHeader());
   }
 }

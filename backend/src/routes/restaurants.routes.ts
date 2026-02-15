@@ -1,7 +1,7 @@
 import {type Request, type Response, Router} from 'express';
 import pool from '../pool';
 import {type RestaurantRow, restaurantSerializer, type ImageRow, imageSerializer} from '../serializers';
-import {sendInternalError, sendNotFound, randomDelay} from '../utils';
+import {sendInternalError, sendNotFound, randomDelay, requiresAuth} from '../utils';
 
 const router = Router();
 
@@ -81,7 +81,7 @@ router.get("/:restaurantId/manage-profile", async (req: Request, res: Response) 
     }
 });
 
-router.put("/:restaurantId/manage-profile", async (req: Request, res: Response) => {
+router.put("/:restaurantId/manage-profile", requiresAuth, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
         const {name, phone, email, openingHours} = req.body;
@@ -128,7 +128,7 @@ router.put("/:restaurantId/manage-profile", async (req: Request, res: Response) 
 });
 
 // assumption: no concurrent writes (only one user will change ordering at the same time); simplifies logic
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", requiresAuth, async (req: Request, res: Response) => {
     try {
         const {name, phone, email, locationName, address} = req.body as {
             name: string,
@@ -189,7 +189,7 @@ router.get("/:restaurantId/image", async (req: Request, res: Response) => {
     }
 });
 
-router.put("/:restaurantId/image", async (req: Request, res: Response) => {
+router.put("/:restaurantId/image", requiresAuth, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
         const { image } = req.body as { image: string | null };
@@ -210,8 +210,7 @@ router.put("/:restaurantId/image", async (req: Request, res: Response) => {
     }
 });
 
-//TODO permission to do so via auth.
-router.patch("/order", async (req: Request, res: Response) => {
+router.patch("/order", requiresAuth, async (req: Request, res: Response) => {
     try {
         const items = req.body as { id: number; orderIndex: number }[];
         const client = await pool.connect();
@@ -236,8 +235,7 @@ router.patch("/order", async (req: Request, res: Response) => {
     }
 });
 
-//TODO permission to do so via auth.
-router.delete("/:restaurantId", async (req: Request, res: Response) => {
+router.delete("/:restaurantId", requiresAuth, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
         const query = `DELETE FROM restaurant WHERE restaurant_id = $1 RETURNING restaurant_id`;

@@ -6,7 +6,7 @@ import {requiresAdmin, sendBadRequest, sendInternalError, sendNotFound} from '..
 const router = Router();
 
 
-router.get("/stats", async (_req: Request, res: Response) => {
+router.get("/stats", requiresAdmin, async (_req: Request, res: Response) => {
     try {
         const ordersResult = await pool.query(`
             SELECT COUNT(*) as total_orders, COALESCE(SUM(paid_amount), 0) as total_revenue
@@ -50,7 +50,7 @@ router.get("/stats", async (_req: Request, res: Response) => {
 
 
 
-router.get("/restaurants/pending", async (_req: Request, res: Response) => {
+router.get("/restaurants/pending", requiresAdmin, async (_req: Request, res: Response) => {
     try {
         const query = `
             SELECT restaurant_id, restaurant_name, owner_id, phone, email, restaurant_status_id,
@@ -69,7 +69,7 @@ router.get("/restaurants/pending", async (_req: Request, res: Response) => {
     }
 });
 
-router.get("/restaurants/active", async (_req: Request, res: Response) => {
+router.get("/restaurants/active", requiresAdmin, async (_req: Request, res: Response) => {
     try {
         const query = `
             SELECT restaurant_id, restaurant_name, owner_id, phone, email, restaurant_status_id,
@@ -88,7 +88,7 @@ router.get("/restaurants/active", async (_req: Request, res: Response) => {
     }
 });
 
-router.post("/restaurants/:restaurantId/approve", async (req: Request, res: Response) => {
+router.post("/restaurants/:restaurantId/approve", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
         const query = `
@@ -112,7 +112,7 @@ router.post("/restaurants/:restaurantId/approve", async (req: Request, res: Resp
     }
 });
 
-router.post("/restaurants/:restaurantId/reject", async (req: Request, res: Response) => {
+router.post("/restaurants/:restaurantId/reject", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
         const query = `
@@ -194,7 +194,7 @@ router.get("/users", requiresAdmin, async (_req: Request, res: Response) => {
     }
 });
 
-router.post("/users/:userId/warn", async (req: Request, res: Response) => {
+router.post("/users/:userId/warn", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const userId = parseInt(req.params.userId!);
         const {reason} = req.body;
@@ -246,7 +246,7 @@ router.post("/users/:userId/warn", async (req: Request, res: Response) => {
     }
 });
 
-router.post("/users/:userId/suspend", async (req: Request, res: Response) => {
+router.post("/users/:userId/suspend", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const userId = parseInt(req.params.userId!);
         const {reason} = req.body;
@@ -285,7 +285,7 @@ router.post("/users/:userId/suspend", async (req: Request, res: Response) => {
     }
 });
 
-router.post("/users/:userId/activate", async (req: Request, res: Response) => {
+router.post("/users/:userId/activate", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const userId = parseInt(req.params.userId!);
 
@@ -330,7 +330,7 @@ interface SettingRow {
     updated_at: Date;
 }
 
-router.get("/settings", async (_req: Request, res: Response) => {
+router.get("/settings", requiresAdmin, async (_req: Request, res: Response) => {
     try {
         const result = await pool.query<SettingRow>(`
             SELECT setting_id, setting_key, setting_value, description, updated_at
@@ -347,7 +347,7 @@ router.get("/settings", async (_req: Request, res: Response) => {
     }
 });
 
-router.put("/settings/:key", async (req: Request, res: Response) => {
+router.put("/settings/:key", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const settingKey = req.params.key!;
         const {value} = req.body;
@@ -389,7 +389,7 @@ interface DeliveryZoneRow {
     created_at: Date;
 }
 
-router.get("/delivery-zones", async (_req: Request, res: Response) => {
+router.get("/delivery-zones", requiresAdmin, async (_req: Request, res: Response) => {
     try {
         const result = await pool.query<DeliveryZoneRow>(`
             SELECT zone_id, zone_name, postal_codes, city, is_active, delivery_fee, created_at
@@ -410,7 +410,7 @@ router.get("/delivery-zones", async (_req: Request, res: Response) => {
     }
 });
 
-router.post("/delivery-zones", async (req: Request, res: Response) => {
+router.post("/delivery-zones", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const {name, postalCodes, city, deliveryFee, isActive} = req.body;
 
@@ -442,7 +442,7 @@ router.post("/delivery-zones", async (req: Request, res: Response) => {
     }
 });
 
-router.put("/delivery-zones/:zoneId", async (req: Request, res: Response) => {
+router.put("/delivery-zones/:zoneId", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const zoneId = parseInt(req.params.zoneId!);
         const {name, postalCodes, city, deliveryFee, isActive} = req.body;
@@ -480,7 +480,7 @@ router.put("/delivery-zones/:zoneId", async (req: Request, res: Response) => {
     }
 });
 
-router.delete("/delivery-zones/:zoneId", async (req: Request, res: Response) => {
+router.delete("/delivery-zones/:zoneId", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const zoneId = parseInt(req.params.zoneId!);
         const result = await pool.query(`DELETE FROM delivery_zone WHERE zone_id = $1 RETURNING zone_id`, [zoneId]);
@@ -517,7 +517,7 @@ interface VoucherRow {
     created_at: Date;
 }
 
-router.get("/vouchers", async (_req: Request, res: Response) => {
+router.get("/vouchers", requiresAdmin, async (_req: Request, res: Response) => {
     try {
         const result = await pool.query<VoucherRow>(`
             SELECT c.coupon_id, c.coupon_code, c.description, c.discount_type, c.discount_value,
@@ -548,7 +548,7 @@ router.get("/vouchers", async (_req: Request, res: Response) => {
     }
 });
 
-router.post("/vouchers", async (req: Request, res: Response) => {
+router.post("/vouchers", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const {code, description, discountType, discountValue, minOrderValue, maxUses, startDate, endDate, isActive, restaurantId} = req.body;
 
@@ -585,7 +585,7 @@ router.post("/vouchers", async (req: Request, res: Response) => {
     }
 });
 
-router.put("/vouchers/:voucherId", async (req: Request, res: Response) => {
+router.put("/vouchers/:voucherId", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const voucherId = parseInt(req.params.voucherId!);
         const {code, description, discountType, discountValue, minOrderValue, maxUses, startDate, endDate, isActive, restaurantId} = req.body;
@@ -633,7 +633,7 @@ router.put("/vouchers/:voucherId", async (req: Request, res: Response) => {
     }
 });
 
-router.delete("/vouchers/:voucherId", async (req: Request, res: Response) => {
+router.delete("/vouchers/:voucherId", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const voucherId = parseInt(req.params.voucherId!);
         const result = await pool.query(`DELETE FROM coupon_code WHERE coupon_id = $1 RETURNING coupon_id`, [voucherId]);
@@ -653,7 +653,7 @@ router.delete("/vouchers/:voucherId", async (req: Request, res: Response) => {
 // REPORTING
 // =====================
 
-router.get("/reports/orders", async (req: Request, res: Response) => {
+router.get("/reports/orders", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const {startDate, endDate, groupBy} = req.query;
         
@@ -709,7 +709,7 @@ router.get("/reports/orders", async (req: Request, res: Response) => {
     }
 });
 
-router.get("/reports/users", async (req: Request, res: Response) => {
+router.get("/reports/users", requiresAdmin, async (req: Request, res: Response) => {
     try {
         const {startDate, endDate} = req.query;
         
@@ -767,7 +767,7 @@ router.get("/reports/users", async (req: Request, res: Response) => {
     }
 });
 
-router.get("/reports/restaurants", async (_req: Request, res: Response) => {
+router.get("/reports/restaurants", requiresAdmin, async (_req: Request, res: Response) => {
     try {
         // Status breakdown
         const statusQuery = `
