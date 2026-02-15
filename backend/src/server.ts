@@ -17,7 +17,7 @@ app.get('/', (_req: Request, res: Response) => {
 // Delegate incoming requests to routers
 app.use('/api/auth', authRouter);
 app.use('/api/users', usersRouter);
-app.use('/api/place-order', orderPlacementRouter);
+app.use('/api/orders', orderPlacementRouter);
 app.use('/api/restaurants/:restaurantId/orders', ordersRouter);
 app.use('/api/restaurants/:restaurantId/menu-items', menuItemsRouter);
 app.use('/api/cuisines', cuisinesRouter);

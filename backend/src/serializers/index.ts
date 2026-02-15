@@ -13,3 +13,5 @@ export {cuisineSerializer, CuisineSerializer} from './cuisine.serializer';
 export type { CuisineRow } from './cuisine.serializer';
 export {imageSerializer, ImageSerializer} from './image.serializer';
 export type { ImageRow } from './image.serializer';
+export {couponCodeSerializer, CouponCodeSerializer} from './coupon-code.serializer';
+export type { CouponCodeRow } from './coupon-code.serializer';

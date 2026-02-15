@@ -6,6 +6,7 @@ export type { OrderRequestDto } from './order-request.dto';
 export type { UserDto } from './user.dto';
 export type {RestaurantDto, OpeningHoursDto} from './restaurant.dto';
 export type { CuisineDto } from './cuisine.dto';
+export type { CouponCodeDto } from './coupon-code.dto';
 export type { ImageDto } from './image.dto';
 export { serializeImageToBase64, deserializeBase64ToDataUrl } from './image.dto';
 export type { LoginRequestDto, RegisterRequestDto, AuthResponseDto, AuthUserDto, PasswordResetRequestDto, PasswordResetDto, UpdateProfileDto, ChangePasswordDto } from './auth.dto';

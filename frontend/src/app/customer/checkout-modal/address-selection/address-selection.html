@@ -1,0 +1,26 @@
+<div>
+  <label class="address-container">
+
+    <div class="address-select-container">
+      @if(address.isDefault) {
+        <input type="radio" name="address-select" class="address-select" (change)="selectAddress()" checked>
+      }
+      @else {
+        <input type="radio" name="address-select" class="address-select" (change)="selectAddress()">
+      }
+    </div>
+
+    <div class="address-block">
+      <div class="address-name">{{address.name}}</div>
+      <div class="address-line">{{address.address.street}} {{address.address.houseNr}}
+        @if(address.address.door) {
+          / {{address.address.door}}
+        }
+      </div>
+      <div class="address-line">
+        {{address.address.city}} {{address.address.postalCode}}
+      </div>
+    </div>
+
+  </label>
+</div>

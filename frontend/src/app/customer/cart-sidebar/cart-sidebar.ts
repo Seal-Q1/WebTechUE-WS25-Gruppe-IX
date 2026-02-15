@@ -1,8 +1,8 @@
 import {Component, inject} from '@angular/core';
 import {CartService} from '../../services/cart-service';
 import {CardItem} from '../cart-item/cart-item';
-import {Router} from '@angular/router';
-import {OrderService} from '../../services/order-service';
+import {Dialog} from '@angular/cdk/dialog';
+import {CheckoutModal} from '../checkout-modal/checkout-modal.component';
 
 @Component({
   selector: 'app-cart-sidebar',
@@ -13,15 +13,10 @@ import {OrderService} from '../../services/order-service';
   styleUrl: './cart-sidebar.css',
 })
 export class CartSidebar {
-  router = inject(Router);
   cartService = inject(CartService);
-  orderService = inject(OrderService)
+  private dialog = inject(Dialog);
 
-  placeOrder() {
-    const orders = this.cartService.cart()
-    this.orderService.placeOrderRequest(orders).subscribe(data => {
-      this.cartService.clearCart();
-      this.router.navigate([`/order-confirmation`]);
-    })
+  checkout() {
+    this.dialog.open(CheckoutModal, {})
   }
 }

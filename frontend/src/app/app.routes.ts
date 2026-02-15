@@ -19,6 +19,7 @@ import {LoyaltyHistoryComponent} from "./loyalty/loyalty-history/loyalty-history
 import {AdminGuard} from "./guards/admin.guard";
 import {AuthGuard} from "./guards/auth.guard";
 import {environment} from '../environment/environment';
+import {CheckoutModal} from './customer/checkout-modal/checkout-modal.component';
 
 
 export const routes: Routes = [
@@ -31,6 +32,11 @@ export const routes: Routes = [
     path: 'restaurant/:restaurantId',
     component: RestaurantView,
     title: 'Restaurant Details'
+  },
+  {
+    path: 'checkout',
+    component: CheckoutModal,
+    title: 'Checkout'
   },
   {
     path: 'order-confirmation',

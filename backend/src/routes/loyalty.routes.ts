@@ -10,6 +10,9 @@ import type {
   PointsEarnedResponseDto,
   RedeemRewardRequestDto
 } from '@shared/types';
+import {requiresAuth, sendInternalError, sendNotFound} from "../utils";
+import {CouponCodeRow, couponCodeSerializer} from "../serializers";
+import {CouponCodeSerializer} from "../serializers/coupon-code.serializer";
 
 const router = Router();
 
@@ -24,16 +27,6 @@ function getUserIdFromToken(authHeader: string | undefined): number | null {
   } catch {
     return null;
   }
-}
-
-// Middleware: Require authentication
-function requireAuth(req: Request, res: Response, next: Function) {
-  const userId = getUserIdFromToken(req.headers.authorization);
-  if (!userId) {
-    return res.status(401).json({ error: 'Authentication required' });
-  }
-  (req as any).userId = userId;
-  next();
 }
 
 // Helper: Serialize promotion from DB row
@@ -156,7 +149,7 @@ async function ensureUserPoints(userId: number): Promise<void> {
 }
 
 // GET /api/loyalty/dashboard - Get user's loyalty dashboard
-router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
+router.get('/dashboard', requiresAuth, async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   
   try {
@@ -232,7 +225,7 @@ router.get('/dashboard', requireAuth, async (req: Request, res: Response) => {
 });
 
 // GET /api/loyalty/points - Get user's current points
-router.get('/points', requireAuth, async (req: Request, res: Response) => {
+router.get('/points', requiresAuth, async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   
   try {
@@ -269,7 +262,7 @@ router.get('/promotions', async (req: Request, res: Response) => {
 });
 
 // GET /api/loyalty/rewards - Get available rewards
-router.get('/rewards', requireAuth, async (req: Request, res: Response) => {
+router.get('/rewards', requiresAuth, async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   
   try {
@@ -300,7 +293,7 @@ router.get('/rewards', requireAuth, async (req: Request, res: Response) => {
 });
 
 // POST /api/loyalty/redeem - Redeem points for a reward
-router.post('/redeem', requireAuth, async (req: Request, res: Response) => {
+router.post('/redeem', requiresAuth, async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   const { rewardId } = req.body as RedeemRewardRequestDto;
   
@@ -408,7 +401,7 @@ router.post('/redeem', requireAuth, async (req: Request, res: Response) => {
 });
 
 // GET /api/loyalty/redemptions - Get user's redemption history
-router.get('/redemptions', requireAuth, async (req: Request, res: Response) => {
+router.get('/redemptions', requiresAuth, async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   const { unused } = req.query;
   
@@ -437,7 +430,7 @@ router.get('/redemptions', requireAuth, async (req: Request, res: Response) => {
 });
 
 // GET /api/loyalty/transactions - Get user's point transaction history
-router.get('/transactions', requireAuth, async (req: Request, res: Response) => {
+router.get('/transactions', requiresAuth, async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   const limit = parseInt(req.query.limit as string) || 50;
   
@@ -460,7 +453,7 @@ router.get('/transactions', requireAuth, async (req: Request, res: Response) => 
 });
 
 // POST /api/loyalty/earn - Award points for an order (called internally when order is placed)
-router.post('/earn', requireAuth, async (req: Request, res: Response) => {
+router.post('/earn', requiresAuth, async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   const { orderId, orderTotal } = req.body;
   
@@ -577,7 +570,7 @@ router.post('/earn', requireAuth, async (req: Request, res: Response) => {
 });
 
 // POST /api/loyalty/use-redemption - Mark a redemption as used with an order
-router.post('/use-redemption', requireAuth, async (req: Request, res: Response) => {
+router.post('/use-redemption', requiresAuth, async (req: Request, res: Response) => {
   const userId = (req as any).userId;
   const { redemptionId, orderId } = req.body;
   
@@ -609,5 +602,24 @@ router.post('/use-redemption', requireAuth, async (req: Request, res: Response) 
     res.status(500).json({ error: 'Failed to use redemption' });
   }
 });
+
+router.get('/coupon-code/:code', async (req: Request, res: Response) => {
+    const code = req.params.code!;
+    try {
+        const result = await pool.query<CouponCodeRow>(`
+            SELECT * FROM coupon_code c
+            WHERE c.coupon_code = $1;
+        `, [code]);
+
+        if (result.rows.length === 0) {
+            sendNotFound(res, "Could not find Coupon Code");
+            return;
+        }
+        res.json(couponCodeSerializer.serialize(result.rows[0]!));
+
+    } catch (error) {
+        sendInternalError(res, error, "occurred while fetching coupon code");
+    }
+})
 
 export default router;

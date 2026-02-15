@@ -11,7 +11,9 @@ export const apiUrls = {
   orderItemsEndpoint: (restaurantId: number, orderId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}/orders/${orderId}/items`,
   placeOrderEndpoint: () =>
-    `${environment.apiUrl}/place-order`,
+    `${environment.apiUrl}/orders`,
+  couponCodeEndpoint: (couponCode: string) =>
+    `${environment.apiUrl}/loyalty/coupon-code/${couponCode}`,
   allMenuItemsEndpoint: (restaurantId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}/menu-items`,
   menuItemEndpoint: (restaurantId: number, itemId: number) =>

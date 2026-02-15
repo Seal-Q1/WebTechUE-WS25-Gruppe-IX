@@ -1,21 +1,31 @@
 import { Router, type Request, type Response } from 'express';
 import pool from '../pool';
-import {orderSerializer, type OrderRow, OrderItemRow} from '../serializers';
+import {orderSerializer, type OrderRow, OrderItemRow, CouponCodeRow} from '../serializers';
 import {OrderRequestDto} from '@shared/types';
-import {sendInternalError } from '../utils';
+import {parseTokenUserId, requiresAuth, sendInternalError, sendNotFound} from '../utils';
+import assert from "node:assert";
 
 const router = Router();
 
 
-router.post("/", async (req: Request, res: Response) => {
-    const orderRequestDto = req.body as OrderRequestDto;
+router.post("/", requiresAuth, async (req: Request, res: Response) => {
+    const dto = req.body as OrderRequestDto;
+    const userId = parseTokenUserId(req.headers.authorization);
+
+    assert(dto.items.length > 0, 'At least one item must be ordered');
+
+    let restaurantId: number = dto.items[0]!.restaurantId;
+    for(let item of dto.items) {
+        assert(item.restaurantId === restaurantId, 'All items must be from same restaurant');
+    }
+
     try {
         const client = await pool.connect();
         let itemPriceList: OrderItemData[] = []
 
         // Retrieve individual prices and calculate total unitPrice
         let totalPrice = 0;
-        for(let item of orderRequestDto.items) {
+        for(let item of dto.items) {
             const getPriceQuery = `
                 SELECT item_price FROM menu_item
                 WHERE item_id = $1 and restaurant_id = $2;
@@ -32,6 +42,25 @@ router.post("/", async (req: Request, res: Response) => {
             totalPrice += item.quantity * itemPrice;
         }
 
+        // Retrieve coupon information
+        const couponQuery = `
+            SELECT *
+            FROM coupon_code
+            WHERE coupon_code = $1
+              AND (restaurant_id = $2 OR restaurant_id IS NULL);
+        `
+        const couponResult = await client.query<CouponCodeRow>(couponQuery,
+            [dto.couponCode, restaurantId]
+        );
+        const couponInfo = couponResult.rows[0]!;
+        let effectiveDiscount = 0
+        if (couponInfo.discount_type === 'fixed') {
+            effectiveDiscount = couponInfo.discount_value;
+        }
+        else {
+            effectiveDiscount = totalPrice * couponInfo.discount_value * 0.01;
+        }
+
         await client.query('BEGIN');
 
         // Create order
@@ -40,14 +69,17 @@ router.post("/", async (req: Request, res: Response) => {
             order_name, order_type, order_status, address_street, address_house_nr, address_postal_code, address_city,
             address_door, paid_amount, payment_method, coupon_id, user_id, created_at
         )
-        VALUES ('Test', 'delivery'::order_type_enum, 'preparing'::order_status_enum, 'Teststraße', '815', '9020', 'Klagenfurt',
-                null, $1, 'cash'::payment_method_enum, null, 1, DEFAULT)
+        VALUES ('Order', 'delivery'::order_type_enum, 'preparing'::order_status_enum, $1, $2, $3, $4,
+                $5, $6, 'card', $7, $8, DEFAULT)
         RETURNING *;
         `
-        const order = await client.query<OrderRow>(query, [totalPrice]);
+        const order = await client.query<OrderRow>(query,
+            [dto.address.street, dto.address.houseNr, dto.address.postalCode, dto.address.city,
+                dto.address.door, totalPrice - effectiveDiscount, couponInfo.coupon_id, userId]
+        );
 
         // Create order item pairs
-        for (let item of orderRequestDto.items) {
+        for (let item of dto.items) {
             const query = `
                 INSERT INTO "order_item" (
                     order_id, item_id, quantity, unit_price

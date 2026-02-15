@@ -1,0 +1,77 @@
+div.checkout-modal {
+  background-color: #ffffff;
+  padding: 20px 26px;
+  border-radius: 10px;
+  min-width: 50vw;
+  min-height: 50vh;
+
+  max-width: 80vw;
+  max-height: 90vh;
+  overflow: scroll;
+}
+
+div.checkout-modal h2 {
+  font-size: 1.75em;
+  font-weight: bold;
+}
+
+table.checkout-items {
+  margin-top: 20px;
+}
+
+table.checkout-items td {
+  padding-right: 15px;
+}
+
+table.checkout-items tr td:nth-child(2) {
+  font-family: monospace;
+  text-align: right;
+}
+
+table.checkout-items tr td:nth-child(3) {
+  font-family: monospace;
+  text-align: right;
+}
+
+tr.checkout-subtotal {
+  border-top: 1px solid #000000;
+}
+
+tr.checkout-total {
+  border-bottom: 2px solid #000000;
+}
+
+span.discount-error-symbol {
+  display: none;
+}
+
+span.discount-error-symbol + input.discount-field {
+  border-color: red;
+}
+
+input.discount-field {
+  margin-top: 10px;
+  padding: 5px;
+  margin-right: 10px;
+  border-radius: 10px;
+  border: 1px solid #000000;
+}
+
+div.checkout-modal h3 {
+  font-size: 1.25em;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.cart-checkout-button, input.discount-apply-btn {
+  color: white;
+  background-color: var(--primary);
+
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.2s;
+}
+
+.cart-checkout-button:hover, input.discount-apply-btn:hover {
+  background-color: var(--primary-darkened);
+}

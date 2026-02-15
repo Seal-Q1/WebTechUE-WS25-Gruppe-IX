@@ -26,3 +26,11 @@
 .cart-checkout-button:hover {
   background-color: var(--primary-darkened);
 }
+
+.cart-checkout-button[disabled] {
+  background-color: var(--disabled);
+}
+
+.cart-checkout-button[disabled]:hover {
+  background-color: var(--disabled);
+}

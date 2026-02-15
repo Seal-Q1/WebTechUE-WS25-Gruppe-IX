@@ -1,0 +1,69 @@
+<div class="checkout-modal">
+  <h2>Checkout</h2>
+
+  <div class="checkout-flex">
+    <div class="checkout-items-container">
+
+      <table class="checkout-items">
+        @for(cartItem of cartService.cart(); track "d" + cartItem.itemInfo.id + "r" + cartItem.itemInfo.restaurantId) {
+          <tr>
+            <td class="checkout-item-name">{{cartItem.itemInfo.name}}</td>
+            <td class="checkout-item-qt">(x{{cartItem.quantity}})</td>
+            <td class="checkout-item-price">{{(cartItem.itemInfo.price * cartItem.quantity).toFixed(2)}} €</td>
+          </tr>
+        }
+        <tr class="checkout-subtotal">
+          <td colspan="2">Subtotal</td>
+          <td class="checkout-subtotal-price">{{cartService.getTotalPrice().toFixed(2)}} €</td>
+        </tr>
+        <tr class="checkout-discount">
+          <td colspan="2">Discount
+          @if(activeDiscount() !== '') {
+            <span>({{activeDiscount()}})</span>
+          }
+          </td>
+          <td class="checkout-discount">-{{effectiveDiscount().toFixed(2)}} €</td>
+        </tr>
+        <tr class="checkout-total">
+          <td colspan="2">Total</td>
+          <td class="checkout-total-price">{{(cartService.getTotalPrice()-effectiveDiscount()).toFixed(2)}} €</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="checkout-discount-container">
+      <label>
+        Discount Code
+        @if(discountError()) {
+          <span class="discount-error-symbol">!</span>
+        }
+        <input type="text" class="discount-field" placeholder="Discount code" (input)="discountEntered($event)">
+      </label>
+      <input type="submit" class="discount-apply-btn" (click)="discountSubmitted()" value="Apply">
+    </div>
+
+    <div class="checkout-address-container">
+      <h3>Select your address</h3>
+      @for(address of user()?.addresses; track address) {
+        <app-address-selection [address]="address" (selected)="addressSelected($event)"></app-address-selection>
+      }
+      @empty {
+        <span>You need to create an address in your profile before ordering!</span>
+      }
+    </div>
+
+    <div class="checkout-payment-container">
+      <h3>Payment</h3>
+      @for(card of user()?.paymentCards; track card) {
+        <app-payment-selection [card]="card" (selected)="cardSelected($event)"></app-payment-selection>
+      }
+      @empty {
+        <span>You need to add a payment option in your profile before ordering!</span>
+      }
+    </div>
+
+    <div class="cart-checkout-container">
+      <button class="cart-checkout-button" title="Place order" (click)="placeOrder()">Place order</button>
+    </div>
+  </div>
+</div>

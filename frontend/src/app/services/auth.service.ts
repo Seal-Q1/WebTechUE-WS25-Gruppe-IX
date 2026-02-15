@@ -114,11 +114,7 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<AuthUserDto> {
-    return this.http.get<AuthUserDto>(`${AUTH_API_URL}/me`, {
-      headers: {
-        Authorization: `Bearer ${this.getToken()}`
-      }
-    });
+    return this.http.get<AuthUserDto>(`${AUTH_API_URL}/me`, this.getAuthHeader());
   }
 
   isLoggedIn(): boolean {

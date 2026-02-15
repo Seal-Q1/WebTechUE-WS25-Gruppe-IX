@@ -5,8 +5,10 @@
 :root {
   --primary: #ff7300;
   --primary-darkened: #cc5e00;
+  --primary-light: #ffb984;
   --secondary: #ffffff;
   --tertiary: #ffffff;
+  --disabled: #aaaaaa;
 }
 
 body {
