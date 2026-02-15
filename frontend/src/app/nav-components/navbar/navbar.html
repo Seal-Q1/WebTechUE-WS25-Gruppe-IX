@@ -2,7 +2,7 @@
   <a class="nav-home" (click)="onHomeClicked()"><fa-icon [icon]="faStar"/> Q1 Food</a>
   <ul>
     @if (isLoggedIn) {
-      <li><a><fa-icon [icon]="faTruckFast"/> My Orders </a></li>
+      <li><a (click)="onMyOrdersClicked()"><fa-icon [icon]="faTruckFast"/> My Orders </a></li>
       @if(isRestaurantOwner) {
         <li><a (click)="onRestaurants()"><fa-icon [icon]="faUtensils"/> Manage Restaurant</a></li>
       }

@@ -20,6 +20,7 @@ import {AdminGuard} from "./guards/admin.guard";
 import {AuthGuard} from "./guards/auth.guard";
 import {environment} from '../environment/environment';
 import {CheckoutModal} from './customer/checkout-modal/checkout-modal.component';
+import {OrderOverview} from './customer/order-overview/order-overview';
 
 
 export const routes: Routes = [
@@ -32,6 +33,11 @@ export const routes: Routes = [
     path: 'restaurant/:restaurantId',
     component: RestaurantView,
     title: 'Restaurant Details'
+  },
+  {
+    path: 'orders',
+    component: OrderOverview,
+    title: 'My Orders'
   },
   {
     path: 'checkout',

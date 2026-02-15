@@ -1,0 +1,36 @@
+.order-overview-header {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.order-overview-header h1 {
+  text-align: center;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+div.order-overview {
+  padding: 20px;
+}
+
+h2 {
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+p {
+  text-align: center;
+}
+
+div.order-container {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+div.order-container span.empty-info {
+  text-align: center;
+  color: #a1a1a1;
+}

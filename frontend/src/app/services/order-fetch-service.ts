@@ -1,13 +1,20 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
 import {OrderDto, OrderItemDto, OrderStatusEnum} from '@shared/types';
+import {AuthService} from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OrderFetchService {
   constructor(private http: HttpClient) {}
+
+  private authService = inject(AuthService);
+
+  getOwnOrders() {
+    return this.http.get<OrderDto[]>(apiUrls.ownOrderEndpoint(), this.authService.getAuthHeader());
+  }
 
   getAllOrders(restaurantId: number) {
     return this.http.get<OrderDto[]>(apiUrls.allOrdersEndpoint(restaurantId));

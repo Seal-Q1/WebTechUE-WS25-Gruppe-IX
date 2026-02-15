@@ -40,6 +40,10 @@ export class Navbar implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
+  onMyOrdersClicked() {
+    this.router.navigate(['/orders']);
+  }
+
   onRestaurants = (): void => {
     this.router.navigate(['/restaurants']);
   };

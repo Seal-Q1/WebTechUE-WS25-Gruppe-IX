@@ -1,0 +1,29 @@
+<div class="order-overview-header">
+  <h1>Order Overview</h1>
+</div>
+
+<div class="order-overview">
+  <div>
+    <h2>Current orders</h2>
+    <div class="order-container">
+      @for(order of currentOrders(); track order) {
+        <app-order-element [order]="order"></app-order-element>
+      }
+      @empty {
+        <span class="empty-info">There are no orders to display.</span>
+      }
+    </div>
+  </div>
+  <div>
+    <h2>Past orders</h2>
+    <div class="order-container">
+      @for(order of pastOrders(); track order) {
+        <app-order-element [order]="order"></app-order-element>
+      }
+      @empty {
+        <span class="empty-info">There are no orders to display.</span>
+      }
+    </div>
+  </div>
+</div>
+

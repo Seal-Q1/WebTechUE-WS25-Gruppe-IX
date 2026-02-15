@@ -4,6 +4,8 @@ export const apiUrls = {
   userEndpoint: environment.apiUrl + "/users",
   allOrdersEndpoint: (restaurantId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}/orders`,
+  ownOrderEndpoint: () =>
+    `${environment.apiUrl}/orders/my`,
   orderEndpoint: (restaurantId: number, orderId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}/orders/${orderId}`,
   orderStatusEndpoint: (restaurantId: number, orderId: number) =>

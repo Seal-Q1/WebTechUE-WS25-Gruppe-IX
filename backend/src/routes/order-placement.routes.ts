@@ -7,6 +7,21 @@ import assert from "node:assert";
 
 const router = Router();
 
+router.get("/my", async (req: Request, res: Response) => {
+    const userId = parseTokenUserId(req.headers.authorization);
+    try {
+        const query = `
+      SELECT * FROM "order"
+      WHERE user_id = $1
+      ORDER BY created_at DESC
+    `;
+        const result = await pool.query<OrderRow>(query, [userId]);
+        res.json(orderSerializer.serialize_multiple(result.rows));
+    }
+    catch (error) {
+        sendInternalError(res, error, "occurred while fetching orders");
+    }
+});
 
 router.post("/", requiresAuth, async (req: Request, res: Response) => {
     const dto = req.body as OrderRequestDto;

@@ -1,0 +1,14 @@
+<div class="order-element">
+  <div class="order-status">{{order.status}}</div>
+  <div class="order-date">{{order.createdAt}}</div>
+  <div class="order-address">
+    <div class="order-address-line">
+      {{order.address?.street}} {{order.address?.houseNr}}
+      @if(order.address?.door) {
+        / {{order.address?.door}}
+      }
+    </div>
+    <div class="order-address-line">{{order.address?.postalCode}} {{order.address?.city}}</div>
+  </div>
+  <div class="order-price">{{order.paidAmount.toFixed(2)}} €</div>
+</div>
