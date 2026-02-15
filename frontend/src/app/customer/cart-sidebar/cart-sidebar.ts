@@ -1,6 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {CartService} from '../../services/cart-service';
-import {CardItem} from '../cart-item/cart-item';
+import {CardItem} from './cart-item/cart-item';
 import {Dialog} from '@angular/cdk/dialog';
 import {CheckoutModal} from '../checkout-modal/checkout-modal.component';
 
