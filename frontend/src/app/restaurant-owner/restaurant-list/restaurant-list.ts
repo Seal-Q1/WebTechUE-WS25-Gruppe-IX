@@ -3,14 +3,13 @@ import {CommonModule} from '@angular/common';
 import {Router} from '@angular/router';
 import {RestaurantDto} from '@shared/types';
 import {RestaurantService} from '../../services/restaurant-service';
-import {GridList} from '../../shared/grid-list/grid-list';
-import {RestaurantGridListElement} from '../../shared/grid-list/restaurant-grid-list-element/restaurant-grid-list-element';
+import {RestaurantGridList} from './restaurant-grid-list/restaurant-grid-list';
 import {RestaurantEditingOverlay} from '../../shared/editing-overlay';
 import type {RestaurantFormData} from '../../shared/editing-overlay';
 
 @Component({
   selector: 'app-restaurant-list',
-  imports: [CommonModule, GridList, RestaurantGridListElement, RestaurantEditingOverlay],
+  imports: [CommonModule, RestaurantGridList, RestaurantEditingOverlay],
   templateUrl: './restaurant-list.html',
   styleUrl: './restaurant-list.css',
 })
@@ -19,7 +18,6 @@ export class RestaurantList implements OnInit {
   restaurants: RestaurantDto[] = [];
   showRestaurantOverlay = false;
   selectedRestaurant: RestaurantDto | null = null;
-  reorderEnabled = true;
 
   constructor(
     private restaurantService: RestaurantService,
@@ -73,8 +71,8 @@ export class RestaurantList implements OnInit {
     this.selectedRestaurant = null;
   }
 
-  onItemClick(restaurantId: number): void {
-    this.onEditMenu(restaurantId);
+  onItemClick(restaurant: RestaurantDto): void {
+    this.onEditMenu(restaurant.id);
   }
 
   onSettingsClick(restaurantId: number): void {
@@ -92,10 +90,6 @@ export class RestaurantList implements OnInit {
       this.fetchRestaurants();
       this.cdr.markForCheck();
     });
-  }
-
-  onOrderChanged(orderUpdates: { id: number; orderIndex: number }[]): void {
-    this.restaurantService.updateRestaurantsOrder(orderUpdates).subscribe();
   }
 
   onEditProfile(restaurantId: number): void {

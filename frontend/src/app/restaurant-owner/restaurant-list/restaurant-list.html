@@ -3,20 +3,12 @@
   <button (click)="fetchRestaurants()">Refresh Restaurants</button>
   <br>
   <button (click)="onAddRestaurant()">Add Restaurant</button>
-  <div class="restaurant-list-container">
-    <app-grid-list
-      [items]="restaurants"
-      [reorderEnabled]="reorderEnabled"
-      (orderChanged)="onOrderChanged($event)">
-      <ng-template #itemTemplate let-item let-i="index">
-        <app-restaurant-grid-list-element
-          [restaurant]="item"
-          (itemClick)="onItemClick(item.id)"
-          (settingsClick)="onSettingsClick(item.id)">
-        </app-restaurant-grid-list-element>
-      </ng-template>
-    </app-grid-list>
-  </div>
+
+  <app-restaurant-grid-list
+    [restaurants]="restaurants"
+    (edit)="onItemClick($event)"
+    (settings)="onSettingsClick($event)">
+  </app-restaurant-grid-list>
 </div>
 
 @if (showRestaurantOverlay) {
