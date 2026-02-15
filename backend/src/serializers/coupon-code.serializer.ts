@@ -26,7 +26,8 @@ export class CouponCodeSerializer extends Serializable<CouponCodeRow, CouponCode
             discountType: row.discount_type,
             discountValue: row.discount_value,
             minOrderValue: row.min_order_value,
-            maxUsesReached: (row.max_uses ? row.max_uses : 0) > row.current_uses,
+            // true when the coupon has reached or exceeded its max uses
+            maxUsesReached: row.max_uses !== null ? row.current_uses >= row.max_uses : false,
             startDate: row.start_date,
             endDate: row.end_date,
             isActive: row.is_active,

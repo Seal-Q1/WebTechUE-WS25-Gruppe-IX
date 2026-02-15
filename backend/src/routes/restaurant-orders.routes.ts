@@ -2,12 +2,12 @@ import { Router, type Request, type Response } from 'express';
 import pool from '../pool';
 import { orderSerializer, orderItemSerializer, type OrderRow, type OrderItemRow } from '../serializers';
 import { OrderStatusEnum } from '@shared/types';
-import { sendNotFound, sendBadRequest, sendInternalError } from '../utils';
+import { sendNotFound, sendBadRequest, sendInternalError, requiresAuth } from '../utils';
 
 const router = Router();
 
 // "Get all orders of all restaurants"     // TODO: filter by restaurantId when restaurant table exists
-router.get("/", async (_req: Request, res: Response) => {
+router.get("/", requiresAuth, async (_req: Request, res: Response) => {
   try {
     const query = `
       SELECT order_id,
@@ -68,7 +68,7 @@ router.get("/:orderId", async (req: Request, res: Response) => {
 });
 
 // "Update the status of an order"
-router.patch("/:orderId/status", async (req: Request, res: Response) => {
+router.patch("/:orderId/status", requiresAuth, async (req: Request, res: Response) => {
   try {
     const orderId = parseInt(req.params.orderId!);
     const { status } = req.body as { status: OrderStatusEnum };
@@ -109,7 +109,7 @@ router.patch("/:orderId/status", async (req: Request, res: Response) => {
 });
 
 // "Delete an order"
-router.delete("/:orderId", async (req: Request, res: Response) => {
+router.delete("/:orderId", requiresAuth, async (req: Request, res: Response) => {
   try {
     const orderId = parseInt(req.params.orderId!);
     const result = await pool.query('DELETE FROM "order" WHERE order_id = $1 RETURNING order_id', [orderId]);

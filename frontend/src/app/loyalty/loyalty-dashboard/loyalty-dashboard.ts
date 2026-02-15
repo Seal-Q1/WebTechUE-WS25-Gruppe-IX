@@ -31,6 +31,7 @@ export class LoyaltyDashboardComponent implements OnInit {
   redeeming = false;
   redeemSuccess = false;
   redeemError = '';
+  redeemedCouponCode: string | null = null;
 
   ngOnInit(): void {
     this.loadDashboard();
@@ -134,8 +135,9 @@ export class LoyaltyDashboardComponent implements OnInit {
     this.redeemError = '';
     
     this.loyaltyService.redeemReward(this.selectedReward.id).subscribe({
-      next: () => {
+      next: (res) => {
         this.redeemSuccess = true;
+        this.redeemedCouponCode = (res as RewardRedemptionDto).couponCode || null;
         this.redeeming = false;
         this.cdr.detectChanges();
       },

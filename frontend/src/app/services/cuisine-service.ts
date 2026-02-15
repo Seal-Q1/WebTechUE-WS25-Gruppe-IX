@@ -1,12 +1,15 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
 import {CuisineDto} from '@shared/types';
+import {AuthService} from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CuisineService {
+  private authService = inject(AuthService);
+
   constructor(private http: HttpClient) {}
 
   getAllCuisines() {
@@ -18,18 +21,18 @@ export class CuisineService {
   }
 
   createCuisine(data: { name: string; description?: string; emoji?: string }) {
-    return this.http.post<CuisineDto>(apiUrls.allCuisinesEndpoint(), data);
+    return this.http.post<CuisineDto>(apiUrls.allCuisinesEndpoint(), data, this.authService.getAuthHeader());
   }
 
   updateCuisine(cuisineId: number, data: { name: string; description?: string; emoji?: string }) {
-    return this.http.put<CuisineDto>(apiUrls.cuisineEndpoint(cuisineId), data);
+    return this.http.put<CuisineDto>(apiUrls.cuisineEndpoint(cuisineId), data, this.authService.getAuthHeader());
   }
 
   deleteCuisine(cuisineId: number) {
-    return this.http.delete<void>(apiUrls.cuisineEndpoint(cuisineId));
+    return this.http.delete<void>(apiUrls.cuisineEndpoint(cuisineId), this.authService.getAuthHeader());
   }
 
   updateCuisinesOrder(items: { id: number; orderIndex: number }[]) {
-    return this.http.patch<void>(apiUrls.cuisinesOrderEndpoint(), items);
+    return this.http.patch<void>(apiUrls.cuisinesOrderEndpoint(), items, this.authService.getAuthHeader());
   }
 }

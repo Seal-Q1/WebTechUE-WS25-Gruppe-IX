@@ -7,8 +7,8 @@ import assert from "node:assert";
 
 const router = Router();
 
-router.get("/my", async (req: Request, res: Response) => {
-    const userId = parseTokenUserId(req.headers.authorization);
+router.get("/my", requiresAuth, async (req: Request, res: Response) => {
+    const userId = (req as any).userId;
     try {
         const query = `
       SELECT * FROM "order"
@@ -25,7 +25,8 @@ router.get("/my", async (req: Request, res: Response) => {
 
 router.post("/", requiresAuth, async (req: Request, res: Response) => {
     const dto = req.body as OrderRequestDto;
-    const userId = parseTokenUserId(req.headers.authorization);
+    const userId = (req as any).userId;
+
 
     assert(dto.items.length > 0, 'At least one item must be ordered');
 
@@ -57,23 +58,45 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
             totalPrice += item.quantity * itemPrice;
         }
 
-        // Retrieve coupon information
-        const couponQuery = `
-            SELECT *
-            FROM coupon_code
-            WHERE coupon_code = $1
-              AND (restaurant_id = $2 OR restaurant_id IS NULL);
-        `
-        const couponResult = await client.query<CouponCodeRow>(couponQuery,
-            [dto.couponCode, restaurantId]
-        );
-        const couponInfo = couponResult.rows[0]!;
-        let effectiveDiscount = 0
-        if (couponInfo.discount_type === 'fixed') {
-            effectiveDiscount = couponInfo.discount_value;
-        }
-        else {
-            effectiveDiscount = totalPrice * couponInfo.discount_value * 0.01;
+        // Retrieve coupon information (optional)
+        let effectiveDiscount = 0;
+        let couponId: number | null = null;
+        
+        if (dto.couponCode && dto.couponCode.trim() !== "") {
+            const couponQuery = `
+                SELECT *
+                FROM coupon_code
+                WHERE coupon_code = $1
+                  AND (restaurant_id = $2 OR restaurant_id IS NULL)
+                  AND is_active = true;
+            `;
+            const couponResult = await client.query<CouponCodeRow>(couponQuery,
+                [dto.couponCode, restaurantId]
+            );
+            const couponInfo = couponResult.rows[0];
+            if (!couponInfo) {
+                client.release();
+                return res.status(400).json({ error: 'coupon_not_found', message: 'Coupon not found or not valid for this restaurant', couponCode: dto.couponCode });
+            }
+
+            if (couponInfo) {
+                if (totalPrice < couponInfo.min_order_value) {
+                    client.release();
+                    return res.status(400).json({
+                        error: 'coupon_min_order',
+                        message: `Minimum order value for this voucher is ${couponInfo.min_order_value}` ,
+                        couponCode: dto.couponCode,
+                        required: couponInfo.min_order_value
+                    });
+                }
+                couponId = couponInfo.coupon_id;
+                if (couponInfo.discount_type === 'fixed') {
+                    effectiveDiscount = couponInfo.discount_value;
+                }
+                else {
+                    effectiveDiscount = totalPrice * couponInfo.discount_value * 0.01;
+                }
+            }
         }
 
         await client.query('BEGIN');
@@ -90,7 +113,7 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
         `
         const order = await client.query<OrderRow>(query,
             [dto.address.street, dto.address.houseNr, dto.address.postalCode, dto.address.city,
-                dto.address.door, totalPrice - effectiveDiscount, couponInfo.coupon_id, userId]
+                dto.address.door, totalPrice - effectiveDiscount, couponId, userId]
         );
 
         // Create order item pairs
@@ -109,7 +132,32 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
                 [order.rows[0]!.order_id, item.dishId, item.quantity, itemPriceObj.unitPrice]);
         }
 
+        // If the order used a coupon that was issued via loyalty redemption, mark that redemption used
+        if (dto.couponCode && dto.couponCode.trim() !== "") {
+            try {
+                await client.query(`
+                    UPDATE reward_redemption rr
+                    SET used_at = now(), order_id = $1
+                    WHERE rr.user_id = $2
+                      AND (rr.reward_snapshot->>'couponCode') = $3
+                      AND rr.used_at IS NULL
+                    RETURNING rr.redemption_id
+                `, [order.rows[0]!.order_id, userId, dto.couponCode]);
+
+                // Increment coupon usage and deactivate if max reached
+                await client.query(`
+                    UPDATE coupon_code
+                    SET current_uses = current_uses + 1,
+                        is_active = CASE WHEN max_uses IS NOT NULL AND (current_uses + 1) >= max_uses THEN false ELSE is_active END
+                    WHERE coupon_code = $1
+                `, [dto.couponCode]);
+            } catch (err) {
+                console.error('Failed to mark redemption or update coupon usage during order creation:', err);
+            }
+        }
+
         await client.query('COMMIT');
+        client.release();
         res.status(201).json(orderSerializer.serialize(order.rows[0]!));
     }
     catch (error) {

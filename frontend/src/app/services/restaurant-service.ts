@@ -35,7 +35,7 @@ export class RestaurantService {
     email: string;
     openingHours?: OpeningHoursDto
   }) {
-    return this.http.put<RestaurantDto>(apiUrls.restaurantProfileEndpoint(restaurantId), data);
+    return this.http.put<RestaurantDto>(apiUrls.restaurantProfileEndpoint(restaurantId), data, this.authService.getAuthHeader());
   }
 
   createRestaurant(data: {
@@ -45,7 +45,7 @@ export class RestaurantService {
     locationName: string;
     address: { street: string; houseNr: string; postalCode: string; city: string; door: string }
   }) {
-    return this.http.post<RestaurantDto>(apiUrls.allRestaurantsEndpoint(), data);
+    return this.http.post<RestaurantDto>(apiUrls.allRestaurantsEndpoint(), data, this.authService.getAuthHeader());
   }
 
   getRestaurantImage(restaurantId: number) {
@@ -58,15 +58,15 @@ export class RestaurantService {
   }
 
   updateRestaurantImage(restaurantId: number, image: string | null) {
-    return this.http.put<ImageDto>(apiUrls.restaurantImageEndpoint(restaurantId), { image });
+    return this.http.put<ImageDto>(apiUrls.restaurantImageEndpoint(restaurantId), { image }, this.authService.getAuthHeader());
   }
 
   updateRestaurantsOrder(items: { id: number; orderIndex: number }[]) {
-    return this.http.patch<void>(apiUrls.restaurantsOrderEndpoint(), items);
+    return this.http.patch<void>(apiUrls.restaurantsOrderEndpoint(), items, this.authService.getAuthHeader());
   }
 
   deleteRestaurant(restaurantId: number) {
-    return this.http.delete<void>(apiUrls.restaurantEndpoint(restaurantId));
+    return this.http.delete<void>(apiUrls.restaurantEndpoint(restaurantId), this.authService.getAuthHeader());
   }
 
   getAggregatedReviews() {

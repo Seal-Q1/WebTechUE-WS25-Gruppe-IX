@@ -305,7 +305,6 @@ CREATE TABLE public.admin_list
 INSERT INTO public.users (user_name, first_name, last_name, email, phone, password_hash, role_id, user_status_id)
 VALUES ('admin', 'Admin', 'Admin', 'admin@admin.com', '+43123456789', 'admin', 3, 1);
 
--- Add the admin user to the admin list
 INSERT INTO public.admin_list (user_id, added_by)
 SELECT user_id, user_id FROM public.users WHERE user_name = 'admin';
 
@@ -504,11 +503,20 @@ INSERT INTO public.reward (reward_name, description, reward_type, points_cost, d
 VALUES 
     ('€5 Off Your Order', 'Get €5 off your next order of €15 or more', 'fixed_discount', 50, 5.00, 15.00),
     ('€10 Off Your Order', 'Get €10 off your next order of €25 or more', 'fixed_discount', 90, 10.00, 25.00),
-    ('10% Off', 'Get 10% off your entire order', 'percentage_discount', 75, 10, 0),
+    ('10% Off', 'Get 10% off your entire order of €15 or more', 'percentage_discount', 75, 10, 15.00),
     ('15% Off', 'Get 15% off your entire order of €20 or more', 'percentage_discount', 120, 15, 20.00),
     ('€20 Off Big Order', 'Get €20 off orders of €50 or more', 'fixed_discount', 180, 20.00, 50.00);
 
--- Initialize points for existing users
 INSERT INTO public.user_points (user_id, total_points_earned, current_balance)
 SELECT user_id, 0, 0 FROM public.users
 ON CONFLICT (user_id) DO NOTHING;
+
+-- Set initial points for admin user (e.g., 1000 points)
+UPDATE public.user_points
+SET total_points_earned = 1000, current_balance = 1000, updated_at = now()
+WHERE user_id = (SELECT user_id FROM public.users WHERE user_name = 'admin');
+
+-- Log the initial points as a bonus transaction for admin
+INSERT INTO public.point_transaction (user_id, points, transaction_type, description)
+SELECT user_id, 1000, 'bonus', 'Initial points for admin'
+FROM public.users WHERE user_name = 'admin';

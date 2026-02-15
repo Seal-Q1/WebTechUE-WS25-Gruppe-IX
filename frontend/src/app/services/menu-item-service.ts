@@ -29,15 +29,15 @@ export class MenuItemService {
   }
 
   createMenuItem(restaurantId: number, data: { name: string; price: number; description?: string }) {
-    return this.http.post<MenuItemDto>(apiUrls.allMenuItemsEndpoint(restaurantId), data);
+    return this.http.post<MenuItemDto>(apiUrls.allMenuItemsEndpoint(restaurantId), data, this.authService.getAuthHeader());
   }
 
   updateMenuItem(restaurantId: number, itemId: number, data: { name: string; price: number; description?: string }) {
-    return this.http.put<MenuItemDto>(apiUrls.menuItemEndpoint(restaurantId, itemId), data);
+    return this.http.put<MenuItemDto>(apiUrls.menuItemEndpoint(restaurantId, itemId), data, this.authService.getAuthHeader());
   }
 
   deleteMenuItem(restaurantId: number, itemId: number) {
-    return this.http.delete<void>(apiUrls.menuItemEndpoint(restaurantId, itemId));
+    return this.http.delete<void>(apiUrls.menuItemEndpoint(restaurantId, itemId), this.authService.getAuthHeader());
   }
 
   getMenuItemImage(restaurantId: number, itemId: number) {
@@ -45,11 +45,11 @@ export class MenuItemService {
   }
 
   updateMenuItemImage(restaurantId: number, itemId: number, image: string | null) {
-    return this.http.put<ImageDto>(apiUrls.menuItemImageEndpoint(restaurantId, itemId), { image });
+    return this.http.put<ImageDto>(apiUrls.menuItemImageEndpoint(restaurantId, itemId), { image }, this.authService.getAuthHeader());
   }
 
   updateMenuItemsOrder(restaurantId: number, items: { id: number; orderIndex: number }[]) {
-    return this.http.patch<void>(apiUrls.menuItemsOrderEndpoint(restaurantId), items);
+    return this.http.patch<void>(apiUrls.menuItemsOrderEndpoint(restaurantId), items, this.authService.getAuthHeader());
   }
 
   getAggregatedReviews(restaurantId: number) {

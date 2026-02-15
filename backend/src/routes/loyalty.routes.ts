@@ -96,7 +96,8 @@ function serializeRedemption(row: any): RewardRedemptionDto {
     orderId: row.order_id,
     redeemedAt: row.redeemed_at,
     usedAt: row.used_at,
-    discountValue: snapshot.discountValue
+    discountValue: snapshot.discountValue,
+    couponCode: snapshot.couponCode
   };
 }
 
@@ -346,7 +347,7 @@ router.post('/redeem', requiresAuth, async (req: Request, res: Response) => {
     }
     
     // Create reward snapshot
-    const rewardSnapshot = {
+    const rewardSnapshot: any = {
       name: reward.reward_name,
       rewardType: reward.reward_type,
       discountValue: reward.discount_value ? parseFloat(reward.discount_value) : null,
@@ -376,6 +377,37 @@ router.post('/redeem', requiresAuth, async (req: Request, res: Response) => {
       INSERT INTO point_transaction (user_id, points, transaction_type, redemption_id, description)
       VALUES ($1, $2, 'redeemed', $3, $4)
     `, [userId, -reward.points_cost, redemptionId, `Redeemed: ${reward.reward_name}`]);
+
+    // If the reward is a voucher/discount, generate a one-time coupon code and persist it
+    let generatedCouponCode: string | undefined = undefined;
+    if (reward.reward_type === 'fixed_discount' || reward.reward_type === 'percentage_discount') {
+      // generate an 8-char alphanumeric code
+      const makeCode = () => Math.random().toString(36).substring(2, 10).toUpperCase();
+      let attempts = 0;
+      while (!generatedCouponCode && attempts < 5) {
+        attempts++;
+        const code = makeCode();
+        try {
+          const discountType = reward.reward_type === 'fixed_discount' ? 'fixed' : 'percentage';
+          const insertCoupon = await client.query<CouponCodeRow>(`
+            INSERT INTO coupon_code (coupon_code, description, discount_type, discount_value, min_order_value, max_uses, current_uses, is_active, created_at)
+            VALUES ($1, $2, $3, $4, $5, 1, 0, true, now())
+            RETURNING coupon_id, coupon_code
+          `, [code, `Loyalty reward: ${reward.reward_name}`, discountType, reward.discount_value, reward.min_order_value || 0]);
+          generatedCouponCode = insertCoupon.rows[0]?.coupon_code;
+        } catch (err) {
+          // on duplicate key, loop and try again
+          if ((err as any).code === '23505') continue;
+          throw err;
+        }
+      }
+
+      if (generatedCouponCode) {
+        // update the reward_snapshot to include the couponCode
+        rewardSnapshot.couponCode = generatedCouponCode;
+        await client.query(`UPDATE reward_redemption SET reward_snapshot = $1 WHERE redemption_id = $2`, [JSON.stringify(rewardSnapshot), redemptionId]);
+      }
+    }
     
     await client.query('COMMIT');
     
@@ -387,7 +419,8 @@ router.post('/redeem', requiresAuth, async (req: Request, res: Response) => {
       rewardType: reward.reward_type,
       pointsSpent: reward.points_cost,
       redeemedAt: redemptionResult.rows[0].redeemed_at,
-      discountValue: rewardSnapshot.discountValue || undefined
+      discountValue: rewardSnapshot.discountValue || undefined,
+      couponCode: (rewardSnapshot as any).couponCode || undefined
     };
     
     res.status(201).json(redemption);
@@ -595,6 +628,27 @@ router.post('/use-redemption', requiresAuth, async (req: Request, res: Response)
       SET used_at = now(), order_id = $1
       WHERE redemption_id = $2
     `, [orderId, redemptionId]);
+
+    // If this redemption created a coupon code, deactivate or increment its usage
+    try {
+      const snapRes = await pool.query(`SELECT reward_snapshot FROM reward_redemption WHERE redemption_id = $1`, [redemptionId]);
+      if (snapRes.rows.length > 0) {
+        const snapshot = snapRes.rows[0].reward_snapshot;
+        const parsed = typeof snapshot === 'string' ? JSON.parse(snapshot) : snapshot;
+        const couponCode = parsed?.couponCode;
+        if (couponCode) {
+          // Increment current_uses and deactivate if max_uses reached
+          await pool.query(`
+            UPDATE coupon_code
+            SET current_uses = current_uses + 1,
+                is_active = CASE WHEN max_uses IS NOT NULL AND (current_uses + 1) >= max_uses THEN false ELSE is_active END
+            WHERE coupon_code = $1
+          `, [couponCode]);
+        }
+      }
+    } catch (err) {
+      console.error('Failed updating coupon usage after redemption use:', err);
+    }
     
     res.json({ success: true, message: 'Redemption marked as used' });
   } catch (error) {
@@ -604,22 +658,46 @@ router.post('/use-redemption', requiresAuth, async (req: Request, res: Response)
 });
 
 router.get('/coupon-code/:code', async (req: Request, res: Response) => {
-    const code = req.params.code!;
-    try {
-        const result = await pool.query<CouponCodeRow>(`
-            SELECT * FROM coupon_code c
-            WHERE c.coupon_code = $1;
-        `, [code]);
+  const code = req.params.code!;
+  try {
+    // Fetch coupon without filters to determine reason for rejection if any
+    const result = await pool.query<CouponCodeRow>(`
+      SELECT * FROM coupon_code c
+      WHERE c.coupon_code = $1
+      LIMIT 1
+    `, [code]);
 
-        if (result.rows.length === 0) {
-            sendNotFound(res, "Could not find Coupon Code");
-            return;
-        }
-        res.json(couponCodeSerializer.serialize(result.rows[0]!));
-
-    } catch (error) {
-        sendInternalError(res, error, "occurred while fetching coupon code");
+    if (result.rows.length === 0) {
+      sendNotFound(res, "Coupon code not found");
+      return;
     }
+
+    const row = result.rows[0]!;
+
+    // Check active flag
+    if (!row.is_active) {
+      return res.status(400).json({ error: 'coupon_inactive', message: 'This coupon is not active', couponCode: code });
+    }
+
+    // Check date range
+    if (row.start_date && new Date(row.start_date) > new Date()) {
+      return res.status(400).json({ error: 'coupon_not_started', message: 'This coupon is not yet valid', couponCode: code, startDate: row.start_date });
+    }
+    if (row.end_date && new Date(row.end_date) < new Date()) {
+      return res.status(400).json({ error: 'coupon_expired', message: 'This coupon has expired', couponCode: code, endDate: row.end_date });
+    }
+
+    // Check uses
+    if (row.max_uses !== null && row.current_uses >= row.max_uses) {
+      return res.status(400).json({ error: 'coupon_exhausted', message: 'This coupon has already been used', couponCode: code });
+    }
+
+    // All checks passed
+    res.json(couponCodeSerializer.serialize(row));
+
+  } catch (error) {
+    sendInternalError(res, error, "occurred while fetching coupon code");
+  }
 })
 
 export default router;

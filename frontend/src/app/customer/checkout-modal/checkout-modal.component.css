@@ -41,20 +41,56 @@ tr.checkout-total {
   border-bottom: 2px solid #000000;
 }
 
-span.discount-error-symbol {
-  display: none;
+
+
+.discount-label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
 }
 
-span.discount-error-symbol + input.discount-field {
-  border-color: red;
+.discount-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 0.3em;
 }
 
-input.discount-field {
-  margin-top: 10px;
-  padding: 5px;
-  margin-right: 10px;
-  border-radius: 10px;
-  border: 1px solid #000000;
+.discount-field {
+  border: 2px solid #ff6600;
+  border-radius: 6px;
+  padding: 0.4em 0.7em;
+  font-size: 1em;
+  width: 180px;
+}
+
+.discount-apply-btn {
+  background: #ff6600;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4em 1.2em;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.discount-apply-btn:hover {
+  background: #ff8800;
+}
+
+.discount-error-symbol {
+  color: #ff3300;
+  font-weight: bold;
+}
+
+
+
+.discount-error-message {
+  color: #ff3300;
+
+
+  margin-top: 0.3em;
+  font-size: 0.95em;
 }
 
 div.checkout-modal h3 {

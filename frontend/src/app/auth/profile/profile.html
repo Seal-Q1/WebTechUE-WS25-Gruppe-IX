@@ -4,34 +4,35 @@
   </div>
 
   <div class="profile-sections">
-    <!-- Account Status / Warnings Section -->
+    <!-- Account Status / Warnings Section (redesigned) -->
     @if (accountStatus && (accountStatus.warningCount > 0 || accountStatus.status !== 'ok')) {
       <section class="profile-section warnings-section">
-        <h2>Account Status</h2>
-        <div class="account-status" [class.warned]="accountStatus.status === 'warned'" [class.suspended]="accountStatus.status === 'suspended'">
-          <div class="status-badge">
-            <span class="status-label">Status:</span>
-            <span class="status-value">{{ getStatusLabel(accountStatus.status) }}</span>
-          </div>
-          @if (accountStatus.warningCount > 0) {
-            <div class="warning-count">
-              <span>Warnings: {{ accountStatus.warningCount }}</span>
-              <small>After 3 warnings, your account may be suspended.</small>
+        <div class="status-grid">
+          <div class="status-card" [class.warned]="accountStatus.status === 'warned'" [class.suspended]="accountStatus.status === 'suspended'">
+            <div class="status-top">
+              <div class="status-value-large">{{ getStatusLabel(accountStatus.status) }}</div>
+              <div class="status-meta">Status</div>
             </div>
-          }
-        </div>
-        
-        @if (warnings.length > 0) {
+            <div class="status-body">
+              <div class="warning-count">{{ accountStatus.warningCount }} warning{{ accountStatus.warningCount === 1 ? '' : 's' }}</div>
+              <small class="status-hint">After 3 warnings, the account may be suspended.</small>
+            </div>
+          </div>
+
           <div class="warnings-list">
             <h3>Warning History</h3>
-            @for (warning of warnings; track warning.id) {
-              <div class="warning-item">
-                <div class="warning-reason">{{ warning.reason }}</div>
-                <div class="warning-date">{{ warning.createdAt | date:'medium' }}</div>
-              </div>
+            @if (warnings.length === 0) {
+              <p class="empty-text">No warnings recorded.</p>
+            } @else {
+              @for (warning of warnings; track warning.id) {
+                <div class="warning-item">
+                  <div class="warning-reason">{{ warning.reason }}</div>
+                  <div class="warning-date">{{ warning.createdAt | date:'medium' }}</div>
+                </div>
+              }
             }
           </div>
-        }
+        </div>
       </section>
     }
 

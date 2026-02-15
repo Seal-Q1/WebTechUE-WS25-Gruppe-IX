@@ -18,18 +18,21 @@ export function requiresAdmin(req: Request, res: Response, next: NextFunction) {
         return res.status(403).json({message: "Token invalid"});
     }
 
+    (req as any).userId = payload.userId;
+    (req as any).roleId = payload.roleId;
     next();
     return;
 }
 
 export function requiresAuth(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
-    try {
-        jwt.verify(getTokenFromAuthHeader(authHeader), secret);
-    }
-    catch (error) {
+    const payload = authHeaderToPayload(authHeader);
+    if (!payload) {
         return res.status(403).json({message: "Token invalid"});
     }
+
+    (req as any).userId = payload.userId;
+    (req as any).roleId = payload.roleId;
     next();
     return;
 }

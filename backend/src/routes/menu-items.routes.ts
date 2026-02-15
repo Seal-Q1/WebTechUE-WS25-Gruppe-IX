@@ -130,7 +130,7 @@ router.post("/:itemId/reviews", requiresAuth, async (req: Request, res: Response
 });
 
 // assumption: no concurrent writes (only one user will change ordering at the same time); simplifies logic
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", requiresAuth, async (req: Request, res: Response) => {
   try {
     const restaurantId = parseInt(req.params.restaurantId!);
     const { name, price, description } = req.body;
@@ -147,7 +147,7 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-router.put("/:itemId", async (req: Request, res: Response) => {
+router.put("/:itemId", requiresAuth, async (req: Request, res: Response) => {
   try {
     const restaurantId = parseInt(req.params.restaurantId!);
     const itemId = parseInt(req.params.itemId!);
@@ -173,7 +173,7 @@ router.put("/:itemId", async (req: Request, res: Response) => {
   }
 });
 
-router.delete("/:itemId", async (req: Request, res: Response) => {
+router.delete("/:itemId", requiresAuth, async (req: Request, res: Response) => {
   try {
     const restaurantId = parseInt(req.params.restaurantId!);
     const itemId = parseInt(req.params.itemId!);
@@ -221,7 +221,7 @@ router.get("/:itemId/image", async (req: Request, res: Response) => {
   }
 });
 
-router.put("/:itemId/image", async (req: Request, res: Response) => {
+router.put("/:itemId/image", requiresAuth, async (req: Request, res: Response) => {
   try {
     const restaurantId = parseInt(req.params.restaurantId!);
     const itemId = parseInt(req.params.itemId!);
@@ -245,8 +245,7 @@ router.put("/:itemId/image", async (req: Request, res: Response) => {
   }
 });
 
-//TODO permission to do so via auth.
-router.patch("/order", async (req: Request, res: Response) => {
+router.patch("/order", requiresAuth, async (req: Request, res: Response) => {
   try {
     const restaurantId = parseInt(req.params.restaurantId!);
     const items = req.body as { id: number; orderIndex: number }[];

@@ -1,12 +1,12 @@
 import {Router, type Request, type Response} from 'express';
 import pool from '../pool';
 import {userSerializer, type UserRow} from '../serializers';
-import {sendInternalError} from '../utils';
+import {sendInternalError, requiresAdmin} from '../utils';
 
 const router = Router();
 
 // "Get all users that exist"
-router.get("/", async (_req: Request, res: Response) => {
+router.get("/", requiresAdmin, async (_req: Request, res: Response) => {
     try {
         const result = await pool.query<UserRow>('SELECT * FROM "users"');
         res.json(userSerializer.serialize_multiple(result.rows));

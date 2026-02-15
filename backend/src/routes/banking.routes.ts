@@ -1,6 +1,6 @@
 import {Router, type Request, type Response} from 'express';
 import pool from '../pool';
-import {sendInternalError, sendBadRequest, parseTokenUserId} from '../utils';
+import {sendInternalError, sendBadRequest, requiresAuth} from '../utils';
 import type {
     UserAddressDto, 
     CreateUserAddressDto, 
@@ -91,12 +91,9 @@ function detectCardType(cardNumber: string): CardType {
 // ===================
 
 // Get all addresses for current user
-router.get("/addresses", async (req: Request, res: Response) => {
+router.get("/addresses", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const result = await pool.query<AddressRow>(
             'SELECT * FROM user_address WHERE user_id = $1 ORDER BY is_default DESC, created_at DESC',
@@ -110,12 +107,9 @@ router.get("/addresses", async (req: Request, res: Response) => {
 });
 
 // Get single address
-router.get("/addresses/:addressId", async (req: Request, res: Response) => {
+router.get("/addresses/:addressId", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const {addressId} = req.params;
         const result = await pool.query<AddressRow>(
@@ -134,12 +128,9 @@ router.get("/addresses/:addressId", async (req: Request, res: Response) => {
 });
 
 // Create new address
-router.post("/addresses", async (req: Request, res: Response) => {
+router.post("/addresses", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const {name, address, isDefault} = req.body as CreateUserAddressDto;
 
@@ -161,12 +152,9 @@ router.post("/addresses", async (req: Request, res: Response) => {
 });
 
 // Update address
-router.put("/addresses/:addressId", async (req: Request, res: Response) => {
+router.put("/addresses/:addressId", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const {addressId} = req.params;
         const {name, address, isDefault} = req.body as UpdateUserAddressDto;
@@ -231,12 +219,9 @@ router.put("/addresses/:addressId", async (req: Request, res: Response) => {
 });
 
 // Delete address
-router.delete("/addresses/:addressId", async (req: Request, res: Response) => {
+router.delete("/addresses/:addressId", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const {addressId} = req.params;
         const result = await pool.query(
@@ -255,12 +240,9 @@ router.delete("/addresses/:addressId", async (req: Request, res: Response) => {
 });
 
 // Set default address
-router.post("/addresses/:addressId/set-default", async (req: Request, res: Response) => {
+router.post("/addresses/:addressId/set-default", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const {addressId} = req.params;
         const result = await pool.query<AddressRow>(
@@ -283,12 +265,9 @@ router.post("/addresses/:addressId/set-default", async (req: Request, res: Respo
 // ===================
 
 // Get all cards for current user
-router.get("/cards", async (req: Request, res: Response) => {
+router.get("/cards", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const result = await pool.query<CardRow>(
             'SELECT card_id, user_id, card_name, card_holder_name, card_number_last4, expiry_month, expiry_year, card_type, is_default, created_at FROM payment_card WHERE user_id = $1 ORDER BY is_default DESC, created_at DESC',
@@ -302,12 +281,9 @@ router.get("/cards", async (req: Request, res: Response) => {
 });
 
 // Get single card
-router.get("/cards/:cardId", async (req: Request, res: Response) => {
+router.get("/cards/:cardId", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const {cardId} = req.params;
         const result = await pool.query<CardRow>(
@@ -326,12 +302,9 @@ router.get("/cards/:cardId", async (req: Request, res: Response) => {
 });
 
 // Add new card
-router.post("/cards", async (req: Request, res: Response) => {
+router.post("/cards", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const {cardName, cardHolderName, cardNumber, expiryMonth, expiryYear, cvv, isDefault} = req.body as CreatePaymentCardDto;
 
@@ -377,12 +350,9 @@ router.post("/cards", async (req: Request, res: Response) => {
 });
 
 // Update card
-router.put("/cards/:cardId", async (req: Request, res: Response) => {
+router.put("/cards/:cardId", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const {cardId} = req.params;
         const {cardName, cardHolderName, expiryMonth, expiryYear, isDefault} = req.body as UpdatePaymentCardDto;
@@ -440,12 +410,9 @@ router.put("/cards/:cardId", async (req: Request, res: Response) => {
 });
 
 // Delete card
-router.delete("/cards/:cardId", async (req: Request, res: Response) => {
+router.delete("/cards/:cardId", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const {cardId} = req.params;
         const result = await pool.query(
@@ -464,12 +431,9 @@ router.delete("/cards/:cardId", async (req: Request, res: Response) => {
 });
 
 // Set default card
-router.post("/cards/:cardId/set-default", async (req: Request, res: Response) => {
+router.post("/cards/:cardId/set-default", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const userId = parseTokenUserId(req.headers.authorization);
-        if (userId === null) {
-            return res.status(401).json({error: "Invalid token"});
-        }
+        const userId = (req as any).userId;
 
         const {cardId} = req.params;
         const result = await pool.query<CardRow>(

@@ -130,7 +130,7 @@ export class LoyaltyService {
 
   // Refresh points balance
   refreshPoints(): void {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('auth_token');
     if (token) {
       this.getPoints().subscribe();
     }

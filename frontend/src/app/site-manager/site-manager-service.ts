@@ -79,7 +79,7 @@ export class SiteManagerService {
 
   // Dashboard Statistics
   getDashboardStats() {
-    return this.http.get<DashboardStats>(apiUrls.adminStatsEndpoint());
+    return this.http.get<DashboardStats>(apiUrls.adminStatsEndpoint(), this.authService.getAuthHeader());
   }
 
   // Restaurant Management
@@ -88,19 +88,19 @@ export class SiteManagerService {
   }
 
   getPendingRestaurants() {
-    return this.http.get<RestaurantDto[]>(apiUrls.adminPendingRestaurantsEndpoint());
+    return this.http.get<RestaurantDto[]>(apiUrls.adminPendingRestaurantsEndpoint(), this.authService.getAuthHeader());
   }
 
   getActiveRestaurants() {
-    return this.http.get<RestaurantDto[]>(apiUrls.adminActiveRestaurantsEndpoint());
+    return this.http.get<RestaurantDto[]>(apiUrls.adminActiveRestaurantsEndpoint(), this.authService.getAuthHeader());
   }
 
   approveRestaurant(restaurantId: number) {
-    return this.http.post<RestaurantDto>(apiUrls.adminApproveRestaurantEndpoint(restaurantId), {});
+    return this.http.post<RestaurantDto>(apiUrls.adminApproveRestaurantEndpoint(restaurantId), {}, this.authService.getAuthHeader());
   }
 
   rejectRestaurant(restaurantId: number, reason?: string) {
-    return this.http.post<RestaurantDto>(apiUrls.adminRejectRestaurantEndpoint(restaurantId), {reason});
+    return this.http.post<RestaurantDto>(apiUrls.adminRejectRestaurantEndpoint(restaurantId), {reason}, this.authService.getAuthHeader());
   }
 
   // User Management
@@ -109,58 +109,58 @@ export class SiteManagerService {
   }
 
   suspendUser(userId: number, reason: string) {
-    return this.http.post<UserWithStatus>(apiUrls.adminSuspendUserEndpoint(userId), {reason});
+    return this.http.post<UserWithStatus>(apiUrls.adminSuspendUserEndpoint(userId), {reason}, this.authService.getAuthHeader());
   }
 
   warnUser(userId: number, reason: string) {
-    return this.http.post<UserWithStatus>(apiUrls.adminWarnUserEndpoint(userId), {reason});
+    return this.http.post<UserWithStatus>(apiUrls.adminWarnUserEndpoint(userId), {reason}, this.authService.getAuthHeader());
   }
 
   activateUser(userId: number) {
-    return this.http.post<UserWithStatus>(apiUrls.adminActivateUserEndpoint(userId), {});
+    return this.http.post<UserWithStatus>(apiUrls.adminActivateUserEndpoint(userId), {}, this.authService.getAuthHeader());
   }
 
   // Platform Settings
   getSettings() {
-    return this.http.get<Record<string, string>>(apiUrls.adminSettingsEndpoint());
+    return this.http.get<Record<string, string>>(apiUrls.adminSettingsEndpoint(), this.authService.getAuthHeader());
   }
 
   updateSetting(key: string, value: string) {
-    return this.http.put<{key: string; value: string}>(apiUrls.adminSettingEndpoint(key), {value});
+    return this.http.put<{key: string; value: string}>(apiUrls.adminSettingEndpoint(key), {value}, this.authService.getAuthHeader());
   }
 
   // Delivery Zones
   getDeliveryZones() {
-    return this.http.get<DeliveryZone[]>(apiUrls.adminDeliveryZonesEndpoint());
+    return this.http.get<DeliveryZone[]>(apiUrls.adminDeliveryZonesEndpoint(), this.authService.getAuthHeader());
   }
 
   createDeliveryZone(zone: Partial<DeliveryZone>) {
-    return this.http.post<DeliveryZone>(apiUrls.adminDeliveryZonesEndpoint(), zone);
+    return this.http.post<DeliveryZone>(apiUrls.adminDeliveryZonesEndpoint(), zone, this.authService.getAuthHeader());
   }
 
   updateDeliveryZone(zoneId: number, zone: Partial<DeliveryZone>) {
-    return this.http.put<DeliveryZone>(apiUrls.adminDeliveryZoneEndpoint(zoneId), zone);
+    return this.http.put<DeliveryZone>(apiUrls.adminDeliveryZoneEndpoint(zoneId), zone, this.authService.getAuthHeader());
   }
 
   deleteDeliveryZone(zoneId: number) {
-    return this.http.delete<{message: string}>(apiUrls.adminDeliveryZoneEndpoint(zoneId));
+    return this.http.delete<{message: string}>(apiUrls.adminDeliveryZoneEndpoint(zoneId), this.authService.getAuthHeader());
   }
 
   // Vouchers
   getVouchers() {
-    return this.http.get<Voucher[]>(apiUrls.adminVouchersEndpoint());
+    return this.http.get<Voucher[]>(apiUrls.adminVouchersEndpoint(), this.authService.getAuthHeader());
   }
 
   createVoucher(voucher: Partial<Voucher>) {
-    return this.http.post<Voucher>(apiUrls.adminVouchersEndpoint(), voucher);
+    return this.http.post<Voucher>(apiUrls.adminVouchersEndpoint(), voucher, this.authService.getAuthHeader());
   }
 
   updateVoucher(voucherId: number, voucher: Partial<Voucher>) {
-    return this.http.put<Voucher>(apiUrls.adminVoucherEndpoint(voucherId), voucher);
+    return this.http.put<Voucher>(apiUrls.adminVoucherEndpoint(voucherId), voucher, this.authService.getAuthHeader());
   }
 
   deleteVoucher(voucherId: number) {
-    return this.http.delete<{message: string}>(apiUrls.adminVoucherEndpoint(voucherId));
+    return this.http.delete<{message: string}>(apiUrls.adminVoucherEndpoint(voucherId), this.authService.getAuthHeader());
   }
 
   // Reporting
@@ -169,17 +169,17 @@ export class SiteManagerService {
     if (startDate) params = params.set('startDate', startDate);
     if (endDate) params = params.set('endDate', endDate);
     if (groupBy) params = params.set('groupBy', groupBy);
-    return this.http.get<OrdersReport[]>(apiUrls.adminOrdersReportEndpoint(), {params});
+    return this.http.get<OrdersReport[]>(apiUrls.adminOrdersReportEndpoint(), {params, ...this.authService.getAuthHeader()});
   }
 
   getUsersReport(startDate?: string, endDate?: string) {
     let params = new HttpParams();
     if (startDate) params = params.set('startDate', startDate);
     if (endDate) params = params.set('endDate', endDate);
-    return this.http.get<UsersReport>(apiUrls.adminUsersReportEndpoint(), {params});
+    return this.http.get<UsersReport>(apiUrls.adminUsersReportEndpoint(), {params, ...this.authService.getAuthHeader()});
   }
 
   getRestaurantsReport() {
-    return this.http.get<RestaurantsReport>(apiUrls.adminRestaurantsReportEndpoint());
+    return this.http.get<RestaurantsReport>(apiUrls.adminRestaurantsReportEndpoint(), this.authService.getAuthHeader());
   }
 }
