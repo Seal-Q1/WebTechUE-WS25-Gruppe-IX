@@ -1,5 +1,5 @@
 export type { AddressDto } from './address.dto';
-export type { MenuItemDto } from './menu-item.dto';
+export type { MenuItemDto, MenuItemWithImageDto } from './menu-item.dto';
 export type { DishReviewDto, DishReviewDtoToServer, AggregateDishReviewDto } from './dish-review.dto';
 export type { OrderDto } from './order.dto';
 export type { OrderItemDto } from './order-item.dto';

@@ -23,7 +23,7 @@ export const apiUrls = {
   menuItemImageEndpoint: (restaurantId: number, itemId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}/menu-items/${itemId}/image`,
   menuItemReviewEndpoint: (restaurantId: number, itemId: number) =>
-    `${environment.apiUrl}/restaurants/${restaurantId}/menu-items/reviews`,
+    `${environment.apiUrl}/restaurants/${restaurantId}/menu-items/${itemId}/reviews`,
   menuItemsOrderEndpoint: (restaurantId: number) =>
     `${environment.apiUrl}/restaurants/${restaurantId}/menu-items/order`,
   allCuisinesEndpoint: () =>

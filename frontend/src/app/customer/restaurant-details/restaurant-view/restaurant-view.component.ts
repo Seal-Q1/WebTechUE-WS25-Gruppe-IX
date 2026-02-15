@@ -49,7 +49,7 @@ export class RestaurantView {
         }
         this.restaurantService.submitReview(this.restaurantId, reviewDto)
       }
-    })
+    });
   }
 
   protected readonly faStar = faStar;
