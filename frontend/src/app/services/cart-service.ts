@@ -51,6 +51,7 @@ export class CartService {
 
   clearCart() {
     this.cart.update(currentCart => [])
+    this.writeToStorage();
   }
 
   private loadCart(): CartItemDto[] {

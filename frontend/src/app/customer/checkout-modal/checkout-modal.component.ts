@@ -120,6 +120,7 @@ export class CheckoutModal {
         this.cartService.clearCart();
         this.router.navigate([`/order-confirmation`]);
         this.dialogRef.close();
+        this.cartService.clearCart();
       },
       error: (err) => {
         // If backend returns minimum-order error for the coupon, show a clear message and clear the input
