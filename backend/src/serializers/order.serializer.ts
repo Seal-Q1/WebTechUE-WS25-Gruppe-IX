@@ -1,5 +1,5 @@
 import {Serializable} from './serializable.interface';
-import {type OrderDto, OrderStatusEnum, OrderTypeEnum, PaymentMethodEnum } from '@shared/types';
+import {AddressDto, type OrderDto, OrderStatusEnum, OrderTypeEnum, PaymentMethodEnum} from '@shared/types';
 
 export interface OrderRow {
   order_id: number;
@@ -11,6 +11,8 @@ export interface OrderRow {
   address_postal_code: string | null;
   address_city: string | null;
   address_door: string | null;
+  latitude: number | null;
+  longitude: number | null;
   paid_amount: string;
   payment_method: string;
   coupon_id: number | null;
@@ -37,8 +39,10 @@ export class OrderSerializer extends Serializable<OrderRow, OrderDto> {
         houseNr: row.address_house_nr!,
         postalCode: row.address_postal_code!,
         city: row.address_city!,
-        door: row.address_door || undefined //returns undefined if there is no address_door (since it's optional)
-      };
+        door: row.address_door || undefined, //returns undefined if there is no address_door (since it's optional)
+        latitude: row.latitude ?? undefined,
+        longitude: row.longitude ?? undefined,
+      } as AddressDto;
     }
 
     if (row.coupon_id) { //coupon is optional

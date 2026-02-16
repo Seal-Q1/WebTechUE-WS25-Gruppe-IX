@@ -11,8 +11,11 @@ import type {
     CardType,
     AddressDto
 } from '@shared/types';
+import type {RestaurantRow} from "../serializers";
+import {GeolocationService} from "../services/geolocation.service";
 
 const router = Router();
+const geolocationService = new GeolocationService();
 
 // ===================
 // HELPER FUNCTIONS
@@ -27,6 +30,8 @@ interface AddressRow {
     address_postal_code: string;
     address_city: string;
     address_door: string | null;
+    latitude: number | null;
+    longitude: number | null;
     is_default: boolean;
     created_at: Date;
 }
@@ -54,7 +59,9 @@ function serializeAddress(row: AddressRow): UserAddressDto {
             houseNr: row.address_house_nr,
             postalCode: row.address_postal_code,
             city: row.address_city,
-            door: row.address_door || undefined
+            door: row.address_door || undefined,
+            latitude: row.latitude || undefined,
+            longitude: row.longitude || undefined,
         },
         isDefault: row.is_default,
         createdAt: row.created_at?.toISOString()
@@ -144,6 +151,9 @@ router.post("/addresses", requiresAuth, async (req: Request, res: Response) => {
              RETURNING *`,
             [userId, name, address.street, address.houseNr, address.postalCode, address.city, address.door || null, isDefault ?? false]
         );
+        const addressId = result.rows[0]!.address_id;
+
+        await addCoordinatesToAddress(addressId, address);
 
         res.status(201).json(serializeAddress(result.rows[0]!));
     } catch (error) {
@@ -156,8 +166,8 @@ router.put("/addresses/:addressId", requiresAuth, async (req: Request, res: Resp
     try {
         const userId = (req as any).userId;
 
-        const {addressId} = req.params;
-        const {name, address, isDefault} = req.body as UpdateUserAddressDto;
+        const addressId = parseInt(req.params.addressId!);
+        const dto = req.body as UpdateUserAddressDto;
 
         // Verify ownership
         const existing = await pool.query(
@@ -173,44 +183,46 @@ router.put("/addresses/:addressId", requiresAuth, async (req: Request, res: Resp
         const values: (string | number | boolean | null)[] = [];
         let paramCount = 1;
 
-        if (name !== undefined) {
+        if (dto.name !== undefined) {
             updates.push(`address_name = $${paramCount++}`);
-            values.push(name);
+            values.push(dto.name);
         }
-        if (address?.street !== undefined) {
+        if (dto.address?.street !== undefined) {
             updates.push(`address_street = $${paramCount++}`);
-            values.push(address.street);
+            values.push(dto.address.street);
         }
-        if (address?.houseNr !== undefined) {
+        if (dto.address?.houseNr !== undefined) {
             updates.push(`address_house_nr = $${paramCount++}`);
-            values.push(address.houseNr);
+            values.push(dto.address.houseNr);
         }
-        if (address?.postalCode !== undefined) {
+        if (dto.address?.postalCode !== undefined) {
             updates.push(`address_postal_code = $${paramCount++}`);
-            values.push(address.postalCode);
+            values.push(dto.address.postalCode);
         }
-        if (address?.city !== undefined) {
+        if (dto.address?.city !== undefined) {
             updates.push(`address_city = $${paramCount++}`);
-            values.push(address.city);
+            values.push(dto.address.city);
         }
-        if (address?.door !== undefined) {
+        if (dto.address?.door !== undefined) {
             updates.push(`address_door = $${paramCount++}`);
-            values.push(address.door || null);
+            values.push(dto.address.door || null);
         }
-        if (isDefault !== undefined) {
+        if (dto.isDefault !== undefined) {
             updates.push(`is_default = $${paramCount++}`);
-            values.push(isDefault);
+            values.push(dto.isDefault);
         }
 
         if (updates.length === 0) {
             return sendBadRequest(res, "No fields to update");
         }
 
-        values.push(parseInt(addressId as string));
+        values.push(addressId);
         const result = await pool.query<AddressRow>(
             `UPDATE user_address SET ${updates.join(', ')} WHERE address_id = $${paramCount} RETURNING *`,
             values
         );
+
+        await addCoordinatesToAddress(addressId, dto.address!);
 
         res.json(serializeAddress(result.rows[0]!));
     } catch (error) {
@@ -451,5 +463,20 @@ router.post("/cards/:cardId/set-default", requiresAuth, async (req: Request, res
         sendInternalError(res, error, "occurred while setting default card");
     }
 });
+
+async function addCoordinatesToAddress(addressId: number, address: AddressDto) {
+    const coordinates = await geolocationService.toCoordinates(address);
+    const coordinateUpdateQuery = `
+                UPDATE user_address
+                SET
+                    latitude = $1,
+                    longitude = $2
+                WHERE address_id = $3
+                RETURNING *
+            `
+    const coordinateUpdateResult = await pool.query<AddressRow>(coordinateUpdateQuery,
+        [coordinates.latitude, coordinates.longitude, addressId],
+    );
+}
 
 export default router;

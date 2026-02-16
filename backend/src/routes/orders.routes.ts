@@ -105,15 +105,15 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
         const query = `
         INSERT INTO "order" (
             order_name, order_type, order_status, address_street, address_house_nr, address_postal_code, address_city,
-            address_door, paid_amount, payment_method, coupon_id, user_id, created_at
+            address_door, latitude, longitude, paid_amount, payment_method, coupon_id, user_id, created_at
         )
         VALUES ('Order', 'delivery'::order_type_enum, 'preparing'::order_status_enum, $1, $2, $3, $4,
-                $5, $6, 'card', $7, $8, DEFAULT)
+                $5, $6, $7, $8, 'card', $9, $10, DEFAULT)
         RETURNING *;
         `
         const order = await client.query<OrderRow>(query,
             [dto.address.street, dto.address.houseNr, dto.address.postalCode, dto.address.city,
-                dto.address.door, totalPrice - effectiveDiscount, couponId, userId]
+                dto.address.door, dto.address.latitude, dto.address.longitude, totalPrice - effectiveDiscount, couponId, userId]
         );
 
         // Create order item pairs

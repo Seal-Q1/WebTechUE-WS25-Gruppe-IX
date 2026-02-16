@@ -3,6 +3,7 @@ import pool from '../pool';
 import cfg from '../../config.json';
 import {AuthJwtPayload, parseTokenUserId, sendBadRequest, sendInternalError, sendNotFound} from '../utils';
 import type {
+    AddressDto,
     AuthResponseDto,
     AuthUserDto,
     CardType,
@@ -15,9 +16,11 @@ import type {
 } from '@shared/types';
 import crypto from 'crypto';
 import jwt from "jsonwebtoken";
-import {UserRow} from "../serializers";
+import {type RestaurantRow, UserRow} from "../serializers";
+import {GeolocationService} from "../services/geolocation.service";
 
 const router = Router();
+const geolocationService = new GeolocationService();
 
 const ROLE_ID_RESTR_OWNER = 2;
 
@@ -40,6 +43,8 @@ interface UserRowWithPassword {
     address_postal_code: string | null;
     address_city: string | null;
     address_door: string | null;
+    latitude: number | null;
+    longitude: number | null;
     password_reset_token: string | null;
     password_reset_expires: Date | null;
 }
@@ -67,6 +72,8 @@ interface AddressRow {
     address_postal_code: string;
     address_city: string;
     address_door: string | null;
+    latitude: number | null;
+    longitude: number | null;
     is_default: boolean;
     created_at: Date;
 }
@@ -105,8 +112,10 @@ async function serializeAuthUser(row: UserRowWithPassword): Promise<AuthUserDto>
             houseNr: addr.address_house_nr,
             postalCode: addr.address_postal_code,
             city: addr.address_city,
-            door: addr.address_door || undefined
-        },
+            door: addr.address_door || undefined,
+            latitude: addr.latitude ?? undefined,
+            longitude: addr.longitude ?? undefined,
+        } as AddressDto,
         isDefault: addr.is_default,
         createdAt: addr.created_at?.toISOString()
     }));
@@ -216,16 +225,16 @@ router.post("/login", async (req: Request, res: Response) => {
 // Register endpoint
 router.post("/register", async (req: Request, res: Response) => {
     try {
-        const {userName, firstName, lastName, email, phone, password, address} = req.body as RegisterRequestDto;
+        const dto = req.body as RegisterRequestDto;
 
-        if (!userName || !firstName || !lastName || !email || !phone || !password) {
+        if (!dto.userName || !dto.firstName || !dto.lastName || !dto.email || !dto.phone || !dto.password) {
             return sendBadRequest(res, "All fields are required");
         }
 
         // Check if user already exists
         const existingUser = await pool.query<UserRow>(
             'SELECT 1 FROM users WHERE user_name = $1 OR email = $2',
-            [userName, email]
+            [dto.userName, dto.email]
         );
 
         if (existingUser.rows.length > 0) {
@@ -237,17 +246,30 @@ router.post("/register", async (req: Request, res: Response) => {
             `INSERT INTO users (user_name, first_name, last_name, email, phone, password_hash, role_id, user_status_id)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
              RETURNING *`,
-            [userName, firstName, lastName, email, phone, password, 1, 1]
+            [dto.userName, dto.firstName, dto.lastName, dto.email, dto.phone, dto.password, 1, 1]
         );
 
         const userId = result.rows[0]!.user_id;
 
-        if (address?.street && address?.city) {
+        if (dto.address?.street && dto.address?.city) {
             const addressResult = await pool.query<AddressRow>(
                 `INSERT INTO user_address (user_id, is_default, address_street, address_house_nr, address_postal_code, address_city, address_door)
                  VALUES ($1, $2, $3, $4, $5, $6, $7)
                  RETURNING *`,
-                [userId, true, address.street, address.houseNr || '', address.postalCode || '', address.city, address.door || null]
+                [userId, true, dto.address.street, dto.address.houseNr || '', dto.address.postalCode || '', dto.address.city, dto.address.door || null]
+            );
+
+            const coordinates = await geolocationService.toCoordinates(dto.address);
+            const coordinateUpdateQuery = `
+            UPDATE user_address
+            SET
+                latitude = $1,
+                longitude = $2
+            WHERE user_id = $3
+            RETURNING *
+        `
+            const coordinateUpdateResult = await pool.query<AddressRow>(coordinateUpdateQuery,
+                [coordinates.latitude, coordinates.longitude, userId],
             );
         }
         

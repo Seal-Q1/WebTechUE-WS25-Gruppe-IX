@@ -160,6 +160,8 @@ CREATE TABLE public.order
     address_postal_code TEXT,
     address_city        TEXT,
     address_door        TEXT,
+    latitude            NUMERIC,
+    longitude           NUMERIC,
     paid_amount         NUMERIC(9, 2)       NOT NULL, -- two decimal places, max total is 9 digits (i.e. 100k-1cent)
     payment_method      payment_method_enum NOT NULL,
     coupon_id           INT REFERENCES coupon_code (coupon_id) ON DELETE RESTRICT,
@@ -197,6 +199,8 @@ CREATE TABLE public.restaurant
     address_postal_code  TEXT                 NOT NULL,
     address_city         TEXT                 NOT NULL,
     address_door            TEXT NOT NULL,
+    latitude                NUMERIC,
+    longitude               NUMERIC,
     opening_hours_monday    TEXT,
     opening_hours_tuesday   TEXT,
     opening_hours_wednesday TEXT,
@@ -310,6 +314,8 @@ CREATE TABLE public.user_address
     address_postal_code TEXT        NOT NULL,
     address_city        TEXT        NOT NULL,
     address_door        TEXT,
+    latitude            NUMERIC,
+    longitude           NUMERIC,
     is_default          BOOLEAN     DEFAULT FALSE,
     created_at          TIMESTAMPTZ DEFAULT now()
 );

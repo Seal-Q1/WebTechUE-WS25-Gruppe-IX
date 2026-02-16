@@ -10,11 +10,13 @@ import {
     RestaurantReviewAggregateRow, DishReviewAggregateRow, dishReviewAggregateSerializer
 } from '../serializers';
 import {sendInternalError, sendNotFound, randomDelay, requiresAuth, parseTokenUserId} from '../utils';
-import {RestaurantReviewDto, RestaurantReviewDtoToServer} from "@shared/types";
+import {AddressDto, RestaurantReviewDto, RestaurantReviewDtoToServer} from "@shared/types";
 import {QueryResult} from "pg";
 import {requiresRestaurantOwner} from "../utils/auth-check";
+import {GeolocationService} from "../services/geolocation.service";
 
 const router = Router();
+const geolocationService: GeolocationService = new GeolocationService();
 
 router.get("/", async (_req: Request, res: Response) => {
     try {
@@ -241,7 +243,7 @@ router.post("/", requiresRestaurantOwner, async (req: Request, res: Response) =>
             phone: string,
             email: string,
             locationName: string,
-            address: { street: string, houseNr: string, postalCode: string, city: string, door: string }
+            address: AddressDto
         };
         const query = `
             INSERT INTO restaurant (
@@ -271,6 +273,20 @@ router.post("/", requiresRestaurantOwner, async (req: Request, res: Response) =>
             address.door
         ];
         const result = await pool.query<RestaurantRow>(query, values);
+
+        const coordinates = await geolocationService.toCoordinates(address);
+        const coordinateUpdateQuery = `
+            UPDATE restaurant
+            SET
+                latitude = $1,
+                longitude = $2
+            WHERE restaurant_id = $3
+            RETURNING *
+        `
+        const coordinateUpdateResult = await pool.query<RestaurantRow>(coordinateUpdateQuery,
+            [coordinates.latitude, coordinates.longitude, result.rows[0]!.restaurant_id],
+        );
+
         res.status(201).json(restaurantSerializer.serialize(result.rows[0]!));
     } catch (error) {
         sendInternalError(res, error, "occurred while creating restaurant");

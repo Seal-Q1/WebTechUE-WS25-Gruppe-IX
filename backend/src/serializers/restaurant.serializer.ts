@@ -1,5 +1,5 @@
 import {Serializable} from './serializable.interface';
-import type {RestaurantDto} from '@shared/types';
+import type {AddressDto, RestaurantDto} from '@shared/types';
 import {RestaurantStatusEnum} from '@shared/types';
 
 export interface RestaurantRow {
@@ -15,6 +15,8 @@ export interface RestaurantRow {
   address_postal_code: string;
   address_city: string;
   address_door: string | null;
+  latitude: number | null;
+  longitude: number | null;
   opening_hours_monday: string | null;
   opening_hours_tuesday: string | null;
   opening_hours_wednesday: string | null;
@@ -39,8 +41,10 @@ export class RestaurantSerializer extends Serializable<RestaurantRow, Restaurant
         houseNr: row.address_house_nr,
         postalCode: row.address_postal_code,
         city: row.address_city,
-        door: row.address_door ?? undefined
-      },
+        door: row.address_door ?? undefined,
+        latitude: row.latitude ?? undefined,
+        longitude: row.longitude ?? undefined,
+      } as AddressDto,
       orderIndex: row.order_index ?? 0
     };
 

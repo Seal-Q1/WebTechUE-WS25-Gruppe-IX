@@ -8,5 +8,8 @@
   },
   "jwt": {
     "secret": "TopSecret123"
+  },
+  "nominatim": {
+    "apiUrl": "https://nominatim.openstreetmap.org"
   }
 }
