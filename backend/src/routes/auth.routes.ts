@@ -15,6 +15,7 @@ import type {
 } from '@shared/types';
 import crypto from 'crypto';
 import jwt from "jsonwebtoken";
+import {UserRow} from "../serializers";
 
 const router = Router();
 
@@ -33,8 +34,7 @@ interface UserRowWithPassword {
     user_status_id: number;
     status_name: string;
     warning_count: number;
-    location_id: number | null;
-    location_name: string | null;
+    address_id: number | null;
     address_street: string | null;
     address_house_nr: string | null;
     address_postal_code: string | null;
@@ -165,13 +165,10 @@ function generateToken(userId: number, roleId: number): string {
 
 // SQL query to get user with all joined data
 const USER_SELECT_QUERY = `
-    SELECT u.*, r.role_name, us.status_name, 
-           ul.location_name, ul.address_street, ul.address_house_nr, 
-           ul.address_postal_code, ul.address_city, ul.address_door
+    SELECT u.*, r.role_name, us.status_name
     FROM users u
     JOIN role r ON u.role_id = r.role_id
     JOIN user_status us ON u.user_status_id = us.user_status_id
-    LEFT JOIN user_location ul ON u.location_id = ul.location_id
 `;
 
 // Login endpoint
@@ -226,7 +223,7 @@ router.post("/register", async (req: Request, res: Response) => {
         }
 
         // Check if user already exists
-        const existingUser = await pool.query(
+        const existingUser = await pool.query<UserRow>(
             'SELECT 1 FROM users WHERE user_name = $1 OR email = $2',
             [userName, email]
         );
@@ -235,27 +232,24 @@ router.post("/register", async (req: Request, res: Response) => {
             return sendBadRequest(res, "Username or email already exists");
         }
 
-        // If address is provided, insert into user_location first
-        let locationId: number | null = null;
-        if (address?.street && address?.city) {
-            const locationResult = await pool.query<{location_id: number}>(
-                `INSERT INTO user_location (location_name, address_street, address_house_nr, address_postal_code, address_city, address_door)
-                 VALUES ($1, $2, $3, $4, $5, $6)
-                 RETURNING location_id`,
-                ['Home', address.street, address.houseNr || '', address.postalCode || '', address.city, address.door || null]
-            );
-            locationId = locationResult.rows[0]?.location_id ?? null;
-        }
-
         // Insert new user with role_id=1 (customer) and user_status_id=1 (ok)
-        const result = await pool.query<{user_id: number}>(
-            `INSERT INTO users (user_name, first_name, last_name, email, phone, password_hash, role_id, location_id, user_status_id)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING user_id`,
-            [userName, firstName, lastName, email, phone, password, 1, locationId, 1]
+        const result = await pool.query<UserRow>(
+            `INSERT INTO users (user_name, first_name, last_name, email, phone, password_hash, role_id, user_status_id)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+             RETURNING *`,
+            [userName, firstName, lastName, email, phone, password, 1, 1]
         );
 
         const userId = result.rows[0]!.user_id;
+
+        if (address?.street && address?.city) {
+            const addressResult = await pool.query<AddressRow>(
+                `INSERT INTO user_address (user_id, is_default, address_street, address_house_nr, address_postal_code, address_city, address_door)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7)
+                 RETURNING *`,
+                [userId, true, address.street, address.houseNr || '', address.postalCode || '', address.city, address.door || null]
+            );
+        }
         
         // Fetch the complete user with joins
         const userResult = await pool.query<UserRowWithPassword>(
@@ -399,14 +393,15 @@ router.get("/admins", async (req: Request, res: Response) => {
 
         const result = await pool.query<UserRowWithPassword & { added_at: Date }>(
             `SELECT u.*, r.role_name, us.status_name, 
-                    ul.location_name, ul.address_street, ul.address_house_nr, 
-                    ul.address_postal_code, ul.address_city, ul.address_door,
+                    ua.address_street, ua.address_house_nr, 
+                    ua.address_postal_code, ua.address_city, ua.address_door,
                     al.added_at
              FROM users u
              JOIN role r ON u.role_id = r.role_id
              JOIN user_status us ON u.user_status_id = us.user_status_id
-             LEFT JOIN user_location ul ON u.location_id = ul.location_id
              JOIN admin_list al ON u.user_id = al.user_id
+             LEFT JOIN user_address ua ON u.user_id = ua.user_id
+             WHERE ua.is_default = true
              ORDER BY al.added_at DESC`
         );
 
@@ -539,36 +534,6 @@ router.put("/profile", async (req: Request, res: Response) => {
         if (phone) {
             updates.push(`phone = $${paramCount++}`);
             values.push(phone);
-        }
-
-        // Handle address update in user_location table
-        if (address?.street && address?.city) {
-            // Get current user's location_id
-            const userResult = await pool.query<{location_id: number | null}>(
-                'SELECT location_id FROM users WHERE user_id = $1',
-                [currentUserId]
-            );
-            const currentLocationId = userResult.rows[0]?.location_id;
-
-            if (currentLocationId) {
-                // Update existing location
-                await pool.query(
-                    `UPDATE user_location SET 
-                        location_name = $1, address_street = $2, address_house_nr = $3, 
-                        address_postal_code = $4, address_city = $5, address_door = $6
-                     WHERE location_id = $7`,
-                    ['Home', address.street, address.houseNr || '', address.postalCode || '', address.city, address.door || null, currentLocationId]
-                );
-            } else {
-                // Create new location and link to user
-                const locationResult = await pool.query<{location_id: number}>(
-                    `INSERT INTO user_location (location_name, address_street, address_house_nr, address_postal_code, address_city, address_door)
-                     VALUES ($1, $2, $3, $4, $5, $6) RETURNING location_id`,
-                    ['Home', address.street, address.houseNr || '', address.postalCode || '', address.city, address.door || null]
-                );
-                updates.push(`location_id = $${paramCount++}`);
-                values.push(locationResult.rows[0]!.location_id);
-            }
         }
 
         // Update user table if there are updates

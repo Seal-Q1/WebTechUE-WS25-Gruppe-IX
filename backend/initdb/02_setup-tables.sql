@@ -24,18 +24,6 @@ INSERT INTO public.user_status (status_name, status_message) VALUES
     ('warned', 'Your account has received warnings'),
     ('suspended', 'Your account has been suspended');
 
--- UserLocation table for addresses
-CREATE TABLE public.user_location
-(
-    location_id         INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    location_name       TEXT,
-    address_street      TEXT NOT NULL,
-    address_house_nr    TEXT NOT NULL,
-    address_postal_code TEXT NOT NULL,
-    address_city        TEXT NOT NULL,
-    address_door        TEXT
-);
-
 -- Users table with foreign keys
 CREATE TABLE public.users
 (
@@ -47,7 +35,6 @@ CREATE TABLE public.users
     phone                TEXT        NOT NULL,
     password_hash        TEXT        NOT NULL,
     role_id              INT         NOT NULL REFERENCES public.role (role_id) ON DELETE RESTRICT,
-    location_id          INT         REFERENCES public.user_location (location_id) ON DELETE SET NULL,
     user_status_id       INT         NOT NULL DEFAULT 1 REFERENCES public.user_status (user_status_id) ON DELETE RESTRICT,
     warning_count        INT         NOT NULL DEFAULT 0,
     password_reset_token TEXT,
