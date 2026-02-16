@@ -1,11 +1,10 @@
 import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {Router} from '@angular/router';
-import {RestaurantDto} from '@shared/types';
+import {RestaurantDto, RestaurantToServerDto} from '@shared/types';
 import {RestaurantService} from '../../services/restaurant-service';
 import {RestaurantGridList} from './restaurant-grid-list/restaurant-grid-list';
 import {RestaurantEditingOverlay} from '../../shared/editing-overlay';
-import type {RestaurantFormData} from '../../shared/editing-overlay';
 
 @Component({
   selector: 'app-restaurant-list',
@@ -43,7 +42,7 @@ export class RestaurantList implements OnInit {
     this.showRestaurantOverlay = true;
   }
 
-  onSaveRestaurant(data: RestaurantFormData): void {
+  onSaveRestaurant(data: RestaurantToServerDto): void {
     if (this.selectedRestaurant) {
       this.restaurantService.updateRestaurantProfile(this.selectedRestaurant.id, data).subscribe(() => {
         this.showRestaurantOverlay = false;
@@ -57,7 +56,7 @@ export class RestaurantList implements OnInit {
         phone: data.phone,
         email: data.email,
         locationName: '',
-        address: { street: '', houseNr: '', postalCode: '', city: '', door: '' }
+        address: data.address,
       }).subscribe(() => {
         this.showRestaurantOverlay = false;
         this.fetchRestaurants();

@@ -2,7 +2,7 @@ import {Component, Input, Output, EventEmitter, OnChanges} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {Observable} from 'rxjs';
-import {ImageDto, OpeningHoursDto, RestaurantDto} from '@shared/types';
+import {AddressDto, ImageDto, OpeningHoursDto, RestaurantDto, RestaurantToServerDto} from '@shared/types';
 import {RestaurantService} from '../../../services/restaurant-service';
 import {EditingOverlayBase} from '../editing-overlay-base';
 import {EditingOverlayAbstract} from '../editing-overlay-abstract';
@@ -20,17 +20,24 @@ export interface RestaurantFormData {
   templateUrl: './restaurant-editing-overlay.html',
   styleUrls: ['./restaurant-editing-overlay.css'],
 })
-export class RestaurantEditingOverlay extends EditingOverlayBase<RestaurantFormData> implements OnChanges {
+export class RestaurantEditingOverlay extends EditingOverlayBase<RestaurantToServerDto> implements OnChanges {
   @Input() restaurant: RestaurantDto | null = null;
   @Input() restaurantId: number = 0;
-  @Output() override save = new EventEmitter<RestaurantFormData>();
+  @Output() override save = new EventEmitter<RestaurantToServerDto>();
   @Output() override cancel = new EventEmitter<void>();
   @Output() override delete = new EventEmitter<number>();
 
   name = '';
   phone = '';
   email = '';
-  openingHours = {
+  address: AddressDto = {
+    street: '',
+    houseNr: '',
+    door: undefined,
+    city: '',
+    postalCode: '',
+  }
+  openingHours: OpeningHoursDto = {
     monday: '',
     tuesday: '',
     wednesday: '',
@@ -49,6 +56,7 @@ export class RestaurantEditingOverlay extends EditingOverlayBase<RestaurantFormD
       this.name = this.restaurant.name;
       this.phone = this.restaurant.phone;
       this.email = this.restaurant.email;
+      this.address = this.restaurant.address;
       if (this.restaurant.openingHours) {
         this.openingHours.monday = this.restaurant.openingHours.monday || '';
         this.openingHours.tuesday = this.restaurant.openingHours.tuesday || '';
@@ -81,10 +89,11 @@ export class RestaurantEditingOverlay extends EditingOverlayBase<RestaurantFormD
     if (this.openingHours.saturday) openingHoursData.saturday = this.openingHours.saturday;
     if (this.openingHours.sunday) openingHoursData.sunday = this.openingHours.sunday;
 
-    const data: RestaurantFormData = {
+    const data: RestaurantToServerDto = {
       name: this.name,
       phone: this.phone,
       email: this.email,
+      address: this.address,
       openingHours: openingHoursData
     };
 
@@ -109,6 +118,13 @@ export class RestaurantEditingOverlay extends EditingOverlayBase<RestaurantFormD
     this.name = '';
     this.phone = '';
     this.email = '';
+    this.address = {
+      street: '',
+      houseNr: '',
+      door: undefined,
+      city: '',
+      postalCode: ''
+    }
     this.openingHours = {
       monday: '',
       tuesday: '',

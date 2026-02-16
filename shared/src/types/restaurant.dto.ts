@@ -24,5 +24,14 @@ export interface RestaurantDto {
   orderIndex: number;
 }
 
+export interface RestaurantToServerDto {
+    name: string;
+    phone: string;
+    email: string;
+    locationName?: string;
+    address: AddressDto;
+    openingHours?: OpeningHoursDto;
+}
+
 //TODO user-facing DTOs should not expose all/sensitive data
 //TODO or permit DTO to have null values for (problematic?)

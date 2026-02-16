@@ -2,7 +2,7 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute} from '@angular/router';
-import {ImageDto, OpeningHoursDto, RestaurantDto} from '@shared/types';
+import {AddressDto, ImageDto, OpeningHoursDto, RestaurantDto, RestaurantToServerDto} from '@shared/types';
 import {Observable} from 'rxjs';
 import {RestaurantService} from '../../services/restaurant-service';
 import {DragAndDropImageArea} from '../../shared/drag-and-drop-image-area/drag-and-drop-image-area';
@@ -19,7 +19,14 @@ export class ManageProfile implements OnInit {
   name = '';
   phone = '';
   email = '';
-  openingHours = {
+  address: AddressDto = {
+    street: '',
+    houseNr: '',
+    door: undefined,
+    city: '',
+    postalCode: ''
+  };
+  openingHours: OpeningHoursDto = {
     monday: '',
     tuesday: '',
     wednesday: '',
@@ -46,6 +53,7 @@ export class ManageProfile implements OnInit {
       this.name = data.name;
       this.phone = data.phone;
       this.email = data.email;
+      this.address = data.address;
       if (data.openingHours) {
         this.openingHours.monday = data.openingHours.monday || '';
         this.openingHours.tuesday = data.openingHours.tuesday || '';
@@ -69,10 +77,11 @@ export class ManageProfile implements OnInit {
     if (this.openingHours.saturday) openingHoursData.saturday = this.openingHours.saturday;
     if (this.openingHours.sunday) openingHoursData.sunday = this.openingHours.sunday;
 
-    const data = {
+    const data: RestaurantToServerDto = {
       name: this.name,
       phone: this.phone,
       email: this.email,
+      address: this.address,
       openingHours: openingHoursData
     };
 

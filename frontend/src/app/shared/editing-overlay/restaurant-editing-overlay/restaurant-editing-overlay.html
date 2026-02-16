@@ -9,10 +9,10 @@
   (save)="onSave()"
   (cancel)="onCancel()"
   (delete)="onDelete()">
-  
+
   <div class="form-section">
     <h4>Basic Information</h4>
-    
+
     <div class="form-group">
       <label for="restaurant-name">Restaurant Name</label>
       <input type="text" id="restaurant-name" [(ngModel)]="name" name="name" required>
@@ -30,8 +30,38 @@
   </div>
 
   <div class="form-section">
+    <h4>Address</h4>
+
+    <div class="form-group">
+      <label for="street">Street</label>
+      <input type="text" id="street" [(ngModel)]="address.street" name="street" >
+    </div>
+
+    <div class="form-group">
+      <label for="houseNr">House Number</label>
+      <input type="text" id="houseNr" [(ngModel)]="address.houseNr" name="houseNr" >
+    </div>
+
+    <div class="form-group">
+      <label for="door">Door</label>
+      <input type="text" id="door" [(ngModel)]="address.door" name="door" >
+    </div>
+
+    <div class="form-group">
+      <label for="city">City</label>
+      <input type="text" id="city" [(ngModel)]="address.city" name="city" >
+    </div>
+
+    <div class="form-group">
+      <label for="postalcode">Postal Code</label>
+      <input type="text" id="postalcode" [(ngModel)]="address.postalCode" name="postalcode" >
+    </div>
+
+  </div>
+
+  <div class="form-section">
     <h4>Opening Hours</h4>
-    
+
     <div class="form-group">
       <label for="monday">Monday</label>
       <input type="text" id="monday" [(ngModel)]="openingHours.monday" name="monday" placeholder="e.g. 09:00-22:00 or Closed">

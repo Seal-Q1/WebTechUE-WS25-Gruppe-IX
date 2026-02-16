@@ -10,7 +10,7 @@ import {
     RestaurantReviewAggregateRow, DishReviewAggregateRow, dishReviewAggregateSerializer
 } from '../serializers';
 import {sendInternalError, sendNotFound, randomDelay, requiresAuth, parseTokenUserId} from '../utils';
-import {AddressDto, RestaurantReviewDto, RestaurantReviewDtoToServer} from "@shared/types";
+import {AddressDto, RestaurantReviewDto, RestaurantReviewDtoToServer, RestaurantToServerDto} from "@shared/types";
 import {QueryResult} from "pg";
 import {requiresRestaurantOwner} from "../utils/auth-check";
 import {GeolocationService} from "../services/geolocation.service";
@@ -192,7 +192,11 @@ router.get("/:restaurantId/manage-profile", async (req: Request, res: Response) 
 router.put("/:restaurantId/manage-profile", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
-        const {name, phone, email, openingHours} = req.body;
+        const dto = req.body as RestaurantToServerDto;
+        if(dto.address.door === null || dto.address.door?.trim() === '') {
+            dto.address.door = undefined;
+        }
+
         const query = `
             UPDATE restaurant
             SET restaurant_name         = $1,
@@ -204,8 +208,13 @@ router.put("/:restaurantId/manage-profile", requiresRestaurantOwner, async (req:
                 opening_hours_thursday  = $7,
                 opening_hours_friday    = $8,
                 opening_hours_saturday  = $9,
-                opening_hours_sunday    = $10
-            WHERE restaurant_id = $11
+                opening_hours_sunday    = $10,
+                address_street          = $11,
+                address_house_nr        = $12,
+                address_postal_code     = $13,
+                address_city            = $14,
+                address_door            = $15
+            WHERE restaurant_id = $16
             RETURNING restaurant_id, restaurant_name, owner_id, phone, email, restaurant_status_id,
                       location_name, address_street, address_house_nr, address_postal_code, address_city,
                       address_door, opening_hours_monday, opening_hours_tuesday, opening_hours_wednesday,
@@ -213,22 +222,30 @@ router.put("/:restaurantId/manage-profile", requiresRestaurantOwner, async (req:
                       order_index
         `;
         const result = await pool.query<RestaurantRow>(query, [
-            name,
-            phone,
-            email,
-            openingHours?.monday || null,
-            openingHours?.tuesday || null,
-            openingHours?.wednesday || null,
-            openingHours?.thursday || null,
-            openingHours?.friday || null,
-            openingHours?.saturday || null,
-            openingHours?.sunday || null,
-            restaurantId
+            dto.name,
+            dto.phone,
+            dto.email,
+            dto.openingHours?.monday || null,
+            dto.openingHours?.tuesday || null,
+            dto.openingHours?.wednesday || null,
+            dto.openingHours?.thursday || null,
+            dto.openingHours?.friday || null,
+            dto.openingHours?.saturday || null,
+            dto.openingHours?.sunday || null,
+            dto.address.street,
+            dto.address.houseNr,
+            dto.address.postalCode,
+            dto.address.city,
+            dto.address.door ?? null,
+            restaurantId,
         ]);
         if (result.rows.length === 0) {
             sendNotFound(res, "Could not find Restaurant");
             return;
         }
+
+        await addCoordinatesToAddress(restaurantId, dto.address);
+
         res.json(restaurantSerializer.serialize(result.rows[0]!));
     } catch (error) {
         sendInternalError(res, error, "occurred while updating restaurant profile");
@@ -274,18 +291,9 @@ router.post("/", requiresRestaurantOwner, async (req: Request, res: Response) =>
         ];
         const result = await pool.query<RestaurantRow>(query, values);
 
-        const coordinates = await geolocationService.toCoordinates(address);
-        const coordinateUpdateQuery = `
-            UPDATE restaurant
-            SET
-                latitude = $1,
-                longitude = $2
-            WHERE restaurant_id = $3
-            RETURNING *
-        `
-        const coordinateUpdateResult = await pool.query<RestaurantRow>(coordinateUpdateQuery,
-            [coordinates.latitude, coordinates.longitude, result.rows[0]!.restaurant_id],
-        );
+        const restaurantId = result.rows[0]!.restaurant_id;
+
+        await addCoordinatesToAddress(restaurantId, address);
 
         res.status(201).json(restaurantSerializer.serialize(result.rows[0]!));
     } catch (error) {
@@ -371,5 +379,20 @@ router.delete("/:restaurantId", requiresRestaurantOwner, async (req: Request, re
         sendInternalError(res, error, "occurred while deleting restaurant");
     }
 });
+
+async function addCoordinatesToAddress(restaurantId: number, address: AddressDto) {
+    const coordinates = await geolocationService.toCoordinates(address);
+    const coordinateUpdateQuery = `
+            UPDATE restaurant
+            SET
+                latitude = $1,
+                longitude = $2
+            WHERE restaurant_id = $3
+            RETURNING *
+        `
+    const coordinateUpdateResult = await pool.query<RestaurantRow>(coordinateUpdateQuery,
+        [coordinates.latitude, coordinates.longitude, restaurantId],
+    );
+}
 
 export default router;

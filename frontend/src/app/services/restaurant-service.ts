@@ -6,7 +6,7 @@ import {
   OpeningHoursDto,
   RestaurantDto, RestaurantReviewAggregateDto,
   RestaurantReviewDto,
-  RestaurantReviewDtoToServer
+  RestaurantReviewDtoToServer, RestaurantToServerDto
 } from '@shared/types';
 import {of, tap} from 'rxjs';
 import {AuthService} from './auth.service';
@@ -29,22 +29,11 @@ export class RestaurantService {
     return this.http.get<RestaurantDto>(apiUrls.restaurantProfileEndpoint(restaurantId));
   }
 
-  updateRestaurantProfile(restaurantId: number, data: {
-    name: string;
-    phone: string;
-    email: string;
-    openingHours?: OpeningHoursDto
-  }) {
+  updateRestaurantProfile(restaurantId: number, data: RestaurantToServerDto) {
     return this.http.put<RestaurantDto>(apiUrls.restaurantProfileEndpoint(restaurantId), data, this.authService.getAuthHeader());
   }
 
-  createRestaurant(data: {
-    name: string;
-    phone: string;
-    email: string;
-    locationName: string;
-    address: { street: string; houseNr: string; postalCode: string; city: string; door: string }
-  }) {
+  createRestaurant(data: RestaurantToServerDto) {
     return this.http.post<RestaurantDto>(apiUrls.allRestaurantsEndpoint(), data, this.authService.getAuthHeader());
   }
 

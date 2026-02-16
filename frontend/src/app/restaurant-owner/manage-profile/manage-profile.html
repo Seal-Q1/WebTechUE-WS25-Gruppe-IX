@@ -24,6 +24,35 @@
     </div>
 
     <div>
+      <h4>Address</h4>
+
+      <div>
+        <label>Street</label>
+        <input type="text" id="street" [(ngModel)]="address.street" name="street" >
+      </div>
+
+      <div>
+        <label for="houseNr">House Number</label>
+        <input type="text" id="houseNr" [(ngModel)]="address.houseNr" name="houseNr" >
+      </div>
+
+      <div>
+        <label for="door">Door</label>
+        <input type="text" id="door" [(ngModel)]="address.door" name="door" >
+      </div>
+
+      <div>
+        <label for="city">City</label>
+        <input type="text" id="city" [(ngModel)]="address.city" name="city" >
+      </div>
+
+      <div>
+        <label for="postalcode">Postal Code</label>
+        <input type="text" id="postalcode" [(ngModel)]="address.postalCode" name="postalcode" >
+      </div>
+    </div>
+
+    <div>
       <h3>Restaurant Image</h3>
       <app-drag-and-drop-image-area
         [fetchImage]="fetchImage"

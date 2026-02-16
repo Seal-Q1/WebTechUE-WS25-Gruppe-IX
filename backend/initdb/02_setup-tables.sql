@@ -198,7 +198,7 @@ CREATE TABLE public.restaurant
     address_house_nr     TEXT                 NOT NULL,
     address_postal_code  TEXT                 NOT NULL,
     address_city         TEXT                 NOT NULL,
-    address_door            TEXT NOT NULL,
+    address_door            TEXT,
     latitude                NUMERIC,
     longitude               NUMERIC,
     opening_hours_monday    TEXT,
