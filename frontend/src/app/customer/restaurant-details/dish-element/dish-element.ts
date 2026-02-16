@@ -9,14 +9,12 @@ import {AuthService} from '../../../services/auth.service';
 import {Dialog} from '@angular/cdk/dialog';
 import {DishDetailsModal} from '../dish-details-modal/dish-details-modal.component';
 import {StarRating} from '../../star-rating/star-rating';
-import {Review} from '../../review/review';
 
 @Component({
   selector: 'app-dish-grid-element',
   imports: [
     ImageDisplay,
-    StarRating,
-    Review
+    StarRating
   ],
   templateUrl: './dish-element.html',
   styleUrl: './dish-element.css',

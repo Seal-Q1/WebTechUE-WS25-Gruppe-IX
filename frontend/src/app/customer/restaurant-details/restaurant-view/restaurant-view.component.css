@@ -1,3 +1,8 @@
+:host {
+  display: flex;
+  flex: 1;
+}
+
 .restaurant-flex {
   display: flex;
   flex-direction: row;
@@ -41,6 +46,13 @@ span.restaurant-rating:hover {
 .cart-section {
   min-width: 300px;
   border-left: 1px solid #333333;
+}
+
+.cart-section .close-cart-btn {
+  float: right;
+  padding: 10px;
+  margin: 10px 20px;
+  cursor: pointer;
 }
 
 .dish-section h1 {

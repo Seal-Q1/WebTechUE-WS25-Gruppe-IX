@@ -13,6 +13,7 @@
         </div>
         @if(authService.isLoggedIn()) {
           <button (click)="openWriteReviewModal()"><fa-icon [icon]="faStar"></fa-icon> Review</button>
+          <button (click)="openCart()"><fa-icon [icon]="faCartShopping"></fa-icon> Cart ({{cartService.getCartSize()}})</button>
         }
       </div>
 
@@ -27,8 +28,9 @@
       </div>
     </div>
   </div>
-  @if(authService.isLoggedIn()) {
+  @if(authService.isLoggedIn() && cartShown()) {
     <div class="cart-section">
+      <button (click)="closeCart()" class="close-cart-btn"><fa-icon [icon]="faXmark"></fa-icon></button>
       <app-cart-sidebar></app-cart-sidebar>
     </div>
   }

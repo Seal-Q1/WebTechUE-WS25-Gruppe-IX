@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {RestaurantService} from '../../../services/restaurant-service';
 import {toSignal} from '@angular/core/rxjs-interop';
@@ -8,7 +8,7 @@ import {DishGridElement} from '../dish-element/dish-element';
 import {CartSidebar} from '../../cart-sidebar/cart-sidebar';
 import {AuthService} from '../../../services/auth.service';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
-import {faStar} from '@fortawesome/free-solid-svg-icons';
+import {faCartShopping, faStar, faXmark} from '@fortawesome/free-solid-svg-icons';
 import {Dialog} from '@angular/cdk/dialog';
 import {WriteReviewModal} from '../../write-review-modal/write-review-modal.component';
 import {
@@ -17,6 +17,7 @@ import {
 } from '@shared/types';
 import {StarRating} from '../../star-rating/star-rating';
 import {ShowReviewsModal} from '../show-reviews-modal/show-reviews-modal';
+import {CartService} from '../../../services/cart-service';
 
 @Component({
   selector: 'app-restaurant-view',
@@ -36,6 +37,7 @@ export class RestaurantView {
   private restaurantService = inject(RestaurantService);
   private menuItemService = inject(MenuItemService);
   authService = inject(AuthService);
+  cartService = inject(CartService);
 
   restaurantId: number = parseInt(this.route.snapshot.paramMap.get('restaurantId')!);
 
@@ -44,6 +46,8 @@ export class RestaurantView {
   menuItemRatings = toSignal(this.menuItemService.getAggregatedReviews(this.restaurantId), { initialValue: [] });
   imageDto = toSignal(this.restaurantService.getRestaurantImage(this.restaurantId), { initialValue: null});
   dishes = toSignal(this.menuItemService.getAllMenuItems(this.restaurantId), { initialValue: []});
+
+  cartShown = signal(this.cartService.cart().length > 0);
 
   getMenuItemRating(itemId: number) {
     for(let rating of this.menuItemRatings()) {
@@ -74,6 +78,14 @@ export class RestaurantView {
     return rating;
   }
 
+  openCart() {
+    this.cartShown.set(true)
+  }
+
+  closeCart() {
+    this.cartShown.set(false)
+  }
+
   openReviewModal() {
     this.dialog.open(ShowReviewsModal, {data: this.restaurantId});
   }
@@ -94,4 +106,6 @@ export class RestaurantView {
   }
 
   protected readonly faStar = faStar;
+  protected readonly faCartShopping = faCartShopping;
+  protected readonly faXmark = faXmark;
 }

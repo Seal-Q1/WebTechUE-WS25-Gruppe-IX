@@ -8,6 +8,14 @@ export class CartService {
   localstorage_name: string = "cart";
   cart = signal(this.loadCart())
 
+  getCartSize() {
+    let count = 0;
+    for(const item of this.cart()) {
+      count += item.quantity;
+    }
+    return count;
+  }
+
   getItemQuantity(menuItem: MenuItemDto) {
     let item = this.cart().find(el => this.isSameItem(el.itemInfo, menuItem));
     if(item) {
