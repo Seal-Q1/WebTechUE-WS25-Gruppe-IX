@@ -31,6 +31,10 @@ div.dish-details-overview {
   flex: 1;
 }
 
+details.dish-reviews summary {
+  cursor: pointer;
+}
+
 div.reviews {
   display: flex;
   flex-direction: column;

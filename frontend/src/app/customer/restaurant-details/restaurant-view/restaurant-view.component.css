@@ -23,7 +23,7 @@
 
 span.restaurant-rating:hover {
   cursor: pointer;
-  text-decoration: underline;
+  border-bottom: 1px solid #000000;
 }
 
 .restaurant-options button {

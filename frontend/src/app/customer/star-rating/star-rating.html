@@ -1,10 +1,10 @@
 <span class="star-rating">
   @for(index of starArray; track index) {
     @if(index <= rating) {
-      <span class="star-filled">★</span>
+      <span class="star star-filled"><fa-icon [icon]="fasStar"></fa-icon></span>
     }
     @else {
-      <span class="star-unfilled">☆</span>
+      <span class="star star-unfilled"><fa-icon [icon]="farStar"></fa-icon></span>
     }
   }
 </span>
