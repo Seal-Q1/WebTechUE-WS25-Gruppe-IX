@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 const secret = cfg.jwt.secret;
 
+const RESTR_OWNER_ROLE_ID = 2
 const ADMIN_ROLE_ID = 3
 
 export type AuthJwtPayload = {
@@ -23,6 +24,20 @@ export function requiresAdmin(req: Request, res: Response, next: NextFunction) {
     next();
     return;
 }
+
+export function requiresRestaurantOwner(req: Request, res: Response, next: NextFunction) {
+    const authHeader = req.headers.authorization;
+    const payload = authHeaderToPayload(authHeader);
+    if (!payload || (payload.roleId !== RESTR_OWNER_ROLE_ID && payload.roleId !== ADMIN_ROLE_ID)) {
+        return res.status(403).json({message: "Token invalid"});
+    }
+
+    (req as any).userId = payload.userId;
+    (req as any).roleId = payload.roleId;
+    next();
+    return;
+}
+
 
 export function requiresAuth(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;

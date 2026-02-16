@@ -12,6 +12,7 @@ import {
 import {sendInternalError, sendNotFound, randomDelay, requiresAuth, parseTokenUserId} from '../utils';
 import {RestaurantReviewDto, RestaurantReviewDtoToServer} from "@shared/types";
 import {QueryResult} from "pg";
+import {requiresRestaurantOwner} from "../utils/auth-check";
 
 const router = Router();
 
@@ -186,7 +187,7 @@ router.get("/:restaurantId/manage-profile", async (req: Request, res: Response) 
     }
 });
 
-router.put("/:restaurantId/manage-profile", requiresAuth, async (req: Request, res: Response) => {
+router.put("/:restaurantId/manage-profile", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
         const {name, phone, email, openingHours} = req.body;
@@ -233,7 +234,7 @@ router.put("/:restaurantId/manage-profile", requiresAuth, async (req: Request, r
 });
 
 // assumption: no concurrent writes (only one user will change ordering at the same time); simplifies logic
-router.post("/", requiresAuth, async (req: Request, res: Response) => {
+router.post("/", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const {name, phone, email, locationName, address} = req.body as {
             name: string,
@@ -294,7 +295,7 @@ router.get("/:restaurantId/image", async (req: Request, res: Response) => {
     }
 });
 
-router.put("/:restaurantId/image", requiresAuth, async (req: Request, res: Response) => {
+router.put("/:restaurantId/image", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
         const { image } = req.body as { image: string | null };
@@ -315,7 +316,7 @@ router.put("/:restaurantId/image", requiresAuth, async (req: Request, res: Respo
     }
 });
 
-router.patch("/order", requiresAuth, async (req: Request, res: Response) => {
+router.patch("/order", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const items = req.body as { id: number; orderIndex: number }[];
         const client = await pool.connect();
@@ -340,7 +341,7 @@ router.patch("/order", requiresAuth, async (req: Request, res: Response) => {
     }
 });
 
-router.delete("/:restaurantId", requiresAuth, async (req: Request, res: Response) => {
+router.delete("/:restaurantId", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
         const query = `DELETE FROM restaurant WHERE restaurant_id = $1 RETURNING restaurant_id`;
