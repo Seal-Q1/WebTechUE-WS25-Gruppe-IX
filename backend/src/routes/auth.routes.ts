@@ -241,6 +241,8 @@ router.post("/register", async (req: Request, res: Response) => {
             return sendBadRequest(res, "Username or email already exists");
         }
 
+        await pool.query('BEGIN');
+
         // Insert new user with role_id=1 (customer) and user_status_id=1 (ok)
         const result = await pool.query<UserRow>(
             `INSERT INTO users (user_name, first_name, last_name, email, phone, password_hash, role_id, user_status_id)
@@ -271,6 +273,8 @@ router.post("/register", async (req: Request, res: Response) => {
             const coordinateUpdateResult = await pool.query<AddressRow>(coordinateUpdateQuery,
                 [coordinates.latitude, coordinates.longitude, userId],
             );
+
+            await pool.query('COMMIT');
         }
         
         // Fetch the complete user with joins

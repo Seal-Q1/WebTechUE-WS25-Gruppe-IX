@@ -197,6 +197,8 @@ router.put("/:restaurantId/manage-profile", requiresRestaurantOwner, async (req:
             dto.address.door = undefined;
         }
 
+        await pool.query('BEGIN');
+
         const query = `
             UPDATE restaurant
             SET restaurant_name         = $1,
@@ -246,6 +248,8 @@ router.put("/:restaurantId/manage-profile", requiresRestaurantOwner, async (req:
 
         await addCoordinatesToAddress(restaurantId, dto.address);
 
+        await pool.query('COMMIT');
+
         res.json(restaurantSerializer.serialize(result.rows[0]!));
     } catch (error) {
         sendInternalError(res, error, "occurred while updating restaurant profile");
@@ -289,11 +293,16 @@ router.post("/", requiresRestaurantOwner, async (req: Request, res: Response) =>
             address.city,
             address.door
         ];
+
+        await pool.query("BEGIN");
+
         const result = await pool.query<RestaurantRow>(query, values);
 
         const restaurantId = result.rows[0]!.restaurant_id;
 
         await addCoordinatesToAddress(restaurantId, address);
+
+        await pool.query("COMMIT");
 
         res.status(201).json(restaurantSerializer.serialize(result.rows[0]!));
     } catch (error) {

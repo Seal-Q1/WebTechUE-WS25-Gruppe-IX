@@ -29,7 +29,7 @@ export class GeolocationService {
 
     async toCoordinates(address: AddressDto): Promise<Coordinates> {
         const nominatimAddress: NominatimAddress = {
-            street: address.street + " " + address.houseNr + (address.door ?? ""),
+            street: [address.street, address.houseNr, address.door ?? ""].join(" "),
             postalcode: address.postalCode,
             city: address.city,
         }

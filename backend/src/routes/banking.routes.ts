@@ -145,6 +145,8 @@ router.post("/addresses", requiresAuth, async (req: Request, res: Response) => {
             return sendBadRequest(res, "Name, street, house number, postal code and city are required");
         }
 
+        await pool.query('BEGIN');
+
         const result = await pool.query<AddressRow>(
             `INSERT INTO user_address (user_id, address_name, address_street, address_house_nr, address_postal_code, address_city, address_door, is_default)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -154,6 +156,8 @@ router.post("/addresses", requiresAuth, async (req: Request, res: Response) => {
         const addressId = result.rows[0]!.address_id;
 
         await addCoordinatesToAddress(addressId, address);
+
+        await pool.query('COMMIT');
 
         res.status(201).json(serializeAddress(result.rows[0]!));
     } catch (error) {
@@ -217,12 +221,17 @@ router.put("/addresses/:addressId", requiresAuth, async (req: Request, res: Resp
         }
 
         values.push(addressId);
+
+        await pool.query('BEGIN');
+
         const result = await pool.query<AddressRow>(
             `UPDATE user_address SET ${updates.join(', ')} WHERE address_id = $${paramCount} RETURNING *`,
             values
         );
 
         await addCoordinatesToAddress(addressId, dto.address!);
+
+        await pool.query('COMMIT');
 
         res.json(serializeAddress(result.rows[0]!));
     } catch (error) {
