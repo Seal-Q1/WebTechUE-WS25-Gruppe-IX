@@ -35,7 +35,8 @@ export class DishGridElement {
     { initialValue: null }
   );
 
-  onAddToCart() {
+  onAddToCart(event: Event) {
+    event.stopPropagation();
     let currentQuantity = this.cartService.getItemQuantity(this.dish())
     this.cartService.setCartEntry(this.dish(), currentQuantity + 1)
   }

@@ -8,7 +8,7 @@
   <div class="dish-controls">
     @if(authService.isLoggedIn()) {
       <div class="dish-controls">
-        <button class="add-to-cart-btn" title="Add to cart" (click)="onAddToCart()">Add to cart</button>
+        <button class="add-to-cart-btn" title="Add to cart" (click)="onAddToCart($event)">Add to cart</button>
       </div>
     }
   </div>
