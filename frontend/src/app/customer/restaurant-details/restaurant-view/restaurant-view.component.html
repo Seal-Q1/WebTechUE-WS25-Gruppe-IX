@@ -29,9 +29,11 @@
     </div>
   </div>
   @if(authService.isLoggedIn() && cartShown()) {
-    <div class="cart-section">
-      <button (click)="closeCart()" class="close-cart-btn"><fa-icon [icon]="faXmark"></fa-icon></button>
-      <app-cart-sidebar></app-cart-sidebar>
+    <div class="cart-container">
+      <div class="cart-section">
+        <button (click)="closeCart()" class="close-cart-btn"><fa-icon [icon]="faXmark"></fa-icon></button>
+        <app-cart-sidebar></app-cart-sidebar>
+      </div>
     </div>
   }
 </div>
