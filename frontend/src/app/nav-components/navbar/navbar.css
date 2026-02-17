@@ -10,6 +10,7 @@ nav {
   background-color: var(--primary);
   color: #ffffff;
   padding: 10px;
+  overflow: scroll;
   /*box-shadow: 10px 5px 84px 38px rgba(0,0,0,0.4);*/
 }
 
@@ -40,6 +41,11 @@ a:hover {
   background-color: var(--primary-darkened);
   text-decoration: none;
   cursor: pointer;
+}
+
+a span {
+  text-align: center;
+  margin-left: 10px;
 }
 
 .user-info {
@@ -76,4 +82,10 @@ a:hover {
 
 .logout-btn:hover {
   background: rgba(255, 255, 255, 0.25);
+}
+
+@media (max-width: 800px) {
+  span.hidable {
+    display: none;
+  }
 }

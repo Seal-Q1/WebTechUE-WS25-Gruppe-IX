@@ -1,18 +1,18 @@
 <nav>
-  <a class="nav-home" (click)="onHomeClicked()"><fa-icon [icon]="faStar"/> Q1 Food</a>
+  <a class="nav-home" (click)="onHomeClicked()"><fa-icon [icon]="faStar"/><span>Q1 Food</span></a>
   <ul>
     @if (isLoggedIn) {
-      <li><a (click)="onMyOrdersClicked()"><fa-icon [icon]="faTruckFast"/> My Orders </a></li>
+      <li><a (click)="onMyOrdersClicked()"><fa-icon [icon]="faTruckFast"/><span class="hidable">My Orders</span></a></li>
       @if(isRestaurantOwner) {
-        <li><a (click)="onRestaurants()"><fa-icon [icon]="faUtensils"/> Manage Restaurant</a></li>
+        <li><a (click)="onRestaurants()"><fa-icon [icon]="faUtensils"/><span class="hidable">Manage Restaurant</span></a></li>
       }
       <li><app-points-badge></app-points-badge></li>
-      <li><a (click)="onProfile()"><fa-icon [icon]="faUser"/> My Profile</a></li>
+      <li><a (click)="onProfile()"><fa-icon [icon]="faUser"/><span class="hidable">My Profile</span></a></li>
       @if (isAdmin) {
-        <li><a (click)="onAdmin()"><fa-icon [icon]="faUserTie"/> Admin</a></li>
+        <li><a (click)="onAdmin()"><fa-icon [icon]="faUserTie"/><span class="hidable">Admin</span></a></li>
       }
       <li class="user-info">
-        <span class="username">{{ currentUser?.userName }}</span>
+        <span class="username hidable">{{ currentUser?.userName }}</span>
         <a (click)="onLogout()" class="logout-btn">Logout</a>
       </li>
     } @else {
