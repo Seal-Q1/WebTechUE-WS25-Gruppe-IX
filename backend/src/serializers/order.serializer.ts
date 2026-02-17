@@ -40,9 +40,15 @@ export class OrderSerializer extends Serializable<OrderRow, OrderDto> {
         postalCode: row.address_postal_code!,
         city: row.address_city!,
         door: row.address_door || undefined, //returns undefined if there is no address_door (since it's optional)
-        latitude: row.latitude ?? undefined,
-        longitude: row.longitude ?? undefined,
       } as AddressDto;
+
+      if(row.latitude != null && row.longitude != null) {
+        dto.address.coordinates = {
+            latitude: row.latitude,
+            longitude: row.longitude
+        }
+      }
+
     }
 
     if (row.coupon_id) { //coupon is optional

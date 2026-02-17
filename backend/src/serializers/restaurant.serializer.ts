@@ -1,5 +1,5 @@
 import {Serializable} from './serializable.interface';
-import type {AddressDto, RestaurantDto} from '@shared/types';
+import type {AddressDto, CoordinateDto, RestaurantDto} from '@shared/types';
 import {RestaurantStatusEnum} from '@shared/types';
 
 export interface RestaurantRow {
@@ -42,11 +42,15 @@ export class RestaurantSerializer extends Serializable<RestaurantRow, Restaurant
         postalCode: row.address_postal_code,
         city: row.address_city,
         door: row.address_door ?? undefined,
-        latitude: row.latitude ?? undefined,
-        longitude: row.longitude ?? undefined,
       } as AddressDto,
       orderIndex: row.order_index ?? 0
     };
+    if(row.latitude != null && row.longitude != null) {
+        dto.address.coordinates = {
+            latitude: row.latitude,
+            longitude: row.longitude
+        }
+    }
 
     if (row.owner_id) {
       dto.ownerId = row.owner_id;

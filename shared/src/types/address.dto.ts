@@ -5,6 +5,10 @@ export interface AddressDto {
   postalCode: string;
   city: string;
   door?: string | undefined;
-  latitude?: number | undefined;
-  longitude?: number | undefined;
+  coordinates?: CoordinateDto;
+}
+
+export interface CoordinateDto {
+    latitude: number;
+    longitude: number;
 }

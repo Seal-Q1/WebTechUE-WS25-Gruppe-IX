@@ -50,7 +50,7 @@ interface CardRow {
 }
 
 function serializeAddress(row: AddressRow): UserAddressDto {
-    return {
+    const dto: UserAddressDto = {
         id: row.address_id,
         userId: row.user_id,
         name: row.address_name,
@@ -60,12 +60,19 @@ function serializeAddress(row: AddressRow): UserAddressDto {
             postalCode: row.address_postal_code,
             city: row.address_city,
             door: row.address_door || undefined,
-            latitude: row.latitude || undefined,
-            longitude: row.longitude || undefined,
         },
         isDefault: row.is_default,
         createdAt: row.created_at?.toISOString()
     };
+
+    if(row.latitude != null && row.longitude != null)  {
+        dto.address.coordinates = {
+            latitude: row.latitude,
+            longitude: row.longitude
+        }
+    }
+
+    return dto;
 }
 
 function serializeCard(row: CardRow): PaymentCardDto {

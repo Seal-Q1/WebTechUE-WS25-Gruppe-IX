@@ -103,22 +103,31 @@ async function serializeAuthUser(row: UserRowWithPassword): Promise<AuthUserDto>
         [row.user_id]
     );
     
-    const addresses: UserAddressDto[] = addressesResult.rows.map(addr => ({
-        id: addr.address_id,
-        userId: addr.user_id,
-        name: addr.address_name,
-        address: {
-            street: addr.address_street,
-            houseNr: addr.address_house_nr,
-            postalCode: addr.address_postal_code,
-            city: addr.address_city,
-            door: addr.address_door || undefined,
-            latitude: addr.latitude ?? undefined,
-            longitude: addr.longitude ?? undefined,
-        } as AddressDto,
-        isDefault: addr.is_default,
-        createdAt: addr.created_at?.toISOString()
-    }));
+    const addresses: UserAddressDto[] = addressesResult.rows.map(addr => {
+        const dto: UserAddressDto = {
+            id: addr.address_id,
+            userId: addr.user_id,
+            name: addr.address_name,
+            address: {
+                street: addr.address_street,
+                houseNr: addr.address_house_nr,
+                postalCode: addr.address_postal_code,
+                city: addr.address_city,
+                door: addr.address_door || undefined,
+            } as AddressDto,
+            isDefault: addr.is_default,
+            createdAt: addr.created_at?.toISOString()
+        }
+
+        if(addr.latitude !== null && addr.longitude !== null) {
+            dto.address.coordinates = {
+                latitude: addr.latitude,
+                longitude: addr.longitude
+            }
+        }
+
+        return dto;
+    });
     
     // Fetch all user payment cards
     const cardsResult = await pool.query<CardRow>(

@@ -33,6 +33,8 @@ router.get("/", async (_req: Request, res: Response) => {
                    address_postal_code,
                    address_city,
                    address_door,
+                   latitude,
+                   longitude,
                    opening_hours_monday,
                    opening_hours_tuesday,
                    opening_hours_wednesday,

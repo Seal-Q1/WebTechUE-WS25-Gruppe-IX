@@ -113,7 +113,8 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
         `
         const order = await client.query<OrderRow>(query,
             [dto.address.street, dto.address.houseNr, dto.address.postalCode, dto.address.city,
-                dto.address.door, dto.address.latitude, dto.address.longitude, totalPrice - effectiveDiscount, couponId, userId]
+                dto.address.door, dto.address.coordinates?.latitude, dto.address.coordinates?.longitude,
+                totalPrice - effectiveDiscount, couponId, userId]
         );
 
         // Create order item pairs
