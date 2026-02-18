@@ -1,11 +1,9 @@
-import {Component, Inject, inject} from '@angular/core';
+import {Component, inject, signal, WritableSignal} from '@angular/core';
 import {Dialog, DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
 import {
-  DishReviewAggregateDto,
+  DishReviewAggregateDto, DishReviewDto,
   DishReviewDtoToServer,
   MenuItemWithImageDto,
-  RestaurantReviewAggregateDto,
-  RestaurantReviewDtoToServer
 } from '@shared/types';
 import {ImageDisplay} from '../../../shared/image-display/image-display';
 import {AuthService} from '../../../services/auth.service';
@@ -38,7 +36,17 @@ export class DishDetailsModal {
 
 
   data = inject<MenuItemWithImageDto>(DIALOG_DATA);
-  dishReviews = toSignal(this.menuItemService.getReviews(this.data.menuItemDto.restaurantId, this.data.menuItemDto.id), { initialValue: [] });
+  dishReviews: WritableSignal<DishReviewDto[]> = signal([])
+
+  ngOnInit() {
+    this.refreshReviews();
+  }
+
+  refreshReviews() {
+    this.menuItemService.getReviews(this.data.menuItemDto.restaurantId, this.data.menuItemDto.id).subscribe((reviews) => {
+      this.dishReviews.set(reviews);
+    });
+  }
 
   getDishRating() {
     let ratingSum = 0;
@@ -58,10 +66,11 @@ export class DishDetailsModal {
   openReviewModal() {
     const dialogRef = this.dialog.open(WriteReviewModal, {disableClose: true});
     dialogRef.closed.subscribe((review) => {
-      console.log(review);
       if (review) {
         const reviewDto = review as DishReviewDtoToServer;
-        this.menuItemService.submitReview(this.data.menuItemDto.restaurantId, this.data.menuItemDto.id, reviewDto)
+        this.menuItemService.submitReview(this.data.menuItemDto.restaurantId, this.data.menuItemDto.id, reviewDto).add(() => {
+            this.refreshReviews();
+        });
       }
     });
   }

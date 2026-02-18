@@ -11,8 +11,8 @@
         <div class="options-left-container">
           <span class="restaurant-distance"><app-distance-badge [distance]="distance()" (click)="openMap()"></app-distance-badge></span>
         </div>
-        <div class="options-right-container" (click)="openReviewModal()">
-          <span class="restaurant-rating"><app-star-rating [rating]="getRestaurantRating().avg"></app-star-rating> ({{getRestaurantRating().count}})</span>
+        <div class="options-right-container">
+          <span class="restaurant-rating"><app-star-rating [rating]="getRestaurantRating().avg" (click)="openReviewModal()"></app-star-rating> ({{getRestaurantRating().count}})</span>
           @if(authService.isLoggedIn()) {
             <button (click)="openWriteReviewModal()"><fa-icon [icon]="faStar"></fa-icon> Review</button>
             <button (click)="openCart()"><fa-icon [icon]="faCartShopping"></fa-icon> Cart ({{cartService.getCartSize()}})</button>

@@ -1,4 +1,4 @@
-import {Component, computed, inject, signal} from '@angular/core';
+import {Component, computed, inject, signal, WritableSignal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {RestaurantService} from '../../../services/restaurant-service';
 import {toSignal} from '@angular/core/rxjs-interop';
@@ -12,7 +12,7 @@ import {faCartShopping, faStar, faXmark} from '@fortawesome/free-solid-svg-icons
 import {Dialog} from '@angular/cdk/dialog';
 import {WriteReviewModal} from '../../write-review-modal/write-review-modal.component';
 import {
-  DishReviewAggregateDto, RestaurantReviewAggregateDto,
+  DishReviewAggregateDto, RestaurantReviewAggregateDto, RestaurantReviewDto,
   RestaurantReviewDtoToServer
 } from '@shared/types';
 import {StarRating} from '../../star-rating/star-rating';
@@ -47,7 +47,7 @@ export class RestaurantView {
   restaurantId: number = parseInt(this.route.snapshot.paramMap.get('restaurantId')!);
 
   restaurant = toSignal(this.restaurantService.getRestaurantProfile(this.restaurantId), { initialValue: null});
-  restaurantReviews = toSignal(this.restaurantService.getReviews(this.restaurantId), { initialValue: [] });
+  restaurantReviews: WritableSignal<RestaurantReviewDto[]> = signal([]);
   menuItemRatings = toSignal(this.menuItemService.getAggregatedReviews(this.restaurantId), { initialValue: [] });
   imageDto = toSignal(this.restaurantService.getRestaurantImage(this.restaurantId), { initialValue: null});
   dishes = toSignal(this.menuItemService.getAllMenuItems(this.restaurantId), { initialValue: []});
@@ -60,6 +60,17 @@ export class RestaurantView {
     return undefined;
   })
   cartShown = signal(this.cartService.cart().length > 0);
+
+
+  ngOnInit() {
+    this.refreshReviews();
+  }
+
+  refreshReviews() {
+    this.restaurantService.getReviews(this.restaurantId).subscribe((reviews) => {
+      this.restaurantReviews.set(reviews);
+    });
+  }
 
   getMenuItemRating(itemId: number) {
     for(let rating of this.menuItemRatings()) {
@@ -109,14 +120,15 @@ export class RestaurantView {
   openWriteReviewModal() {
     const dialogRef = this.dialog.open(WriteReviewModal, {disableClose: true});
     dialogRef.closed.subscribe((review) => {
-      console.log(review);
       if (review) {
         const reviewObj = review as RestaurantReviewDtoToServer;
         const reviewDto: RestaurantReviewDtoToServer = {
           rating: reviewObj.rating,
           reviewText: reviewObj.reviewText,
         }
-        this.restaurantService.submitReview(this.restaurantId, reviewDto)
+        this.restaurantService.submitReview(this.restaurantId, reviewDto).add(() => {
+          this.refreshReviews();
+        })
       }
     });
   }
