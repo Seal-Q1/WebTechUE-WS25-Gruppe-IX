@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {CoordinateDto} from '@shared/types';
 import {AuthService} from './auth.service';
-import {Observable} from 'rxjs';
+import {catchError, Observable, of} from 'rxjs';
 import {toSignal} from '@angular/core/rxjs-interop';
 
 @Injectable({
@@ -12,7 +12,9 @@ export class GeolocationService {
 
   readonly earthRadiusKm: number = 6371;
 
-  readonly userLocation = toSignal(this.getCurrentGPSPosition());
+  readonly userLocation = toSignal(this.getCurrentGPSPosition().pipe(
+    catchError(() => of(undefined))
+  ));
 
   private getCurrentGPSPosition() {
     return new Observable<CoordinateDto>(subscriber => {
@@ -37,7 +39,6 @@ export class GeolocationService {
 
   private getDefaultAddressPosition(): CoordinateDto | undefined {
     const userDto = this.authService.currentUserValue;
-    console.log(userDto);
     if(userDto) {
       const address = userDto.addresses.find((address) => {
         return address.isDefault
