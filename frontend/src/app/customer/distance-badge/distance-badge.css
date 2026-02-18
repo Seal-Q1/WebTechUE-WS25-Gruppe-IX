@@ -1,0 +1,10 @@
+.distance-badge {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 1em;
+}
+
+span.distance-error {
+  color: #6b7280;
+}

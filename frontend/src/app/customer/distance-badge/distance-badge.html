@@ -1,0 +1,9 @@
+<span class="distance-badge">
+  <fa-icon [icon]="faLocationDot"></fa-icon>
+  @if(distance() !== undefined) {
+    <span class="distance">{{distance()!.toFixed(1)}} km</span>
+  }
+  @else {
+    <span class="distance-error">-</span>
+  }
+</span>
