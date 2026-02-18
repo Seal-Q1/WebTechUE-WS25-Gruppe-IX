@@ -8,7 +8,9 @@
 
 
       <div class="restaurant-options">
-        <div class="options-left-container"><app-distance-badge [distance]="distance()"></app-distance-badge></div>
+        <div class="options-left-container">
+          <span class="restaurant-distance"><app-distance-badge [distance]="distance()" (click)="openMap()"></app-distance-badge></span>
+        </div>
         <div class="options-right-container" (click)="openReviewModal()">
           <span class="restaurant-rating"><app-star-rating [rating]="getRestaurantRating().avg"></app-star-rating> ({{getRestaurantRating().count}})</span>
           @if(authService.isLoggedIn()) {

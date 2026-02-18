@@ -37,6 +37,14 @@
   margin-right: 10px;
 }
 
+span.restaurant-distance {
+  cursor: pointer;
+}
+
+span.restaurant-distance:hover {
+  text-decoration: underline;
+}
+
 span.restaurant-rating:hover {
   cursor: pointer;
   border-bottom: 1px solid #000000;

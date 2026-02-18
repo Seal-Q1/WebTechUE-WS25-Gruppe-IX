@@ -20,6 +20,7 @@ import {ShowReviewsModal} from '../show-reviews-modal/show-reviews-modal';
 import {CartService} from '../../../services/cart-service';
 import {GeolocationService} from '../../../services/geolocation-service';
 import {DistanceBadge} from '../../distance-badge/distance-badge';
+import {MapModal} from '../map-modal/map-modal';
 
 @Component({
   selector: 'app-restaurant-view',
@@ -95,6 +96,10 @@ export class RestaurantView {
 
   closeCart() {
     this.cartShown.set(false)
+  }
+
+  openMap() {
+    this.dialog.open(MapModal, {data: this.restaurant()?.address.coordinates});
   }
 
   openReviewModal() {
