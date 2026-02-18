@@ -1,4 +1,4 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, computed, inject, signal} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {RestaurantService} from '../../../services/restaurant-service';
 import {toSignal} from '@angular/core/rxjs-interop';
@@ -18,6 +18,8 @@ import {
 import {StarRating} from '../../star-rating/star-rating';
 import {ShowReviewsModal} from '../show-reviews-modal/show-reviews-modal';
 import {CartService} from '../../../services/cart-service';
+import {GeolocationService} from '../../../services/geolocation-service';
+import {DistanceBadge} from '../../distance-badge/distance-badge';
 
 @Component({
   selector: 'app-restaurant-view',
@@ -26,7 +28,8 @@ import {CartService} from '../../../services/cart-service';
     DishGridElement,
     CartSidebar,
     FaIconComponent,
-    StarRating
+    StarRating,
+    DistanceBadge
   ],
   templateUrl: './restaurant-view.component.html',
   styleUrl: './restaurant-view.component.css',
@@ -38,6 +41,7 @@ export class RestaurantView {
   private menuItemService = inject(MenuItemService);
   authService = inject(AuthService);
   cartService = inject(CartService);
+  geolocationService = inject(GeolocationService);
 
   restaurantId: number = parseInt(this.route.snapshot.paramMap.get('restaurantId')!);
 
@@ -47,6 +51,13 @@ export class RestaurantView {
   imageDto = toSignal(this.restaurantService.getRestaurantImage(this.restaurantId), { initialValue: null});
   dishes = toSignal(this.menuItemService.getAllMenuItems(this.restaurantId), { initialValue: []});
 
+  distance = computed(() => {
+    const coordinates = this.restaurant()?.address.coordinates;
+    if(coordinates) {
+      return this.geolocationService.getDistanceFromMe(coordinates);
+    }
+    return undefined;
+  })
   cartShown = signal(this.cartService.cart().length > 0);
 
   getMenuItemRating(itemId: number) {

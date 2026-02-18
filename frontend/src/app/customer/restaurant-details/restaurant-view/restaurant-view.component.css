@@ -22,9 +22,19 @@
 .restaurant-options {
   display: flex;
   flex-direction: row;
-  justify-content: right;
+  justify-content: left;
   align-items: center;
   gap: 10px;
+}
+
+.options-right-container {
+  flex: 1;
+  text-align: right;
+}
+
+.options-left-container > *, .options-right-container > * {
+  display: inline-block;
+  margin-right: 10px;
 }
 
 span.restaurant-rating:hover {
