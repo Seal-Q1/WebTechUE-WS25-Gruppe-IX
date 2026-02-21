@@ -14,16 +14,16 @@ export class OrderService {
 
   private authService = inject(AuthService)
 
-  placeOrderRequest(cartItems: CartItemDto[], address: AddressDto, card: PaymentCardDto, couponCode?: string) {
+  placeOrderRequest(restaurantId: number, cartItems: CartItemDto[], address: AddressDto, card: PaymentCardDto, couponCode?: string) {
     let orderRequestItems: OrderRequestItemDto[] = []
     for (const order of cartItems) {
       orderRequestItems.push({
-        restaurantId: order.itemInfo.restaurantId,
         dishId: order.itemInfo.id,
         quantity: order.quantity
       })
     }
     let orderRequestDto: OrderRequestDto = {
+      restaurantId: restaurantId,
       items: orderRequestItems,
       address: address,
       card: card

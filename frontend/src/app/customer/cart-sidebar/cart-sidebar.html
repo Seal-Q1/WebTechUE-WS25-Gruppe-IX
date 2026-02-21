@@ -1,7 +1,7 @@
 <div class="cart-sidebar">
   <h2>Cart</h2>
   <div class="cart-item-container">
-    @for(cartItem of cartService.cart(); track "d" + cartItem.itemInfo.id + "r" + cartItem.itemInfo.restaurantId) {
+    @for(cartItem of cart(); track "d" + cartItem.itemInfo.id + "r" + cartItem.itemInfo.restaurantId) {
       <app-cart-item [cartItem]="cartItem">
       </app-cart-item>
     } @empty {
@@ -9,10 +9,10 @@
     }
   </div>
   <div class="cart-total">
-    Total: {{cartService.getTotalPrice().toFixed(2)}} €
+    Total: {{cartService.getTotalPrice(this.restaurantId()).toFixed(2)}} €
   </div>
   <div class="cart-checkout-container">
-    @if(cartService.cart().length > 0) {
+    @if(cart().length > 0) {
       <button class="cart-checkout-button" title="Place order" (click)="checkout()">Place order</button>
     }
     @else {

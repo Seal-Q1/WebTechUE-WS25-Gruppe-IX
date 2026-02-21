@@ -3,13 +3,13 @@ import type {PaymentCardDto} from "@shared/types/banking.dto";
 
 export interface OrderRequestDto {
     items: OrderRequestItemDto[],
+    restaurantId: number;
     couponCode?: string,
     address: AddressDto,
     card: PaymentCardDto
 }
 
 export interface OrderRequestItemDto {
-    restaurantId: number,
     dishId: number,
     quantity: number
 }

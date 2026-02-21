@@ -150,6 +150,7 @@ CREATE TYPE public.payment_method_enum as ENUM ('cash', 'card', 'crypto', 'csgo-
 CREATE TABLE public.order
 (
     order_id            INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    restaurant_id       INT REFERENCES restaurant ON DELETE RESTRICT, -- an order is tied to one single restaurant
     order_name          TEXT                NOT NULL,
     order_type          order_type_enum     NOT NULL,
     order_status        order_status_enum   NOT NULL,

@@ -15,7 +15,7 @@
           <span class="restaurant-rating"><app-star-rating [rating]="getRestaurantRating().avg" (click)="openReviewModal()"></app-star-rating> ({{getRestaurantRating().count}})</span>
           @if(authService.isLoggedIn()) {
             <button (click)="openWriteReviewModal()"><fa-icon [icon]="faStar"></fa-icon> Review</button>
-            <button (click)="openCart()"><fa-icon [icon]="faCartShopping"></fa-icon> Cart ({{cartService.getCartSize()}})</button>
+            <button (click)="openCart()"><fa-icon [icon]="faCartShopping"></fa-icon> Cart ({{cartService.getCartSize(restaurantId)}})</button>
           }
         </div>
       </div>
@@ -35,7 +35,7 @@
     <div class="cart-container">
       <div class="cart-section">
         <button (click)="closeCart()" class="close-cart-btn"><fa-icon [icon]="faXmark"></fa-icon></button>
-        <app-cart-sidebar></app-cart-sidebar>
+        <app-cart-sidebar [restaurantId]="restaurantId"></app-cart-sidebar>
       </div>
     </div>
   }

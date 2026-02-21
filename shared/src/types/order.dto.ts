@@ -3,6 +3,7 @@ import { OrderStatusEnum, OrderTypeEnum, PaymentMethodEnum } from './enums';
 
 export interface OrderDto {
   id: number;
+  restaurantId: number;
   name: string;
   type: OrderTypeEnum;
   status: OrderStatusEnum;

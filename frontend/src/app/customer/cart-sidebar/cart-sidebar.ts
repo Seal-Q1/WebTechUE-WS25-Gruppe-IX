@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, computed, inject, input} from '@angular/core';
 import {CartService} from '../../services/cart-service';
 import {CardItem} from './cart-item/cart-item';
 import {Dialog} from '@angular/cdk/dialog';
@@ -13,10 +13,16 @@ import {CheckoutModal} from '../checkout-modal/checkout-modal.component';
   styleUrl: './cart-sidebar.css',
 })
 export class CartSidebar {
+  restaurantId = input.required<number>();
+
   cartService = inject(CartService);
   private dialog = inject(Dialog);
 
+  cart = computed(() => {
+    return this.cartService.getCart(this.restaurantId());
+  })
+
   checkout() {
-    this.dialog.open(CheckoutModal, {})
+    this.dialog.open(CheckoutModal, {data: this.restaurantId()})
   }
 }

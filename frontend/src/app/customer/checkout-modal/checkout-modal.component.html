@@ -5,7 +5,7 @@
     <div class="checkout-items-container">
 
       <table class="checkout-items">
-        @for(cartItem of cartService.cart(); track "d" + cartItem.itemInfo.id + "r" + cartItem.itemInfo.restaurantId) {
+        @for(cartItem of cartService.getCart(restaurantId); track "d" + cartItem.itemInfo.id + "r" + cartItem.itemInfo.restaurantId) {
           <tr>
             <td class="checkout-item-name">{{cartItem.itemInfo.name}}</td>
             <td class="checkout-item-qt">(x{{cartItem.quantity}})</td>
@@ -14,7 +14,7 @@
         }
         <tr class="checkout-subtotal">
           <td colspan="2">Subtotal</td>
-          <td class="checkout-subtotal-price">{{cartService.getTotalPrice().toFixed(2)}} €</td>
+          <td class="checkout-subtotal-price">{{cartService.getTotalPrice(restaurantId).toFixed(2)}} €</td>
         </tr>
         <tr class="checkout-discount">
           <td colspan="2">Discount
@@ -26,7 +26,7 @@
         </tr>
         <tr class="checkout-total">
           <td colspan="2">Total</td>
-          <td class="checkout-total-price">{{(cartService.getTotalPrice()-effectiveDiscount()).toFixed(2)}} €</td>
+          <td class="checkout-total-price">{{(cartService.getTotalPrice(restaurantId)-effectiveDiscount()).toFixed(2)}} €</td>
         </tr>
       </table>
     </div>

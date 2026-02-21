@@ -59,7 +59,7 @@ export class RestaurantView {
     }
     return undefined;
   })
-  cartShown = signal(this.cartService.cart().length > 0);
+  cartShown = signal(this.cartService.getCart(this.restaurantId).length > 0);
 
 
   ngOnInit() {

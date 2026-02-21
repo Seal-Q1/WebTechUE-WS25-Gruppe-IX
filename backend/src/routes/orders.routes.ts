@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import pool from '../pool';
-import {orderSerializer, type OrderRow, OrderItemRow, CouponCodeRow} from '../serializers';
+import {orderSerializer, type OrderRow, OrderItemRow, CouponCodeRow, MenuItemRow} from '../serializers';
 import {OrderRequestDto} from '@shared/types';
 import {parseTokenUserId, requiresAuth, sendInternalError, sendNotFound} from '../utils';
 import assert from "node:assert";
@@ -26,14 +26,9 @@ router.get("/my", requiresAuth, async (req: Request, res: Response) => {
 router.post("/", requiresAuth, async (req: Request, res: Response) => {
     const dto = req.body as OrderRequestDto;
     const userId = (req as any).userId;
-
+    const restaurantId = dto.restaurantId;
 
     assert(dto.items.length > 0, 'At least one item must be ordered');
-
-    let restaurantId: number = dto.items[0]!.restaurantId;
-    for(let item of dto.items) {
-        assert(item.restaurantId === restaurantId, 'All items must be from same restaurant');
-    }
 
     try {
         const client = await pool.connect();
@@ -43,18 +38,16 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
         let totalPrice = 0;
         for(let item of dto.items) {
             const getPriceQuery = `
-                SELECT item_price FROM menu_item
-                WHERE item_id = $1 and restaurant_id = $2;
+                SELECT * FROM menu_item
+                WHERE item_id = $1;
             `
-            const values = [
-                item.dishId,
-                item.restaurantId
-            ]
-            const result = await client.query(getPriceQuery, values);
+            const result = await client.query<MenuItemRow>(getPriceQuery, [item.dishId]);
 
-            const itemPrice = parseFloat(result.rows[0]["item_price"])
+            assert(result.rows[0]!["restaurant_id"] === restaurantId, 'All items must be from same restaurant');
 
-            itemPriceList.push(new OrderItemData(item.restaurantId, item.dishId, itemPrice))
+            const itemPrice = parseFloat(result.rows[0]!["item_price"])
+
+            itemPriceList.push(new OrderItemData(item.dishId, itemPrice))
             totalPrice += item.quantity * itemPrice;
         }
 
@@ -104,15 +97,15 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
         // Create order
         const query = `
         INSERT INTO "order" (
-            order_name, order_type, order_status, address_street, address_house_nr, address_postal_code, address_city,
+            restaurant_id, order_name, order_type, order_status, address_street, address_house_nr, address_postal_code, address_city,
             address_door, latitude, longitude, paid_amount, payment_method, coupon_id, user_id, created_at
         )
-        VALUES ('Order', 'delivery'::order_type_enum, 'preparing'::order_status_enum, $1, $2, $3, $4,
-                $5, $6, $7, $8, 'card', $9, $10, DEFAULT)
+        VALUES ($1, 'Order', 'delivery'::order_type_enum, 'preparing'::order_status_enum, $2, $3, $4, $5,
+                $6, $7, $8, $9, 'card', $10, $11, DEFAULT)
         RETURNING *;
         `
         const order = await client.query<OrderRow>(query,
-            [dto.address.street, dto.address.houseNr, dto.address.postalCode, dto.address.city,
+            [dto.restaurantId, dto.address.street, dto.address.houseNr, dto.address.postalCode, dto.address.city,
                 dto.address.door, dto.address.coordinates?.latitude, dto.address.coordinates?.longitude,
                 totalPrice - effectiveDiscount, couponId, userId]
         );
@@ -127,7 +120,7 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
                 RETURNING *;
             `
             // Get matching helper object containing unit price
-            let itemPriceObj: OrderItemData = itemPriceList.find(helper => helper.restaurantId === item.restaurantId && helper.dishId === item.dishId)!;
+            let itemPriceObj: OrderItemData = itemPriceList.find(helper => helper.dishId === item.dishId)!;
 
             await client.query<OrderItemRow>(query,
                 [order.rows[0]!.order_id, item.dishId, item.quantity, itemPriceObj.unitPrice]);
@@ -170,7 +163,6 @@ export default router;
 
 class OrderItemData {
     constructor(
-        public restaurantId: number,
         public dishId: number,
         public unitPrice: number
     ) {}

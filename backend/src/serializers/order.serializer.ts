@@ -3,6 +3,7 @@ import {AddressDto, type OrderDto, OrderStatusEnum, OrderTypeEnum, PaymentMethod
 
 export interface OrderRow {
   order_id: number;
+  restaurant_id: number;
   order_name: string;
   order_type: string;
   order_status: string;
@@ -24,6 +25,7 @@ export class OrderSerializer extends Serializable<OrderRow, OrderDto> {
   serialize(row: OrderRow): OrderDto {
     const dto: OrderDto = {
       id: row.order_id,
+      restaurantId: row.restaurant_id,
       name: row.order_name,
       type: row.order_type as OrderTypeEnum,
       status: row.order_status as OrderStatusEnum,

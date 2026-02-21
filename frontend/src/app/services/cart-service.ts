@@ -1,23 +1,29 @@
-import {Injectable, signal} from '@angular/core';
+import {Injectable, signal, WritableSignal} from '@angular/core';
 import {MenuItemDto} from '@shared/types';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService {
-  localstorage_name: string = "cart";
-  cart = signal(this.loadCart())
+  readonly localstorageName: string = "cart";
+  private cart: WritableSignal<Map<number, CartItemDto[]>> = signal(this.loadCart())
 
-  getCartSize() {
+  getCart(restaurantId: number) {
+    return this.cart().get(restaurantId) ?? [];
+  }
+
+  getCartSize(restaurantId: number) {
     let count = 0;
-    for(const item of this.cart()) {
+    const restaurantCart = this.cart().get(restaurantId) ?? [];
+    for(const item of restaurantCart) {
       count += item.quantity;
     }
     return count;
   }
 
   getItemQuantity(menuItem: MenuItemDto) {
-    let item = this.cart().find(el => this.isSameItem(el.itemInfo, menuItem));
+    const restaurantCart = this.cart().get(menuItem.restaurantId) ?? [];
+    let item = restaurantCart.find(el => this.isSameItem(el.itemInfo, menuItem));
     if(item) {
       return item.quantity;
     }
@@ -31,58 +37,79 @@ export class CartService {
     }
 
     this.cart.update(currentCart => {
-      let existingItem = currentCart.find(el => this.isSameItem(el.itemInfo, menuItem));
+      const restaurantCart = currentCart.get(menuItem.restaurantId) ?? [];
+      let existingItem = restaurantCart.find(el => this.isSameItem(el.itemInfo, menuItem));
 
       if(existingItem) {
-        return currentCart.map(cartItem => {
-          if(this.isSameItem(cartItem.itemInfo, menuItem)) {
-            return new CartItemDto(menuItem, quantity);
-          }
-          else {
-            return cartItem
-          }
-        })
+        existingItem.quantity = quantity;
+      }
+      else {
+        restaurantCart.push(new CartItemDto(menuItem, quantity));
       }
 
-      return currentCart.concat([new CartItemDto(menuItem, quantity)]);
-    })
+      currentCart.set(menuItem.restaurantId, restaurantCart);
+      return currentCart;
+    });
 
     this.writeToStorage();
   }
 
   deleteCartEntry(menuItem: MenuItemDto) {
-    this.cart.update(currentCart => currentCart.filter(
-      el => !this.isSameItem(el.itemInfo, menuItem)
-    ));
+    this.cart.update(
+      currentCart => {
+        const restaurantCart = currentCart.get(menuItem.restaurantId) ?? [];
+        restaurantCart.filter(
+          el => !this.isSameItem(el.itemInfo, menuItem)
+        );
+        return currentCart;
+      }
+    );
     this.writeToStorage();
   }
 
-  clearCart() {
-    this.cart.update(currentCart => [])
+  clearCart(restaurantId: number) {
+    this.cart.update(currentCart => {
+      currentCart.set(restaurantId, []);
+      return currentCart;
+    });
     this.writeToStorage();
   }
 
-  private loadCart(): CartItemDto[] {
-    let localstorage_string = localStorage.getItem(this.localstorage_name)
+  private loadCart(): Map<number, CartItemDto[]> {
+    let storedString = localStorage.getItem(this.localstorageName);
 
-    if (localstorage_string) {
+    if (storedString) {
       try {
-        return JSON.parse(localstorage_string);
+        const storedObject: (CartItemDto[])[] =  JSON.parse(storedString);
+        let cartMap: Map<number, CartItemDto[]> = new Map();
+        for(const restaurantCart of storedObject) {
+          if(restaurantCart.length > 0) {
+            cartMap.set(restaurantCart[0].itemInfo.restaurantId, restaurantCart)
+          }
+        }
+        return cartMap;
       }
       catch(err) {
-        return [];
+        return new Map<number, CartItemDto[]>();
       }
     }
-    return [];
+    return new Map<number, CartItemDto[]>();
   }
 
   private writeToStorage() {
-    localStorage.setItem(this.localstorage_name, JSON.stringify(this.cart()));
+    // Calling JSON.stringify on a map returns {} -> turn map to simple array
+    let cartList: (CartItemDto[])[] = []
+    for (const restaurantCart of this.cart().values()) {
+      cartList.push(restaurantCart);
+    }
+    localStorage.setItem(this.localstorageName, JSON.stringify(cartList));
   }
 
-  getTotalPrice() {
+  getTotalPrice(restaurantId: number) {
+    const restaurantCart = this.cart().get(restaurantId) ?? [];
+
     let price = 0;
-    for(let cartItem of this.cart()) {
+    for(let cartItem of restaurantCart) {
       price += cartItem.itemInfo.price * cartItem.quantity;
     }
     return price;

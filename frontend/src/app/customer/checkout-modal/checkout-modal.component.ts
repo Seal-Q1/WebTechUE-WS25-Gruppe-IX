@@ -1,13 +1,13 @@
-import {Component, effect, inject, signal} from '@angular/core';
+import {Component, effect, inject, input, signal} from '@angular/core';
 import {OrderService} from '../../services/order-service';
 import {CartService} from '../../services/cart-service';
 import {Router} from '@angular/router';
 import {AuthService} from '../../services/auth.service';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {AddressSelection} from './address-selection/address-selection';
-import {PaymentCardDto, UserAddressDto} from '@shared/types';
+import {MenuItemWithImageDto, PaymentCardDto, UserAddressDto} from '@shared/types';
 import {PaymentSelection} from './payment-selection/payment-selection.component';
-import {DialogRef} from '@angular/cdk/dialog';
+import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-checkout',
@@ -24,6 +24,8 @@ export class CheckoutModal {
   cartService = inject(CartService);
   orderService = inject(OrderService);
   authService = inject(AuthService);
+
+  restaurantId = inject<number>(DIALOG_DATA)
 
   user = toSignal(this.authService.getCurrentUser(), { initialValue: null });
   address= signal<UserAddressDto | null>(null);
@@ -79,7 +81,7 @@ export class CheckoutModal {
     this.orderService.getCouponCode(this.couponCode).subscribe({
       next: (res) => {
         // Immediate client-side min order check for better UX
-        const cartTotal = this.cartService.getTotalPrice();
+        const cartTotal = this.cartService.getTotalPrice(this.restaurantId);
         if (res.minOrderValue && cartTotal < res.minOrderValue) {
           this.discountError.set(true);
           this.discountErrorMessage.set(`This coupon requires a minimum order of €${res.minOrderValue}. It has not been applied.`);
@@ -93,7 +95,7 @@ export class CheckoutModal {
         if (res.discountType === 'fixed') {
           this.effectiveDiscount.set(res.discountValue * 1);
         } else {
-          this.effectiveDiscount.set(this.cartService.getTotalPrice() * res.discountValue * 0.01);
+          this.effectiveDiscount.set(this.cartService.getTotalPrice(this.restaurantId) * res.discountValue * 0.01);
         }
         this.activeDiscount.set(res.couponCode);
         this.discountError.set(false);
@@ -114,13 +116,13 @@ export class CheckoutModal {
   }
 
   placeOrder() {
-    const orders = this.cartService.cart();
-    this.orderService.placeOrderRequest(orders, this.address()!.address, this.card()!, this.couponCode).subscribe({
+    const orders = this.cartService.getCart(this.restaurantId);
+    this.orderService.placeOrderRequest(this.restaurantId, orders, this.address()!.address, this.card()!, this.couponCode).subscribe({
       next: (data) => {
-        this.cartService.clearCart();
+        this.cartService.clearCart(this.restaurantId);
         this.router.navigate([`/order-confirmation`]);
         this.dialogRef.close();
-        this.cartService.clearCart();
+        this.cartService.clearCart(this.restaurantId);
       },
       error: (err) => {
         // If backend returns minimum-order error for the coupon, show a clear message and clear the input
