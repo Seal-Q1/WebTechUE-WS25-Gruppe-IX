@@ -4,7 +4,7 @@ import {RestaurantGridElement} from '../restaurant-grid-element/restaurant-grid-
 import {toSignal} from '@angular/core/rxjs-interop';
 import {CuisineDto, RestaurantReviewAggregateDto} from '@shared/types';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
-import {faFilter, faStar, faTruckFast} from '@fortawesome/free-solid-svg-icons';
+import {faFilter, faPizzaSlice, faStar, faTruckFast} from '@fortawesome/free-solid-svg-icons';
 import {GeolocationService} from '../../../services/geolocation-service';
 import {CuisineService} from '../../../services/cuisine-service';
 
@@ -72,6 +72,7 @@ export class RestaurantGrid {
   nameSearchTerm = signal('');
   minStars = signal(0);
   maxDeliveryTime: WritableSignal<number | undefined> = signal(undefined);
+  cuisineFilter: WritableSignal<number[]> = signal([]);
 
   filteredRestaurants = computed(() => {
     const searchTerm = this.nameSearchTerm().toLowerCase();
@@ -90,7 +91,19 @@ export class RestaurantGrid {
         }
         return true;
       })
-      ;
+      .filter((restaurant) => {
+        if(this.cuisineFilter().length === 0) {
+          return true;
+        }
+        const restaurantCuisines = this.restrIdToCuisinesMap().get(restaurant.id) ?? [];
+        const restaurantCuisineIds = restaurantCuisines.map(c => c.id);
+        for(const searchedCuisine of this.cuisineFilter()) {
+          if(restaurantCuisineIds.includes(searchedCuisine)) {
+            return true;
+          }
+        }
+        return false;
+      });
   })
 
   toggleAdvancedFilters() {
@@ -120,6 +133,15 @@ export class RestaurantGrid {
     this.maxDeliveryTime.set(value);
   }
 
+  onCuisineFilterSet(e: Event) {
+    const target = e.target as HTMLSelectElement;
+    let selectedIds: number[] = [];
+    for(const option of target.selectedOptions) {
+      selectedIds.push(parseInt(option.value));
+    }
+    this.cuisineFilter.set(selectedIds);
+  }
+
   getRestaurantRating(restaurantId: number) {
     return this.restrIdToRatingMap().get(restaurantId) ?? {
       restaurantId: restaurantId,
@@ -135,4 +157,5 @@ export class RestaurantGrid {
   protected readonly faFilter = faFilter;
   protected readonly faStar = faStar;
   protected readonly faTruckFast = faTruckFast;
+  protected readonly faPizzaSlice = faPizzaSlice;
 }

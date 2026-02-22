@@ -45,6 +45,18 @@ div.advanced-filters input {
   padding: 5px 10px;
 }
 
+div.advanced-filters select {
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 5px 10px;
+  overflow: scroll;
+}
+
+div.advanced-filters select option {
+  border-radius: 20px;
+  padding: 4px 5px;
+}
+
 .restaurant-grid {
   padding-top: 20px;
   display: grid;
