@@ -10,7 +10,10 @@ import {toSignal} from '@angular/core/rxjs-interop';
 export class GeolocationService {
   private authService = inject(AuthService);
 
-  readonly earthRadiusKm: number = 6371;
+  private readonly earthRadiusKm: number = 6371;
+
+  private readonly mealPrepEstimate: number = 25;
+  private readonly deliverySpeedKmh: number = 30;
 
   readonly userLocation = toSignal(this.getCurrentGPSPosition().pipe(
     catchError(() => of(undefined))
@@ -62,6 +65,12 @@ export class GeolocationService {
       return this.getDistance(target, defaultAddrPos);
     }
     return undefined;
+  }
+
+  getDeliveryEstimate(origin: CoordinateDto, target: CoordinateDto): number {
+    const distance = this.getDistance(origin, target);
+
+    return this.mealPrepEstimate + distance / this.deliverySpeedKmh * 60;
   }
 
   // Formula adapted from this StackOverflow post

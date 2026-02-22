@@ -7,7 +7,7 @@
     <h2>Current orders</h2>
     <div class="order-container">
       @for(order of currentOrders(); track order) {
-        <app-order-element [order]="order"></app-order-element>
+        <app-order-element [order]="order" [showDeliveryEstimate]="true"></app-order-element>
       }
       @empty {
         <span class="empty-info">There are no orders to display.</span>

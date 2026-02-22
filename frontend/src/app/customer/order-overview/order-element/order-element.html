@@ -1,14 +1,17 @@
 <div class="order-element">
-  <div class="order-status">{{order.status}}</div>
-  <div class="order-date">{{order.createdAt}}</div>
+  <div class="order-status">{{order().status}}</div>
+  <div class="order-date">{{order().createdAt}}</div>
+  @if(showDeliveryEstimate) {
+    <div class="order-delivery-estimate">Estimated delivery time: {{deliveryEstimate()?.toFixed(0)}} min</div>
+  }
   <div class="order-address">
     <div class="order-address-line">
-      {{order.address?.street}} {{order.address?.houseNr}}
-      @if(order.address?.door) {
-        / {{order.address?.door}}
+      {{order().address.street}} {{order().address.houseNr}}
+      @if(order().address.door) {
+        / {{order().address.door}}
       }
     </div>
-    <div class="order-address-line">{{order.address?.postalCode}} {{order.address?.city}}</div>
+    <div class="order-address-line">{{order().address.postalCode}} {{order().address.city}}</div>
   </div>
-  <div class="order-price">{{order.paidAmount.toFixed(2)}} €</div>
+  <div class="order-price">{{order().paidAmount.toFixed(2)}} €</div>
 </div>

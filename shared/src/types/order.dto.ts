@@ -7,7 +7,7 @@ export interface OrderDto {
   name: string;
   type: OrderTypeEnum;
   status: OrderStatusEnum;
-  address?: AddressDto;
+  address: AddressDto;
   paidAmount: number;
   paymentMethod: PaymentMethodEnum;
   couponId?: number;
