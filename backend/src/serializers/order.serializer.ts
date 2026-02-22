@@ -32,25 +32,21 @@ export class OrderSerializer extends Serializable<OrderRow, OrderDto> {
       paidAmount: parseFloat(row.paid_amount),
       paymentMethod: row.payment_method as PaymentMethodEnum,
       userId: row.user_id,
-      createdAt: row.created_at
-    };
-
-    if (row.order_type === OrderTypeEnum.DELIVERY) { //address is only for deliveries (optional)
-      dto.address = {
+      createdAt: row.created_at,
+      address: {
         street: row.address_street!,
         houseNr: row.address_house_nr!,
         postalCode: row.address_postal_code!,
         city: row.address_city!,
         door: row.address_door || undefined, //returns undefined if there is no address_door (since it's optional)
-      } as AddressDto;
+      } as AddressDto
+    };
 
-      if(row.latitude != null && row.longitude != null) {
-        dto.address.coordinates = {
-            latitude: row.latitude,
-            longitude: row.longitude
-        }
+    if(row.latitude != null && row.longitude != null) {
+      dto.address.coordinates = {
+        latitude: row.latitude,
+        longitude: row.longitude
       }
-
     }
 
     if (row.coupon_id) { //coupon is optional
