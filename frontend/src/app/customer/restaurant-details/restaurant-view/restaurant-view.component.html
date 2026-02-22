@@ -9,7 +9,10 @@
 
       <div class="restaurant-options">
         <div class="options-left-container">
-          <span class="restaurant-distance"><app-distance-badge [distance]="distance()" (click)="openMap()"></app-distance-badge></span>
+          <div class="restaurant-geoinfo">
+            <span class="restaurant-distance" (click)="openMap()"><app-distance-badge [distance]="distance()"></app-distance-badge></span>
+            <span class="restaurant-delivery-estimate"><app-delivery-estimate-badge [deliveryTime]="deliveryEstimate()"></app-delivery-estimate-badge></span>
+          </div>
         </div>
         <div class="options-right-container">
           <span class="restaurant-rating"><app-star-rating [rating]="getRestaurantRating().avg" (click)="openReviewModal()"></app-star-rating> ({{getRestaurantRating().count}})</span>

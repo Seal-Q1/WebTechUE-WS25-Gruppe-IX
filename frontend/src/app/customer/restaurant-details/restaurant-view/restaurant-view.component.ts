@@ -21,6 +21,7 @@ import {CartService} from '../../../services/cart-service';
 import {GeolocationService} from '../../../services/geolocation-service';
 import {DistanceBadge} from '../../distance-badge/distance-badge';
 import {MapModal} from '../map-modal/map-modal';
+import {DeliveryEstimateBadge} from '../../delivery-estimate-badge/delivery-estimate-badge';
 
 @Component({
   selector: 'app-restaurant-view',
@@ -30,7 +31,8 @@ import {MapModal} from '../map-modal/map-modal';
     CartSidebar,
     FaIconComponent,
     StarRating,
-    DistanceBadge
+    DistanceBadge,
+    DeliveryEstimateBadge
   ],
   templateUrl: './restaurant-view.component.html',
   styleUrl: './restaurant-view.component.css',
@@ -58,7 +60,14 @@ export class RestaurantView {
       return this.geolocationService.getDistanceFromMe(coordinates);
     }
     return undefined;
-  })
+  });
+  deliveryEstimate = computed(() => {
+    const coordinates = this.restaurant()?.address.coordinates;
+    if(coordinates) {
+      return this.geolocationService.getDeliveryEstimateFromMe(coordinates);
+    }
+    return undefined;
+  });
   cartShown = signal(this.cartService.getCart(this.restaurantId).length > 0);
 
 

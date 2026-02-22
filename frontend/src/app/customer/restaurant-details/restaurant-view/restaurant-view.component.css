@@ -22,19 +22,27 @@
 .restaurant-options {
   display: flex;
   flex-direction: row;
-  justify-content: left;
+  justify-content: right;
   align-items: center;
   gap: 10px;
 }
 
-.options-right-container {
+.options-left-container {
   flex: 1;
+}
+
+.options-right-container {
   text-align: right;
 }
 
 .options-left-container > *, .options-right-container > * {
-  display: inline-block;
   margin-right: 10px;
+}
+
+div.restaurant-geoinfo {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
 span.restaurant-distance {
