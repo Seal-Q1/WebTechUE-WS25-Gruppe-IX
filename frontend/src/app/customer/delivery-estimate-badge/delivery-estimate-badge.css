@@ -1,0 +1,14 @@
+.delivery-estimate-badge {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 1em;
+}
+
+span.delivery-estimate-error {
+  color: #6b7280;
+}
+
+span.delivery-estimate, span.delivery-estimate-error {
+  margin-left: 5px;
+}

@@ -15,7 +15,7 @@ export class GeolocationService {
   private readonly mealPrepEstimate: number = 25;
   private readonly deliverySpeedKmh: number = 30;
 
-  readonly userLocation = toSignal(this.getCurrentGPSPosition().pipe(
+  private readonly userGPSLocation = toSignal(this.getCurrentGPSPosition().pipe(
     catchError(() => of(undefined))
   ));
 
@@ -51,25 +51,31 @@ export class GeolocationService {
     return undefined;
   }
 
+  getUserLocation() {
+    if(this.userGPSLocation()) {
+      return this.userGPSLocation();
+    }
+    return this.getDefaultAddressPosition();
+  }
+
   getDistanceFromMe(target: CoordinateDto): number | undefined {
-    const userLocation = this.userLocation();
+    const userLocation = this.getUserLocation();
     if(userLocation) {
       return this.getDistance(target, userLocation);
     }
-    return this.getDistanceFromDefaultAddr(target);
+    return undefined;
   }
 
-  getDistanceFromDefaultAddr(target: CoordinateDto): number | undefined {
-    const defaultAddrPos = this.getDefaultAddressPosition()
-    if(defaultAddrPos) {
-      return this.getDistance(target, defaultAddrPos);
+  getDeliveryEstimateFromMe(target: CoordinateDto): number | undefined {
+    const userLocation = this.getUserLocation();
+    if(userLocation) {
+      return this.getDeliveryEstimate(target, userLocation);
     }
     return undefined;
   }
 
   getDeliveryEstimate(origin: CoordinateDto, target: CoordinateDto): number {
     const distance = this.getDistance(origin, target);
-
     return this.mealPrepEstimate + distance / this.deliverySpeedKmh * 60;
   }
 

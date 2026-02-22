@@ -1,0 +1,9 @@
+<span class="delivery-estimate-badge">
+  <fa-icon [icon]="faTruckFast"></fa-icon>
+  @if(deliveryTime() !== undefined) {
+    <span class="delivery-estimate">{{deliveryTime()!.toFixed(0)}} min</span>
+  }
+  @else {
+    <span class="delivery-estimate-error">-</span>
+  }
+</span>

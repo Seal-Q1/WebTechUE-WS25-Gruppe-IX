@@ -8,13 +8,15 @@ import {Router} from '@angular/router';
 import {StarRating} from '../../star-rating/star-rating';
 import {DistanceBadge} from '../../distance-badge/distance-badge';
 import {GeolocationService} from '../../../services/geolocation-service';
+import {DeliveryEstimateBadge} from '../../delivery-estimate-badge/delivery-estimate-badge';
 
 @Component({
   selector: 'app-restaurant-grid-element',
   imports: [
     ImageDisplay,
     StarRating,
-    DistanceBadge
+    DistanceBadge,
+    DeliveryEstimateBadge
   ],
   templateUrl: './restaurant-grid-element.html',
   styleUrl: './restaurant-grid-element.css',
@@ -31,6 +33,10 @@ export class RestaurantGridElement {
     const coordinates = this.restaurant().address.coordinates!;
     return this.geolocationService.getDistanceFromMe(coordinates);
   });
+  deliveryEstimate = computed(() => {
+    const coordinates = this.restaurant().address.coordinates!;
+    return this.geolocationService.getDeliveryEstimateFromMe(coordinates);
+  })
 
   imageDto = toSignal(
     toObservable(this.restaurant).pipe(
