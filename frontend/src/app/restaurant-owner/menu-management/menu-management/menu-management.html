@@ -21,6 +21,8 @@
 
     <app-cuisine-list
       [cuisines]="cuisines"
+      [activeCuisines]="activeCuisines"
+      [restaurantId]="restaurantId"
       (edit)="onEditCuisine($event)"
       (delete)="onDeleteCuisine($event)">
     </app-cuisine-list>

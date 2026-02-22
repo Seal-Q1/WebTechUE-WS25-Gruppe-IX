@@ -36,6 +36,8 @@ export const apiUrls = {
     `${environment.apiUrl}/cuisines/restaurant`,
   cuisinesForRestaurantEndpoint: (restaurantId: number) =>
     `${environment.apiUrl}/cuisines/restaurant/${restaurantId}`,
+  cuisineForRestaurantMappingEndpoint: (restaurantId: number, cuisineId: number) =>
+    `${environment.apiUrl}/cuisines/restaurant/${restaurantId}/${cuisineId}`,
   cuisinesOrderEndpoint: () =>
     `${environment.apiUrl}/cuisines/order`,
   allRestaurantsEndpoint: () =>

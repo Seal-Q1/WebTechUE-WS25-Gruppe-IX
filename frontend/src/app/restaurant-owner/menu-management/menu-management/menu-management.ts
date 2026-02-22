@@ -18,6 +18,7 @@ import {OrderPollList} from '../../order-viewing/order-poll-list/order-poll-list
 export class MenuManagement implements OnInit {
   dishes: MenuItemDto[] = [];
   cuisines: CuisineDto[] = [];
+  activeCuisines: CuisineDto[] = [];
 
   selectedDish: MenuItemDto | null = null;
   selectedCuisine: CuisineDto | null = null;
@@ -50,6 +51,9 @@ export class MenuManagement implements OnInit {
       this.cuisines = data;
       this.cdr.detectChanges();
     });
+    this.cuisineService.getCuisinesForRestaurant(this.restaurantId).subscribe(data => {
+      this.activeCuisines = data;
+    })
   }
 
   onAddDish(): void {

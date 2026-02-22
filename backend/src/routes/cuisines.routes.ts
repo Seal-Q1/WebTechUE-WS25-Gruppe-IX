@@ -6,6 +6,9 @@ import {
     cuisineRestaurantMapSerializer, CuisineRestaurantMapRow
 } from '../serializers';
 import {sendNotFound, sendInternalError, requiresAuth} from '../utils';
+import {CuisineRestaurantMapDto} from "@shared/types";
+import assert from "node:assert";
+import {requiresRestaurantOwner} from "../utils/auth-check";
 
 const router = Router();
 
@@ -36,6 +39,43 @@ router.get("/restaurant", async (req: Request, res: Response) => {
         res.json(cuisineRestaurantMapSerializer.serialize_multiple(result.rows));
     } catch (error) {
         sendInternalError(res, error, "occurred while fetching cuisine-restaurant map");
+    }
+});
+
+router.post("/restaurant/", requiresRestaurantOwner, async (req: Request, res: Response) => {
+    try {
+        const dto = req.body as CuisineRestaurantMapDto;
+
+        const query = `
+            INSERT INTO restaurant_cuisine_map (restaurant_id, cuisine_id)
+            VALUES($1, $2)
+            RETURNING *;
+        `;
+        const result = await pool.query<CuisineRestaurantMapRow>(query, [dto.restaurantId, dto.cuisineId]);
+        res.json(cuisineRestaurantMapSerializer.serialize_multiple(result.rows));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while inserting cuisine-restaurant mapping");
+    }
+});
+
+router.delete("/restaurant/:restaurantId/:cuisineId", requiresRestaurantOwner, async (req: Request, res: Response) => {
+    try {
+        const restaurantId = parseInt(req.params.restaurantId!);
+        const cuisineId = parseInt(req.params.cuisineId!);
+
+        const query = `
+            DELETE FROM restaurant_cuisine_map
+            WHERE restaurant_id = $1 and cuisine_id = $2
+            RETURNING *;
+        `;
+        const result = await pool.query<CuisineRestaurantMapDto>(query, [restaurantId, cuisineId]);
+        if (result.rows.length === 0) {
+            sendNotFound(res, "Cuisine-restaurant mapping does not exist");
+            return;
+        }
+        res.status(204).send();
+    } catch (error) {
+        sendInternalError(res, error, "occurred while deleting cuisine-restaurant mapping");
     }
 });
 

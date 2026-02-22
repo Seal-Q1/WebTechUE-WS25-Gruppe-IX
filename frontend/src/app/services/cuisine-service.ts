@@ -24,6 +24,17 @@ export class CuisineService {
     return this.http.get<CuisineRestaurantMapDto[]>(apiUrls.cuisinesRestaurantMapEndpoint());
   }
 
+  addCuisineRestaurantMapping(restaurantId: number, cuisineId: number) {
+    return this.http.post<CuisineRestaurantMapDto>(apiUrls.cuisinesRestaurantMapEndpoint(), {
+      restaurantId: restaurantId,
+      cuisineId: cuisineId,
+    } as CuisineRestaurantMapDto, this.authService.getAuthHeader());
+  }
+
+  deleteCuisineRestaurantMapping(restaurantId: number, cuisineId: number) {
+    return this.http.delete<void>(apiUrls.cuisineForRestaurantMappingEndpoint(restaurantId, cuisineId), this.authService.getAuthHeader());
+  }
+
   getCuisinesForRestaurant(restaurantId: number) {
     return this.http.get<CuisineDto[]>(apiUrls.cuisinesForRestaurantEndpoint(restaurantId));
   }

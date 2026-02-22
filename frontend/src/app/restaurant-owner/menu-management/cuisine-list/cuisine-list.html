@@ -6,7 +6,11 @@
     <ng-template #itemTemplate let-item>
       <app-cuisine-grid-list-element
         [cuisine]="item"
-        (itemClick)="onItemClick(item.id)">
+        [active]="isCuisineActive(item)"
+        (itemClick)="onItemClick(item.id)"
+        (checkBoxSelected)="onCheckboxSelected($event)"
+        (checkBoxUnselected)="onCheckboxUnselected($event)"
+      >
       </app-cuisine-grid-list-element>
     </ng-template>
   </app-grid-list>

@@ -12,8 +12,11 @@ import {CuisineDto} from '@shared/types';
 })
 export class CuisineGridListElement extends GridListElementBase {
   @Input() cuisine!: CuisineDto;
+  @Input() active: boolean = false;
 
   @Output() itemClick = new EventEmitter<number>();
+  @Output() checkBoxSelected = new EventEmitter<CuisineDto>();
+  @Output() checkBoxUnselected = new EventEmitter<CuisineDto>();
 
   override get id(): number {
     return this.cuisine?.id ?? 0;
@@ -33,5 +36,16 @@ export class CuisineGridListElement extends GridListElementBase {
 
   onItemClicked(): void {
     this.itemClick.emit(this.id);
+  }
+
+  onCheckboxClicked(e: Event): void {
+    e.stopPropagation();
+    const target = e.target as HTMLInputElement;
+    if(target.checked) {
+      this.checkBoxSelected.emit(this.cuisine);
+    }
+    else {
+      this.checkBoxUnselected.emit(this.cuisine);
+    }
   }
 }
