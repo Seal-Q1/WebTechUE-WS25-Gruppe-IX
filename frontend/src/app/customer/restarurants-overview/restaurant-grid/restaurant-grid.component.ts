@@ -1,10 +1,11 @@
-import {Component, computed, inject, signal} from '@angular/core';
+import {Component, computed, inject, signal, WritableSignal} from '@angular/core';
 import {RestaurantService} from '../../../services/restaurant-service';
 import {RestaurantGridElement} from '../restaurant-grid-element/restaurant-grid-element';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {RestaurantReviewAggregateDto} from '@shared/types';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
-import {faFilter, faStar} from '@fortawesome/free-solid-svg-icons';
+import {faFilter, faStar, faTruckFast} from '@fortawesome/free-solid-svg-icons';
+import {GeolocationService} from '../../../services/geolocation-service';
 
 @Component({
   selector: 'app-restaurant-grid',
@@ -17,6 +18,7 @@ import {faFilter, faStar} from '@fortawesome/free-solid-svg-icons';
 })
 export class RestaurantGrid {
   private restaurantService = inject(RestaurantService);
+  private geolocationService = inject(GeolocationService);
 
   restaurants = toSignal(this.restaurantService.getAllRestaurants(), { initialValue: [] });
   restaurantRatings = toSignal(this.restaurantService.getAggregatedReviews(), { initialValue: [] });
@@ -44,6 +46,7 @@ export class RestaurantGrid {
   advancedFilters = signal(false);
   nameSearchTerm = signal('');
   minStars = signal(0);
+  maxDeliveryTime: WritableSignal<number | undefined> = signal(undefined);
 
   filteredRestaurants = computed(() => {
     const searchTerm = this.nameSearchTerm().toLowerCase();
@@ -54,7 +57,15 @@ export class RestaurantGrid {
       .filter((restaurant) => {
         const rating = this.restrIdToRatingMap().get(restaurant.id)!;
         return rating.avg >= this.minStars();
-      });
+      })
+      .filter((restaurant) => {
+        const deliveryTime = this.geolocationService.getDeliveryEstimateFromMe(restaurant.address.coordinates!);
+        if(deliveryTime !== undefined && this.maxDeliveryTime() !== undefined) {
+          return Math.round(deliveryTime) <= this.maxDeliveryTime()!;
+        }
+        return true;
+      })
+      ;
   })
 
   toggleAdvancedFilters() {
@@ -75,6 +86,15 @@ export class RestaurantGrid {
     this.minStars.set(value);
   }
 
+  onMaxDeliveryTimeSet(e: Event) {
+    const target = e.target as HTMLInputElement;
+    let value: number | undefined = parseInt(target.value);
+    if(isNaN(value)) {
+      value = undefined;
+    }
+    this.maxDeliveryTime.set(value);
+  }
+
   getRestaurantRating(restaurantId: number) {
     for(let rating of this.restaurantRatings()) {
       if(restaurantId === rating.restaurantId) {
@@ -91,4 +111,5 @@ export class RestaurantGrid {
 
   protected readonly faFilter = faFilter;
   protected readonly faStar = faStar;
+  protected readonly faTruckFast = faTruckFast;
 }

@@ -32,7 +32,14 @@ button.advanced-filter-btn:hover {
   background-color: var(--primary-darkened);
 }
 
-input#min-stars {
+div.advanced-filters {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+}
+
+div.advanced-filters input {
   border: 1px solid #ccc;
   border-radius: 20px;
   padding: 5px 10px;

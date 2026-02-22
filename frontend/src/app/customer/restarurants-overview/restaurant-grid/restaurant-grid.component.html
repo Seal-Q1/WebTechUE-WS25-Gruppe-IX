@@ -10,6 +10,10 @@
           <fa-icon [icon]="faStar"></fa-icon> Min. Rating:
           <input type="number" id="min-stars" name="min-stars" [defaultValue]="0" value="0" min="0" max="5" (input)="onMinStarsSet($event)">
         </label>
+        <label>
+          <fa-icon [icon]="faTruckFast"></fa-icon> Max. Delivery Time:
+          <input type="number" id="max-delivery-time" name="max-delivery-time" [defaultValue]="" min="0" (input)="onMaxDeliveryTimeSet($event)"> min
+        </label>
       </div>
     }
   </div>
