@@ -1,0 +1,11 @@
+<div class="order-details-modal">
+  <h2>Order Details</h2>
+    @for(item of orderItemData(); track item.orderItem.id) {
+      <div class="order-item">
+        <div class="order-info">{{item.menuItem.name}} (x{{item.orderItem.quantity}}) - {{item.orderItem.unitPrice.toFixed(2)}} €</div>
+        <div class="order-price-sum">Total: {{(item.orderItem.unitPrice * item.orderItem.quantity).toFixed(2)}} €</div>
+      </div>
+    }
+  <div class="order-discount">Discount: {{order.couponId !== undefined}}</div>
+  <div class="order-total">Total: {{order.paidAmount.toFixed(2)}} €</div>
+</div>

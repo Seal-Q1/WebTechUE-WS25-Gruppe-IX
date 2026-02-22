@@ -1,4 +1,4 @@
-<div class="order-element">
+<div class="order-element" (click)="openOrderDetailsModal()">
   <div class="order-status">{{order().status}}</div>
   <div class="order-date">{{order().createdAt}}</div>
   @if(showDeliveryEstimate) {

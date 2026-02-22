@@ -52,7 +52,6 @@ router.get("/:itemId", async (req: Request, res: Response) => {
       FROM menu_item
       WHERE item_id = $1
         AND restaurant_id = $2
-        AND is_deleted = FALSE
     `;
     const result = await pool.query<MenuItemRow>(query, [itemId, restaurantId]);
     if (result.rows.length === 0) {
