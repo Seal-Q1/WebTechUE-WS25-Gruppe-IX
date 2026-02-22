@@ -25,6 +25,10 @@ export class RestaurantService {
     return this.http.get<RestaurantDto[]>(apiUrls.allRestaurantsEndpoint());
   }
 
+  getMyRestaurants() {
+    return this.http.get<RestaurantDto[]>(apiUrls.myRestaurantsEndpoint(), this.authService.getAuthHeader());
+  }
+
   getRestaurantProfile(restaurantId: number) {
     return this.http.get<RestaurantDto>(apiUrls.restaurantProfileEndpoint(restaurantId));
   }

@@ -77,3 +77,7 @@ export function parseTokenUserId(authHeader: string | undefined): number | null 
     const userId = payload.userId;
     return isNaN(userId) ? null : userId;
 }
+
+export function getAuthDetails(req: Request) {
+    return authHeaderToPayload(req.headers.authorization);
+}

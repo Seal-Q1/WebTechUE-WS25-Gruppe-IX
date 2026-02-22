@@ -12,8 +12,9 @@ import {
 import {sendInternalError, sendNotFound, randomDelay, requiresAuth, parseTokenUserId} from '../utils';
 import {AddressDto, RestaurantReviewDto, RestaurantReviewDtoToServer, RestaurantToServerDto} from "@shared/types";
 import {QueryResult} from "pg";
-import {requiresRestaurantOwner} from "../utils/auth-check";
+import {getAuthDetails, requiresRestaurantOwner} from "../utils/auth-check";
 import {GeolocationService} from "../services/geolocation.service";
+import {assertRestaurantRights} from "../utils/restaurant-rights-check";
 
 const router = Router();
 const geolocationService: GeolocationService = new GeolocationService();
@@ -54,6 +55,21 @@ router.get("/", async (_req: Request, res: Response) => {
         res.json(serialized);
     } catch (error) {
         console.error("Full error:", error);
+        sendInternalError(res, error, "occurred while fetching restaurants");
+    }
+});
+
+router.get("/my", requiresAuth, async (req: Request, res: Response) => {
+    try {
+        const query = `
+            SELECT * FROM restaurant
+            WHERE owner_id = $1
+            ORDER BY order_index, restaurant_id
+        `;
+        const result = await pool.query<RestaurantRow>(query, [getAuthDetails(req)?.userId]);
+        const serialized = restaurantSerializer.serialize_multiple(result.rows);
+        res.json(serialized);
+    } catch (error) {
         sendInternalError(res, error, "occurred while fetching restaurants");
     }
 });
@@ -196,6 +212,9 @@ router.get("/:restaurantId/manage-profile", async (req: Request, res: Response) 
 router.put("/:restaurantId/manage-profile", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
+
+        await assertRestaurantRights(restaurantId, req);
+
         const dto = req.body as RestaurantToServerDto;
         if(dto.address.door === null || dto.address.door?.trim() === '') {
             dto.address.door = undefined;
@@ -286,7 +305,7 @@ router.post("/", requiresRestaurantOwner, async (req: Request, res: Response) =>
         `; //coalesce returns 0 if there aren't any restaurants yet
         const values = [
             name,
-            null,
+            getAuthDetails(req)?.userId,
             phone,
             email,
             'pending',
@@ -335,6 +354,9 @@ router.get("/:restaurantId/image", async (req: Request, res: Response) => {
 router.put("/:restaurantId/image", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
+
+        await assertRestaurantRights(restaurantId, req);
+
         const { image } = req.body as { image: string | null };
         const query = `
             UPDATE restaurant
@@ -381,6 +403,9 @@ router.patch("/order", requiresRestaurantOwner, async (req: Request, res: Respon
 router.delete("/:restaurantId", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
+
+        await assertRestaurantRights(restaurantId, req);
+
         const query = `DELETE FROM restaurant WHERE restaurant_id = $1 RETURNING restaurant_id`;
         const result = await pool.query(query, [restaurantId]);
         if (result.rowCount === 0) {

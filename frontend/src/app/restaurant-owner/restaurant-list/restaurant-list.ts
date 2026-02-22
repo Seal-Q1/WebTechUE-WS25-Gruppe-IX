@@ -29,7 +29,7 @@ export class RestaurantList implements OnInit {
   }
 
   fetchRestaurants(): void {
-    this.restaurantService.getAllRestaurants().subscribe((data) => {
+    this.restaurantService.getMyRestaurants().subscribe((data) => {
       setTimeout(() => { //HACK
         this.restaurants = data;
         this.cdr.markForCheck();

@@ -9,6 +9,7 @@ import {sendNotFound, sendInternalError, requiresAuth} from '../utils';
 import {CuisineRestaurantMapDto} from "@shared/types";
 import assert from "node:assert";
 import {requiresRestaurantOwner} from "../utils/auth-check";
+import {assertRestaurantRights} from "../utils/restaurant-rights-check";
 
 const router = Router();
 
@@ -46,6 +47,8 @@ router.post("/restaurant/", requiresRestaurantOwner, async (req: Request, res: R
     try {
         const dto = req.body as CuisineRestaurantMapDto;
 
+        await assertRestaurantRights(dto.restaurantId, req);
+
         const query = `
             INSERT INTO restaurant_cuisine_map (restaurant_id, cuisine_id)
             VALUES($1, $2)
@@ -62,6 +65,8 @@ router.delete("/restaurant/:restaurantId/:cuisineId", requiresRestaurantOwner, a
     try {
         const restaurantId = parseInt(req.params.restaurantId!);
         const cuisineId = parseInt(req.params.cuisineId!);
+
+        await assertRestaurantRights(restaurantId, req);
 
         const query = `
             DELETE FROM restaurant_cuisine_map
@@ -118,7 +123,7 @@ router.get("/:cuisineId", async (req: Request, res: Response) => {
 });
 
 // assumption: no concurrent writes (only one user will change ordering at the same time); simplifies logic
-router.post("/", requiresAuth, async (req: Request, res: Response) => {
+router.post("/", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const {name, description, emoji} = req.body;
         const query = `
@@ -134,7 +139,7 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
     }
 });
 
-router.put("/:cuisineId", requiresAuth, async (req: Request, res: Response) => {
+router.put("/:cuisineId", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const cuisineId = parseInt(req.params.cuisineId!);
         const {name, description, emoji} = req.body;
@@ -157,7 +162,7 @@ router.put("/:cuisineId", requiresAuth, async (req: Request, res: Response) => {
     }
 });
 
-router.delete("/:cuisineId", requiresAuth, async (req: Request, res: Response) => {
+router.delete("/:cuisineId", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const cuisineId = parseInt(req.params.cuisineId!);
         const query = `
@@ -177,7 +182,7 @@ router.delete("/:cuisineId", requiresAuth, async (req: Request, res: Response) =
     }
 });
 
-router.patch("/order", requiresAuth, async (req: Request, res: Response) => {
+router.patch("/order", requiresRestaurantOwner, async (req: Request, res: Response) => {
     try {
         const items = req.body as { id: number; orderIndex: number }[];
         const client = await pool.connect();

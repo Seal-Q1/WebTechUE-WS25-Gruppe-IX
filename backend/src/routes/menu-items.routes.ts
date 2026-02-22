@@ -10,6 +10,7 @@ import {
 import {sendNotFound, sendInternalError, randomDelay, requiresAuth, parseTokenUserId} from '../utils';
 import {DishReviewDto, DishReviewDtoToServer} from "@shared/types";
 import {QueryResult} from "pg";
+import {assertRestaurantRights} from "../utils/restaurant-rights-check";
 
 const router = Router({ mergeParams: true });
 
@@ -133,6 +134,9 @@ router.post("/:itemId/reviews", requiresAuth, async (req: Request, res: Response
 router.post("/", requiresAuth, async (req: Request, res: Response) => {
   try {
     const restaurantId = parseInt(req.params.restaurantId!);
+
+    await assertRestaurantRights(restaurantId, req);
+
     const { name, price, description } = req.body;
     const query = `
       INSERT INTO menu_item (restaurant_id, item_name, item_price, item_description, order_index)
@@ -150,6 +154,9 @@ router.post("/", requiresAuth, async (req: Request, res: Response) => {
 router.put("/:itemId", requiresAuth, async (req: Request, res: Response) => {
   try {
     const restaurantId = parseInt(req.params.restaurantId!);
+
+    await assertRestaurantRights(restaurantId, req);
+
     const itemId = parseInt(req.params.itemId!);
     const { name, price, description } = req.body;
     const query = `
@@ -176,6 +183,9 @@ router.put("/:itemId", requiresAuth, async (req: Request, res: Response) => {
 router.delete("/:itemId", requiresAuth, async (req: Request, res: Response) => {
   try {
     const restaurantId = parseInt(req.params.restaurantId!);
+
+    await assertRestaurantRights(restaurantId, req);
+
     const itemId = parseInt(req.params.itemId!);
     const query = `
       UPDATE menu_item
@@ -224,6 +234,9 @@ router.get("/:itemId/image", async (req: Request, res: Response) => {
 router.put("/:itemId/image", requiresAuth, async (req: Request, res: Response) => {
   try {
     const restaurantId = parseInt(req.params.restaurantId!);
+
+    await assertRestaurantRights(restaurantId, req);
+
     const itemId = parseInt(req.params.itemId!);
     const { image } = req.body as { image: string | null };
     const query = `
@@ -248,6 +261,9 @@ router.put("/:itemId/image", requiresAuth, async (req: Request, res: Response) =
 router.patch("/order", requiresAuth, async (req: Request, res: Response) => {
   try {
     const restaurantId = parseInt(req.params.restaurantId!);
+
+    await assertRestaurantRights(restaurantId, req);
+
     const items = req.body as { id: number; orderIndex: number }[];
     const client = await pool.connect();
     try {
