@@ -57,10 +57,9 @@ export class CartService {
   deleteCartEntry(menuItem: MenuItemDto) {
     this.cart.update(currentCart => {
       const restaurantCart = currentCart.get(menuItem.restaurantId) ?? [];
-      const filteredCart = restaurantCart.filter(
-        el => !this.isSameItem(el.itemInfo, menuItem)
-      );
-      currentCart.set(menuItem.restaurantId, filteredCart);
+      const removeIndex = restaurantCart.findIndex(el => this.isSameItem(el.itemInfo, menuItem));
+      restaurantCart.splice(removeIndex, 1);
+      currentCart.set(menuItem.restaurantId, restaurantCart);
       return currentCart;
     });
     this.writeToStorage();
