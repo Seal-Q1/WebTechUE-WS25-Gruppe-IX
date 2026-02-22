@@ -18,7 +18,7 @@ export class MapModal {
 
   options = {
     layers: [
-      tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap Contributors' }),
+      tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap Contributors' }),
       marker([ this.coordinate.latitude, this.coordinate.longitude ]),
     ],
     zoom: 14,
