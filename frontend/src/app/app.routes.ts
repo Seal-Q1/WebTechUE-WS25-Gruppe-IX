@@ -16,11 +16,12 @@ import {ForgotPassword} from "./auth/forgot-password/forgot-password";
 import {Profile} from "./auth/profile/profile";
 import {LoyaltyDashboardComponent} from "./loyalty/loyalty-dashboard/loyalty-dashboard";
 import {LoyaltyHistoryComponent} from "./loyalty/loyalty-history/loyalty-history";
-import {AdminGuard} from "./guards/admin.guard";
-import {AuthGuard} from "./guards/auth.guard";
+import {AdminGuard} from "./guards";
+import {AuthGuard} from "./guards";
 import {environment} from '../environment/environment';
 import {CheckoutModal} from './customer/checkout-modal/checkout-modal.component';
 import {OrderOverview} from './customer/order-overview/order-overview';
+import {RestaurantOwnerGuard} from './guards';
 
 
 export const routes: Routes = [
@@ -37,17 +38,20 @@ export const routes: Routes = [
   {
     path: 'orders',
     component: OrderOverview,
-    title: 'My Orders'
+    title: 'My Orders',
+    canActivate: [AuthGuard],
   },
   {
     path: 'checkout',
     component: CheckoutModal,
-    title: 'Checkout'
+    title: 'Checkout',
+    canActivate: [AuthGuard],
   },
   {
     path: 'order-confirmation',
     component: OrderConfirmation,
-    title: 'Order Confirmation'
+    title: 'Order Confirmation',
+    canActivate: [AuthGuard],
   },
   {
     path: 'login',
@@ -85,17 +89,20 @@ export const routes: Routes = [
   {
     path: 'restaurants/:restaurantId/menu-management',
     component: MenuManagement,
-    title: 'Restaurant Menu Management'
+    title: 'Restaurant Menu Management',
+    canActivate: [RestaurantOwnerGuard]
   },
   {
     path: 'restaurants/:restaurantId/manage-profile',
     component: ManageProfile,
-    title: 'Restaurant Profile Management'
+    title: 'Restaurant Profile Management',
+    canActivate: [RestaurantOwnerGuard]
   },
   {
     path: 'restaurants',
     component: RestaurantList,
-    title: 'Restaurant List'
+    title: 'Restaurant List',
+    canActivate: [RestaurantOwnerGuard]
   },
   {
     path: 'admin',
