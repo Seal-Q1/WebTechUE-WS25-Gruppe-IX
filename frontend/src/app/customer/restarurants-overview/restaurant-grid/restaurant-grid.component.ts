@@ -7,12 +7,15 @@ import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faFilter, faPizzaSlice, faStar, faTruckFast} from '@fortawesome/free-solid-svg-icons';
 import {GeolocationService} from '../../../services/geolocation-service';
 import {CuisineService} from '../../../services/cuisine-service';
+import {NgOptionComponent, NgSelectComponent} from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-restaurant-grid',
   imports: [
     RestaurantGridElement,
-    FaIconComponent
+    FaIconComponent,
+    NgSelectComponent,
+    NgOptionComponent
   ],
   templateUrl: './restaurant-grid.component.html',
   styleUrl: './restaurant-grid.component.css',
@@ -133,13 +136,8 @@ export class RestaurantGrid {
     this.maxDeliveryTime.set(value);
   }
 
-  onCuisineFilterSet(e: Event) {
-    const target = e.target as HTMLSelectElement;
-    let selectedIds: number[] = [];
-    for(const option of target.selectedOptions) {
-      selectedIds.push(parseInt(option.value));
-    }
-    this.cuisineFilter.set(selectedIds);
+  onCuisineFilterSet(values: number[]) {
+    this.cuisineFilter.set(values);
   }
 
   getRestaurantRating(restaurantId: number) {

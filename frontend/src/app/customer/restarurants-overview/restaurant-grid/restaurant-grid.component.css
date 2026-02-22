@@ -39,22 +39,33 @@ div.advanced-filters {
   align-items: center;
 }
 
+div.advanced-filters label {
+  background-color: var(--primary-light);
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+}
+
 div.advanced-filters input {
+  background-color: #ffffff;
   border: 1px solid #ccc;
   border-radius: 20px;
   padding: 5px 10px;
 }
 
-div.advanced-filters select {
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  padding: 5px 10px;
-  overflow: scroll;
+div.advanced-filters label.cuisine-filter {
+  flex: 1;
 }
 
-div.advanced-filters select option {
-  border-radius: 20px;
-  padding: 4px 5px;
+.cuisine-filter .ng-select {
+  flex: 1;
+}
+
+.cuisine-filter .ng-select {
+  width: 100%;
 }
 
 .restaurant-grid {
