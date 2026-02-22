@@ -7,15 +7,15 @@
     @if(advancedFilters()) {
       <div class="advanced-filters">
         <label class="star-filter">
-          <span><fa-icon [icon]="faStar"></fa-icon> Min. Rating:</span>
+          <span><fa-icon [icon]="faStar"></fa-icon><span class="mobile-hidable">Min. Rating:</span></span>
           <input type="number" id="min-stars" name="min-stars" [defaultValue]="0" value="0" min="0" max="5" (input)="onMinStarsSet($event)">
         </label>
         <label class="delivery-time-filter">
-          <span><fa-icon [icon]="faTruckFast"></fa-icon> Max. Delivery Time:</span>
+          <span><fa-icon [icon]="faTruckFast"></fa-icon><span class="mobile-hidable">Max. Delivery Time:</span></span>
           <input type="number" id="max-delivery-time" name="max-delivery-time" [defaultValue]="" min="0" max="180" (input)="onMaxDeliveryTimeSet($event)"> min
         </label>
         <label class="cuisine-filter">
-          <span><fa-icon [icon]="faPizzaSlice"></fa-icon> Cuisines:</span>
+          <span><fa-icon [icon]="faPizzaSlice"></fa-icon><span class="mobile-hidable">Cuisines:</span></span>
           <ng-select class="custom" [multiple]="true" [closeOnSelect]="false" (change)="onCuisineFilterSet($event)">
             @for(cuisine of cuisines(); track cuisine.id) {
               <ng-option [value]="cuisine.id">{{cuisine.emoji}} {{cuisine.name}}</ng-option>

@@ -85,7 +85,7 @@ a span {
 }
 
 @media (max-width: 800px) {
-  span.hidable {
+  span.mobile-hidable {
     display: none;
   }
 }

@@ -49,6 +49,12 @@ div.advanced-filters label {
   align-items: center;
 }
 
+div.advanced-filters label > span {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
 div.advanced-filters input {
   background-color: #ffffff;
   border: 1px solid #ccc;
@@ -74,4 +80,10 @@ div.advanced-filters label.cuisine-filter {
   grid-auto-rows: 1fr;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
+}
+
+@media (max-width: 800px) {
+  .mobile-hidable {
+    display: none;
+  }
 }
