@@ -11,6 +11,8 @@ export {restaurantSerializer, RestaurantSerializer} from './restaurant.serialize
 export type { RestaurantRow } from './restaurant.serializer';
 export {cuisineSerializer, CuisineSerializer} from './cuisine.serializer';
 export type { CuisineRow } from './cuisine.serializer';
+export {cuisineRestaurantMapSerializer, CuisineRestaurantMapSerializer} from './cuisine-restaurant-map.serializer';
+export type { CuisineRestaurantMapRow } from './cuisine-restaurant-map.serializer';
 export {imageSerializer, ImageSerializer} from './image.serializer';
 export type { ImageRow } from './image.serializer';
 export {couponCodeSerializer, CouponCodeSerializer} from './coupon-code.serializer';

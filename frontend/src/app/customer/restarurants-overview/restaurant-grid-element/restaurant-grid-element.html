@@ -4,6 +4,14 @@
   </div>
   <div class="restaurant-name">{{restaurant().name}}</div>
   <div class="restaurant-rating"><app-star-rating [rating]="rating().avg"></app-star-rating> ({{rating().count}})</div>
+  <div class="restaurant-cuisines">
+    @for(cuisine of cuisines(); track cuisine.id) {
+      <span class="cuisine-tag">{{cuisine.emoji}} {{cuisine.name}}</span>
+    }
+    @empty {
+      <span class="no-cuisines">No tags for this restaurant yet</span>
+    }
+  </div>
   <div class="restaurant-distance">
     <app-distance-badge [distance]="distance()"></app-distance-badge>
     <app-delivery-estimate-badge [deliveryTime]="deliveryEstimate()"></app-delivery-estimate-badge>

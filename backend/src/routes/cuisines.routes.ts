@@ -1,6 +1,10 @@
 import {Router, type Request, type Response} from 'express';
 import pool from '../pool';
-import {cuisineSerializer, type CuisineRow} from '../serializers';
+import {
+    cuisineSerializer,
+    type CuisineRow,
+    cuisineRestaurantMapSerializer, CuisineRestaurantMapRow
+} from '../serializers';
 import {sendNotFound, sendInternalError, requiresAuth} from '../utils';
 
 const router = Router();
@@ -20,6 +24,33 @@ router.get("/", async (_req: Request, res: Response) => {
         res.json(cuisineSerializer.serialize_multiple(result.rows));
     } catch (error) {
         sendInternalError(res, error, "occurred while fetching cuisines");
+    }
+});
+
+router.get("/restaurant", async (req: Request, res: Response) => {
+    try {
+        const query = `
+            SELECT * FROM restaurant_cuisine_map
+        `;
+        const result = await pool.query<CuisineRestaurantMapRow>(query);
+        res.json(cuisineRestaurantMapSerializer.serialize_multiple(result.rows));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while fetching cuisine-restaurant map");
+    }
+});
+
+router.get("/restaurant/:restaurantId", async (req: Request, res: Response) => {
+    try {
+        const restaurantId = parseInt(req.params.restaurantId!);
+        const query = `
+            SELECT * FROM cuisine Cuisine
+            JOIN restaurant_cuisine_map Map ON Map.cuisine_id = Cuisine.cuisine_id
+            WHERE restaurant_id = $1
+        `;
+        const result = await pool.query<CuisineRow>(query, [restaurantId]);
+        res.json(cuisineSerializer.serialize_multiple(result.rows));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while fetching cuisine");
     }
 });
 

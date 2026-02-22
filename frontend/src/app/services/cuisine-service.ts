@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
-import {CuisineDto} from '@shared/types';
+import {CuisineDto, CuisineRestaurantMapDto} from '@shared/types';
 import {AuthService} from './auth.service';
 
 @Injectable({
@@ -18,6 +18,14 @@ export class CuisineService {
 
   getCuisine(cuisineId: number) {
     return this.http.get<CuisineDto>(apiUrls.cuisineEndpoint(cuisineId));
+  }
+
+  getCuisineRestaurantMap() {
+    return this.http.get<CuisineRestaurantMapDto[]>(apiUrls.cuisinesRestaurantMapEndpoint());
+  }
+
+  getCuisinesForRestaurant(restaurantId: number) {
+    return this.http.get<CuisineDto[]>(apiUrls.cuisinesForRestaurantEndpoint(restaurantId));
   }
 
   createCuisine(data: { name: string; description?: string; emoji?: string }) {

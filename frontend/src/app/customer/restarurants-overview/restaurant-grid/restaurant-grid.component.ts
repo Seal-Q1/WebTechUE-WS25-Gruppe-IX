@@ -2,10 +2,11 @@ import {Component, computed, inject, signal, WritableSignal} from '@angular/core
 import {RestaurantService} from '../../../services/restaurant-service';
 import {RestaurantGridElement} from '../restaurant-grid-element/restaurant-grid-element';
 import {toSignal} from '@angular/core/rxjs-interop';
-import {RestaurantReviewAggregateDto} from '@shared/types';
+import {CuisineDto, RestaurantReviewAggregateDto} from '@shared/types';
 import {FaIconComponent} from '@fortawesome/angular-fontawesome';
 import {faFilter, faStar, faTruckFast} from '@fortawesome/free-solid-svg-icons';
 import {GeolocationService} from '../../../services/geolocation-service';
+import {CuisineService} from '../../../services/cuisine-service';
 
 @Component({
   selector: 'app-restaurant-grid',
@@ -19,9 +20,12 @@ import {GeolocationService} from '../../../services/geolocation-service';
 export class RestaurantGrid {
   private restaurantService = inject(RestaurantService);
   private geolocationService = inject(GeolocationService);
+  private cuisineService = inject(CuisineService);
 
   restaurants = toSignal(this.restaurantService.getAllRestaurants(), { initialValue: [] });
   restaurantRatings = toSignal(this.restaurantService.getAggregatedReviews(), { initialValue: [] });
+  restaurantCuisineMap = toSignal(this.cuisineService.getCuisineRestaurantMap(), { initialValue: [] });
+  cuisines = toSignal(this.cuisineService.getAllCuisines(), { initialValue: [] });
 
   restrIdToRatingMap = computed(() => {
     const map: Map<number, RestaurantReviewAggregateDto> = new Map();
@@ -42,6 +46,27 @@ export class RestaurantGrid {
     }
     return map;
   });
+
+  restrIdToCuisinesMap = computed(() => {
+    const map: Map<number, CuisineDto[]> = new Map();
+
+    for(const cuisineMapping of this.restaurantCuisineMap()) {
+      const cuisineDto = this.cuisines().find(el => {
+        return cuisineMapping.cuisineId === el.id;
+      })
+
+      if(!map.has(cuisineMapping.restaurantId)) {
+        map.set(cuisineMapping.restaurantId, []);
+      }
+
+      const restaurantCuisines = map.get(cuisineMapping.restaurantId)!;
+      if(cuisineDto) {
+        restaurantCuisines.push(cuisineDto);
+      }
+    }
+
+    return map;
+  })
 
   advancedFilters = signal(false);
   nameSearchTerm = signal('');
@@ -96,17 +121,15 @@ export class RestaurantGrid {
   }
 
   getRestaurantRating(restaurantId: number) {
-    for(let rating of this.restaurantRatings()) {
-      if(restaurantId === rating.restaurantId) {
-        return rating;
-      }
-    }
-    const noRating: RestaurantReviewAggregateDto = {
+    return this.restrIdToRatingMap().get(restaurantId) ?? {
       restaurantId: restaurantId,
       count: 0,
       avg: 0
-    }
-    return noRating;
+    };
+  }
+
+  getRestaurantCuisines(restaurantId: number) {
+    return this.restrIdToCuisinesMap().get(restaurantId) ?? [];
   }
 
   protected readonly faFilter = faFilter;

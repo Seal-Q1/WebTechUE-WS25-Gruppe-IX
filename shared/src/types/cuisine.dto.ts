@@ -5,3 +5,8 @@ export interface CuisineDto {
   emoji?: string;
   orderIndex: number;
 }
+
+export interface CuisineRestaurantMapDto {
+    cuisineId: number;
+    restaurantId: number;
+}

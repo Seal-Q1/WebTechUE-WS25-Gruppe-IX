@@ -1,5 +1,5 @@
 import {Component, computed, inject, input} from '@angular/core';
-import {RestaurantDto, RestaurantReviewAggregateDto} from '@shared/types';
+import {CuisineDto, RestaurantDto, RestaurantReviewAggregateDto} from '@shared/types';
 import {ImageDisplay} from '../../../shared/image-display/image-display';
 import {RestaurantService} from '../../../services/restaurant-service';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';
@@ -29,6 +29,8 @@ export class RestaurantGridElement {
 
   restaurant = input.required<RestaurantDto>();
   rating = input.required<RestaurantReviewAggregateDto>();
+  cuisines = input.required<CuisineDto[]>();
+
   distance = computed(() => {
     const coordinates = this.restaurant().address.coordinates!;
     return this.geolocationService.getDistanceFromMe(coordinates);
