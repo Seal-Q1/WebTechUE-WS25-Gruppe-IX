@@ -16,27 +16,6 @@ export class OrderDetailsModal {
   order = inject<OrderDto>(DIALOG_DATA);
 
   private orderFetchService = inject(OrderFetchService);
-  private menuItemService = inject(MenuItemService);
 
-  private orderItems = toSignal(this.orderFetchService.getOrderItems(this.order.restaurantId, this.order.id), {initialValue: []})
-  orderItemData = toSignal(
-    toObservable(this.orderItems).pipe(
-      switchMap(orderItems => {
-        if (orderItems.length === 0) return of([]);
-
-        const requests = orderItems.map(orderItem =>
-          this.menuItemService.getMenuItem(this.order.restaurantId, orderItem.itemId).pipe(
-            map(menuItem => ({orderItem: orderItem, menuItem: menuItem} as OrderItemData))
-          )
-        );
-
-        return forkJoin(requests);
-      })
-    )
-  , {initialValue: []});
-}
-
-interface OrderItemData {
-  orderItem: OrderItemDto,
-  menuItem: MenuItemDto
+  orderItems = toSignal(this.orderFetchService.getOrderItemsWithDetails(this.order.restaurantId, this.order.id), {initialValue: []})
 }

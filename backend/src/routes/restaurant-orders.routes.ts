@@ -1,6 +1,12 @@
 import { Router, type Request, type Response } from 'express';
 import pool from '../pool';
-import { orderSerializer, orderItemSerializer, type OrderRow, type OrderItemRow } from '../serializers';
+import {
+    orderSerializer,
+    orderItemSerializer,
+    type OrderRow,
+    type OrderItemRow,
+    OrderItemWithMenuItemRow, orderItemWithMenuItemSerializer
+} from '../serializers';
 import { OrderStatusEnum } from '@shared/types';
 import { sendNotFound, sendBadRequest, sendInternalError, requiresAuth } from '../utils';
 
@@ -140,6 +146,22 @@ router.get("/:orderId/items", async (req: Request, res: Response) => {
   } catch (error) {
     sendInternalError(res, error, "occurred while fetching order-items");
   }
+});
+
+// "Get all order_items of an order"
+router.get("/:orderId/items-details", async (req: Request, res: Response) => {
+    try {
+      const orderId = parseInt(req.params.orderId!);
+      const query = `
+          SELECT * FROM order_item OrderItem
+          JOIN menu_item MenuItem ON OrderItem.item_id = MenuItem.item_id
+          WHERE order_id = $1
+      `;
+        const result = await pool.query<OrderItemWithMenuItemRow>(query, [orderId]);
+        res.json(orderItemWithMenuItemSerializer.serialize_multiple(result.rows));
+    } catch (error) {
+        sendInternalError(res, error, "occurred while fetching order-items");
+    }
 });
 
 export default router;

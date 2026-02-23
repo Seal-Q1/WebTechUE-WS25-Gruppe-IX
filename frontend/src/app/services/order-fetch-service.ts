@@ -3,6 +3,7 @@ import {apiUrls} from '../config/api_urls';
 import {HttpClient} from '@angular/common/http';
 import {OrderDto, OrderItemDto, OrderStatusEnum} from '@shared/types';
 import {AuthService} from './auth.service';
+import {OrderItemWithMenuItemDto} from '@shared/types/order-item.dto';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,10 @@ export class OrderFetchService {
 
   getOrderItems(restaurantId: number, orderId: number) {
     return this.http.get<OrderItemDto[]>(apiUrls.orderItemsEndpoint(restaurantId, orderId));
+  }
+
+  getOrderItemsWithDetails(restaurantId: number, orderId: number) {
+    return this.http.get<OrderItemWithMenuItemDto[]>(apiUrls.orderItemsWithDetailsEndpoint(restaurantId, orderId));
   }
 
   updateOrderStatus(restaurantId: number, orderId: number, status: OrderStatusEnum) {
