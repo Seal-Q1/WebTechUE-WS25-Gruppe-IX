@@ -147,6 +147,37 @@ CREATE TYPE public.order_type_enum AS ENUM ('pickup', 'delivery');
 CREATE TYPE public.order_status_enum AS ENUM ('preparing', 'ready', 'dispatched', 'fulfilled', 'cancelled');
 CREATE TYPE public.payment_method_enum as ENUM ('cash', 'card', 'crypto', 'csgo-skins');
 
+-- TODO add constraint only accepted restaurants can do anything
+CREATE TYPE public.restaurant_type_enum AS ENUM ('pending', 'accepted', 'rejected');
+
+CREATE TABLE public.restaurant
+(
+    restaurant_id        INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    restaurant_name      TEXT                 NOT NULL,
+    owner_id             INT REFERENCES users ON DELETE RESTRICT,
+    phone                TEXT                 NOT NULL,
+    email                TEXT                 NOT NULL,
+    restaurant_status_id restaurant_type_enum NOT NUll,
+    location_name        TEXT                 NOT NULL,
+    address_street       TEXT                 NOT NULL,
+    address_house_nr     TEXT                 NOT NULL,
+    address_postal_code  TEXT                 NOT NULL,
+    address_city         TEXT                 NOT NULL,
+    address_door            TEXT,
+    latitude                NUMERIC,
+    longitude               NUMERIC,
+    opening_hours_monday    TEXT,
+    opening_hours_tuesday   TEXT,
+    opening_hours_wednesday TEXT,
+    opening_hours_thursday  TEXT,
+    opening_hours_friday    TEXT,
+    opening_hours_saturday  TEXT,
+    opening_hours_sunday    TEXT,
+    image                   TEXT,
+    order_index             INT NOT NULL DEFAULT 0
+
+);
+
 CREATE TABLE public.order
 (
     order_id            INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -179,39 +210,6 @@ CREATE TABLE public.order
                     AND address_city IS NOT NULL
                 )
             )
-);
-
-
-
--- TODO add constraint only accepted restaurants can do anything
-CREATE TYPE public.restaurant_type_enum AS ENUM ('pending', 'accepted', 'rejected');
-
-CREATE TABLE public.restaurant
-(
-    restaurant_id        INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    restaurant_name      TEXT                 NOT NULL,
-    owner_id             INT REFERENCES users ON DELETE RESTRICT,
-    phone                TEXT                 NOT NULL,
-    email                TEXT                 NOT NULL,
-    restaurant_status_id restaurant_type_enum NOT NUll,
-    location_name        TEXT                 NOT NULL,
-    address_street       TEXT                 NOT NULL,
-    address_house_nr     TEXT                 NOT NULL,
-    address_postal_code  TEXT                 NOT NULL,
-    address_city         TEXT                 NOT NULL,
-    address_door            TEXT,
-    latitude                NUMERIC,
-    longitude               NUMERIC,
-    opening_hours_monday    TEXT,
-    opening_hours_tuesday   TEXT,
-    opening_hours_wednesday TEXT,
-    opening_hours_thursday  TEXT,
-    opening_hours_friday    TEXT,
-    opening_hours_saturday  TEXT,
-    opening_hours_sunday    TEXT,
-    image                   TEXT,
-    order_index             INT NOT NULL DEFAULT 0
-
 );
 
 CREATE TABLE public.restaurant_review
