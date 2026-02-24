@@ -282,9 +282,9 @@ router.post("/register", async (req: Request, res: Response) => {
             const coordinateUpdateResult = await pool.query<AddressRow>(coordinateUpdateQuery,
                 [coordinates.latitude, coordinates.longitude, userId],
             );
-
-            await pool.query('COMMIT');
         }
+
+        await pool.query('COMMIT');
         
         // Fetch the complete user with joins
         const userResult = await pool.query<UserRowWithPassword>(
