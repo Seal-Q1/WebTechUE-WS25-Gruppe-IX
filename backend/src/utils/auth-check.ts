@@ -15,7 +15,7 @@ export type AuthJwtPayload = {
 export function requiresAdmin(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
     const payload = authHeaderToPayload(authHeader);
-    if (!payload || payload.roleId !== ADMIN_ROLE_ID) {
+    if (!payload || !isAdmin(req)) {
         return res.status(403).json({message: "Token invalid"});
     }
 
@@ -26,9 +26,8 @@ export function requiresAdmin(req: Request, res: Response, next: NextFunction) {
 }
 
 export function requiresRestaurantOwner(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers.authorization;
-    const payload = authHeaderToPayload(authHeader);
-    if (!payload || (payload.roleId !== RESTR_OWNER_ROLE_ID && payload.roleId !== ADMIN_ROLE_ID)) {
+    const payload = getAuthDetails(req);
+    if (!payload || (!isRestaurantOwner(req) && !isAdmin(req))) {
         return res.status(403).json({message: "Token invalid"});
     }
 
@@ -40,8 +39,7 @@ export function requiresRestaurantOwner(req: Request, res: Response, next: NextF
 
 
 export function requiresAuth(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers.authorization;
-    const payload = authHeaderToPayload(authHeader);
+    const payload = getAuthDetails(req);
     if (!payload) {
         return res.status(403).json({message: "Token invalid"});
     }
@@ -84,4 +82,8 @@ export function getAuthDetails(req: Request) {
 
 export function isAdmin(req: Request) {
     return getAuthDetails(req)?.roleId === ADMIN_ROLE_ID;
+}
+
+export function isRestaurantOwner(req: Request) {
+    return getAuthDetails(req)?.roleId === RESTR_OWNER_ROLE_ID;
 }
