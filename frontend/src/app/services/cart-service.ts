@@ -1,10 +1,13 @@
-import {Injectable, signal, WritableSignal} from '@angular/core';
+import {inject, Injectable, signal, WritableSignal} from '@angular/core';
 import {MenuItemDto} from '@shared/types';
+import {MenuItemService} from './menu-item-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService {
+  private menuItemService = inject(MenuItemService)
+
   readonly localstorageName: string = "cart";
   private cart: WritableSignal<Map<number, CartItemDto[]>> = signal(this.loadCart())
 
@@ -82,6 +85,11 @@ export class CartService {
         let cartMap: Map<number, CartItemDto[]> = new Map();
         for(const restaurantCart of storedObject) {
           if(restaurantCart.length > 0) {
+            for(let item of restaurantCart) {
+              this.menuItemService.getMenuItem(item.itemInfo.restaurantId, item.itemInfo.id).subscribe(menuItem => {
+                this.updateMenuItemInCart(menuItem)
+              })
+            }
             cartMap.set(restaurantCart[0].itemInfo.restaurantId, restaurantCart)
           }
         }
@@ -92,6 +100,18 @@ export class CartService {
       }
     }
     return new Map<number, CartItemDto[]>();
+  }
+
+  private updateMenuItemInCart(menuItem: MenuItemDto) {
+    this.cart.update(currentCart => {
+      const restaurantCart = currentCart.get(menuItem.restaurantId) ?? [];
+      let existingItem = restaurantCart.find(el => this.isSameItem(el.itemInfo, menuItem));
+      if(existingItem) {
+        existingItem.itemInfo = menuItem;
+      }
+      return currentCart;
+    });
+    this.writeToStorage();
   }
 
   private writeToStorage() {
