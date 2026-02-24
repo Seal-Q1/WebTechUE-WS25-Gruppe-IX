@@ -37,11 +37,11 @@ VALUES
 
 -- owner99 is now user_id 8
 INSERT INTO restaurant (restaurant_name, owner_id, phone, email, restaurant_status_id, location_name, address_street,
-                        address_house_nr, address_postal_code, address_city, address_door, opening_hours_monday,
+                        address_house_nr, address_postal_code, address_city, address_door, latitude, longitude, opening_hours_monday,
                         opening_hours_tuesday, opening_hours_wednesday, opening_hours_thursday, opening_hours_friday,
                         opening_hours_saturday, opening_hours_sunday, image)
 VALUES ('Borgar Bootique', 8, '+123', 'restaurant@mail.at', 'accepted', 'RestaurantLocation', 'RestaurantStr.', '999',
-        '9583', 'Klagenfurt', '5', '09:00-22:00', '09:00-22:00', '09:00-22:00', '09:00-22:00', '09:00-23:00',
+        '9583', 'Klagenfurt', '5', 46.616, 14.265, '09:00-22:00', '09:00-22:00', '09:00-22:00', '09:00-22:00', '09:00-23:00',
         '10:00-23:00', 'Closed', null);
 
 
@@ -50,8 +50,8 @@ VALUES (1,'Pizza', 12.00, 'yay'),
        (1,'Borgar', 8.99, 'lol');
 
 
-INSERT INTO "order" (restaurant_id, order_name, order_type, order_status, address_street, address_house_nr, address_postal_code, address_city, paid_amount, payment_method, user_id)
-VALUES (1, 'SealOrder', 'delivery', 'preparing', 'Gruberstrasse', '420', '9583', 'Klagenfurt', 999.44, 'cash', 2);
+INSERT INTO "order" (restaurant_id, order_name, order_type, order_status, address_street, address_house_nr, address_postal_code, address_city, latitude, longitude, paid_amount, payment_method, user_id)
+VALUES (1, 'SealOrder', 'delivery', 'preparing', 'Gruberstrasse', '420', '9583', 'Klagenfurt', 46.616, 14.265, 999.44, 'cash', 2);
 
 INSERT INTO order_item (order_id, item_id, quantity, unit_price)
 VALUES (1, 1, 1, 12.00),
