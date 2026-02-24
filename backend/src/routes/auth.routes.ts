@@ -14,6 +14,7 @@ import type {
     UpdateProfileDto,
     UserAddressDto
 } from '@shared/types';
+import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from "jsonwebtoken";
 import {type RestaurantRow, UserRow} from "../serializers";
@@ -23,6 +24,8 @@ const router = Router();
 const geolocationService = new GeolocationService();
 
 const ROLE_ID_RESTR_OWNER = 2;
+
+const saltRounds = 10;
 
 interface UserRowWithPassword {
     user_id: number;
@@ -210,8 +213,8 @@ router.post("/login", async (req: Request, res: Response) => {
 
         const userRow = result.rows[0]!;
 
-        // Simple password comparison (in production, use bcrypt.compare)
-        if (userRow.password_hash !== password) {
+        // Password comparison using bcrypt
+        if (!bcrypt.compareSync(password, userRow.password_hash)) {
             return sendNotFound(res, "Invalid username or password");
         }
 
@@ -250,6 +253,8 @@ router.post("/register", async (req: Request, res: Response) => {
             return sendBadRequest(res, "Username or email already exists");
         }
 
+        const passwordHash = bcrypt.hashSync(dto.password, saltRounds);
+
         await pool.query('BEGIN');
 
         // Insert new user with role_id=1 (customer) and user_status_id=1 (ok)
@@ -257,7 +262,7 @@ router.post("/register", async (req: Request, res: Response) => {
             `INSERT INTO users (user_name, first_name, last_name, email, phone, password_hash, role_id, user_status_id)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
              RETURNING *`,
-            [dto.userName, dto.firstName, dto.lastName, dto.email, dto.phone, dto.password, 1, 1]
+            [dto.userName, dto.firstName, dto.lastName, dto.email, dto.phone, passwordHash, 1, 1]
         );
 
         const userId = result.rows[0]!.user_id;
@@ -514,12 +519,14 @@ router.post("/password-reset", async (req: Request, res: Response) => {
             return sendBadRequest(res, "Invalid or expired reset token");
         }
 
+        const passwordHash = bcrypt.hashSync(newPassword, saltRounds);
+
         // Update password and clear reset token
         await pool.query(
             `UPDATE users 
              SET password_hash = $1, password_reset_token = NULL, password_reset_expires = NULL 
              WHERE user_id = $2`,
-            [newPassword, result.rows[0]!.user_id]
+            [passwordHash, result.rows[0]!.user_id]
         );
 
         res.json({message: "Password has been reset successfully"});
@@ -621,14 +628,16 @@ router.put("/change-password", async (req: Request, res: Response) => {
             return res.status(401).json({error: "User not found"});
         }
 
-        if (result.rows[0]!.password_hash !== currentPassword) {
+        if (!bcrypt.compareSync(currentPassword, result.rows[0]!.password_hash)) {
             return sendBadRequest(res, "Current password is incorrect");
         }
+
+        const newPasswordHash = bcrypt.hashSync(newPassword, saltRounds);
 
         // Update password
         await pool.query(
             'UPDATE users SET password_hash = $1 WHERE user_id = $2',
-            [newPassword, currentUserId]
+            [newPasswordHash, currentUserId]
         );
 
         res.json({message: "Password changed successfully"});

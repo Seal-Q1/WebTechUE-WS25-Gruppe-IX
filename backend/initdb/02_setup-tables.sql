@@ -293,7 +293,7 @@ CREATE TABLE public.admin_list
 
 -- Insert default admin user with password 'admin' (role_id=3 is admin, user_status_id=1 is 'ok')
 INSERT INTO public.users (user_name, first_name, last_name, email, phone, password_hash, role_id, user_status_id)
-VALUES ('admin', 'Admin', 'Admin', 'admin@admin.com', '+43123456789', 'admin', 3, 1);
+VALUES ('admin', 'Admin', 'Admin', 'admin@admin.com', '+43123456789', '$2b$10$H9A0h4Gj/KHHGNU9xNlYnu6a1kFK3zqmcU/Nwoybp44z0lYYKnuNa', 3, 1);
 
 INSERT INTO public.admin_list (user_id, added_by)
 SELECT user_id, user_id FROM public.users WHERE user_name = 'admin';

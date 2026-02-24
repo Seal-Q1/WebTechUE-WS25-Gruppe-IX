@@ -1,21 +1,22 @@
 \connect food_delivery_platform;
 
 -- Insert sample users (role_id: 1=customer, 2=restaurantOwner, 3=admin; user_status_id: 1=ok, 2=warned, 3=suspended)
+-- Password is universally "password123"
 INSERT INTO users (user_name, first_name, last_name, email, phone, password_hash, role_id, user_status_id, warning_count)
 VALUES 
        -- Active customers
-       ('Seal', 'Markus', 'M', 'seal@q.1', '+123', 'tubele', 1, 1, 0),
-       ('johndoe', 'John', 'Doe', 'john.doe@email.com', '+43660111222', 'password123', 1, 1, 0),
-       ('janedoe', 'Jane', 'Doe', 'jane.doe@email.com', '+43660222333', 'password123', 1, 1, 0),
+       ('Seal', 'Markus', 'M', 'seal@q.1', '+123', '$2b$10$aU13Z6a9E4uFrBDsQ8wmDuMN4gO70.zjM4.0oCljpzvdWjn3wGG.i', 1, 1, 0),
+       ('johndoe', 'John', 'Doe', 'john.doe@email.com', '+43660111222', '$2b$10$aU13Z6a9E4uFrBDsQ8wmDuMN4gO70.zjM4.0oCljpzvdWjn3wGG.i', 1, 1, 0),
+       ('janedoe', 'Jane', 'Doe', 'jane.doe@email.com', '+43660222333', '$2b$10$aU13Z6a9E4uFrBDsQ8wmDuMN4gO70.zjM4.0oCljpzvdWjn3wGG.i', 1, 1, 0),
        -- Warned customers
-       ('warneduser1', 'Peter', 'Parker', 'peter@email.com', '+43660333444', 'password123', 1, 2, 1),
-       ('warneduser2', 'Mary', 'Jane', 'mary@email.com', '+43660444555', 'password123', 1, 2, 2),
+       ('warneduser1', 'Peter', 'Parker', 'peter@email.com', '+43660333444', '$2b$10$aU13Z6a9E4uFrBDsQ8wmDuMN4gO70.zjM4.0oCljpzvdWjn3wGG.i', 1, 2, 1),
+       ('warneduser2', 'Mary', 'Jane', 'mary@email.com', '+43660444555', '$2b$10$aU13Z6a9E4uFrBDsQ8wmDuMN4gO70.zjM4.0oCljpzvdWjn3wGG.i', 1, 2, 2),
        -- Suspended customers
-       ('suspendeduser', 'Bruce', 'Banner', 'bruce@email.com', '+43660555666', 'password123', 1, 3, 3),
+       ('suspendeduser', 'Bruce', 'Banner', 'bruce@email.com', '+43660555666', '$2b$10$aU13Z6a9E4uFrBDsQ8wmDuMN4gO70.zjM4.0oCljpzvdWjn3wGG.i', 1, 3, 3),
        -- Restaurant owners with different statuses
-       ('owner99', 'Restau', 'rantOwner','restau@owner.at', '+123','paschwoat', 2, 1, 0),
-       ('owner_warned', 'Tony', 'Stark', 'tony@restaurant.at', '+43660777888', 'password123', 2, 2, 1),
-       ('owner_suspended', 'Steve', 'Rogers', 'steve@restaurant.at', '+43660888999', 'password123', 2, 3, 2);
+       ('owner99', 'Restau', 'rantOwner','restau@owner.at', '+123','$2b$10$aU13Z6a9E4uFrBDsQ8wmDuMN4gO70.zjM4.0oCljpzvdWjn3wGG.i', 2, 1, 0),
+       ('owner_warned', 'Tony', 'Stark', 'tony@restaurant.at', '+43660777888', '$2b$10$aU13Z6a9E4uFrBDsQ8wmDuMN4gO70.zjM4.0oCljpzvdWjn3wGG.i', 2, 2, 1),
+       ('owner_suspended', 'Steve', 'Rogers', 'steve@restaurant.at', '+43660888999', '$2b$10$aU13Z6a9E4uFrBDsQ8wmDuMN4gO70.zjM4.0oCljpzvdWjn3wGG.i', 2, 3, 2);
 
 -- Initialize points for sample users
 INSERT INTO user_points (user_id, total_points_earned, current_balance)
