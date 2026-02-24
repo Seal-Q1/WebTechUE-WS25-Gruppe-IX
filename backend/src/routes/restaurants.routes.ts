@@ -12,7 +12,7 @@ import {
 import {sendInternalError, sendNotFound, randomDelay, requiresAuth, parseTokenUserId} from '../utils';
 import {AddressDto, RestaurantReviewDto, RestaurantReviewDtoToServer, RestaurantToServerDto} from "@shared/types";
 import {QueryResult} from "pg";
-import {getAuthDetails, requiresRestaurantOwner} from "../utils/auth-check";
+import {getAuthDetails, isAdmin, requiresRestaurantOwner} from "../utils/auth-check";
 import {GeolocationService} from "../services/geolocation.service";
 import {assertRestaurantRights} from "../utils/restaurant-rights-check";
 
@@ -61,12 +61,24 @@ router.get("/", async (_req: Request, res: Response) => {
 
 router.get("/my", requiresAuth, async (req: Request, res: Response) => {
     try {
-        const query = `
+        let result: QueryResult<RestaurantRow>;
+
+        if(isAdmin(req)) {
+            const query = `
+            SELECT * FROM restaurant
+            ORDER BY order_index, restaurant_id
+        `;
+            result = await pool.query<RestaurantRow>(query);
+        }
+        else {
+            const query = `
             SELECT * FROM restaurant
             WHERE owner_id = $1
             ORDER BY order_index, restaurant_id
         `;
-        const result = await pool.query<RestaurantRow>(query, [getAuthDetails(req)?.userId]);
+            result = await pool.query<RestaurantRow>(query, [getAuthDetails(req)?.userId]);
+        }
+
         const serialized = restaurantSerializer.serialize_multiple(result.rows);
         res.json(serialized);
     } catch (error) {

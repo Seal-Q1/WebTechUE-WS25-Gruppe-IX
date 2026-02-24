@@ -81,3 +81,7 @@ export function parseTokenUserId(authHeader: string | undefined): number | null 
 export function getAuthDetails(req: Request) {
     return authHeaderToPayload(req.headers.authorization);
 }
+
+export function isAdmin(req: Request) {
+    return getAuthDetails(req)?.roleId === ADMIN_ROLE_ID;
+}
